@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Pixectra</string>
+
+    <string name="lorem">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras venenatis vulputate odio pharetra placera.</string>
+</resources>
