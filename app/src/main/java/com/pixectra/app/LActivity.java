@@ -120,7 +120,7 @@ imageView.setOnClickListener(new View.OnClickListener() {
 //    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
 //        try {
 //            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-//
+//+
 //            // Signed in successfully, show authenticated UI.
 //            updateUI(account);
 //        } catch (ApiException e) {
