@@ -1,6 +1,7 @@
 package com.pixectra.app;
 
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -8,11 +9,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity implements UserProfileFragment.OnFragmentInteractionListener{
+import static com.pixectra.app.UserProfileFragment.*;
+
+public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener {
 
     DashboardFragment dashboardFragment;
     UserProfileFragment userProfileFragment;
@@ -21,6 +23,8 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
     ViewPager viewPager;
 
     BottomNavigationView bottomNavigationView;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,4 +131,5 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
             return 3;
         }
     }
+
 }
