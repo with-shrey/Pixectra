@@ -1,6 +1,7 @@
 package com.pixectra.app;
 
-import  android.net.Uri;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -11,13 +12,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity implements UserProfileFragment.OnFragmentInteractionListener{
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+@SuppressWarnings("deprecation")
+public class MainActivity extends AppCompatActivity implements UserProfileFragment.OnFragmentInteractionListener {
 
     DashboardFragment dashboardFragment;
     UserProfileFragment userProfileFragment;
     ReferAndEarnFragment referAndEarnFragment;
 
+    FirebaseAuth auth, mFirebaseAuth;
+    FirebaseUser mFirebaseUser;
     ViewPager viewPager;
 
     BottomNavigationView bottomNavigationView;
@@ -33,8 +41,19 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
 
         viewPager = findViewById(R.id.main_viewpager);
         viewPager.setOffscreenPageLimit(3);
+
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        mFirebaseUser = mFirebaseAuth.getCurrentUser();
+        if (mFirebaseUser == null) {
+            // Not signed in, launch the Sign In activity
+            startActivity(new Intent(this, LActivity.class));
+            finish();
+            return;
+        } else {
+            Toast.makeText(getApplicationContext(), "Signed in", Toast.LENGTH_SHORT).show();
+        }
         viewPager.setAdapter(new ViewPagerAdapter(getSupportFragmentManager()));
-        viewPager.setCurrentItem(1,true);
+        viewPager.setCurrentItem(1, true);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -43,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
 
             @Override
             public void onPageSelected(int position) {
-                switch (position){
+                switch (position) {
                     case 0:
                         bottomNavigationView.setSelectedItemId(R.id.refer_earn);
                         break;
@@ -67,21 +86,20 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
+                switch (item.getItemId()) {
                     case R.id.refer_earn:
-                        viewPager.setCurrentItem(0,true);
+                        viewPager.setCurrentItem(0, true);
                         return true;
                     case R.id.dashboard:
-                        viewPager.setCurrentItem(1,true);
+                        viewPager.setCurrentItem(1, true);
                         return true;
                     case R.id.settings:
-                        viewPager.setCurrentItem(2,true);
+                        viewPager.setCurrentItem(2, true);
                         return true;
                 }
                 return false;
             }
         });
-
 
 
     }
@@ -91,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
 
     }
 
-    private class ViewPagerAdapter extends FragmentPagerAdapter{
+    private class ViewPagerAdapter extends FragmentPagerAdapter {
 
         public ViewPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -99,21 +117,21 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
 
         @Override
         public Fragment getItem(int position) {
-            switch (position){
+            switch (position) {
                 case 0:
-                    if(referAndEarnFragment == null){
+                    if (referAndEarnFragment == null) {
                         referAndEarnFragment = new ReferAndEarnFragment();
                         return referAndEarnFragment;
                     }
                     return referAndEarnFragment;
                 case 1:
-                    if(dashboardFragment == null){
+                    if (dashboardFragment == null) {
                         dashboardFragment = new DashboardFragment();
                         return dashboardFragment;
                     }
                     return dashboardFragment;
                 case 2:
-                    if(userProfileFragment == null){
+                    if (userProfileFragment == null) {
                         userProfileFragment = new UserProfileFragment();
                         return userProfileFragment;
                     }

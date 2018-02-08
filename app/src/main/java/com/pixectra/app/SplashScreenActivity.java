@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
-
+@SuppressWarnings("deprecation")
 public class SplashScreenActivity extends AppCompatActivity {
 
     private ImageView splashimage;

@@ -1,11 +1,12 @@
 package com.pixectra.app;
 
-import android.content.Intent;
+import  android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -25,25 +26,25 @@ import com.google.firebase.auth.GoogleAuthProvider;
 public class LActivity extends AppCompatActivity {
 GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
-
+private ImageView imageView;
 int RC_SIGN_IN=1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_l);
         mAuth = FirebaseAuth.getInstance();
-        SignInButton signInButton = findViewById(R.id.sign_in_button);
-        signInButton.setSize(SignInButton.SIZE_STANDARD);
+        imageView=(ImageView)findViewById(R.id.google_login_button);
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken("802114397478-121sl0s0bfr0ts2ojchta7b22lc98q5n.apps.googleusercontent.com")
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-signInButton.setOnClickListener(new View.OnClickListener() {
+imageView.setOnClickListener(new View.OnClickListener() {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.sign_in_button:
+            case R.id.google_login_button:
                 signIn();
                 break;
             // ...
