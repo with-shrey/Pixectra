@@ -1,4 +1,4 @@
-package com.pixectra.app;
+package com.pixectra.app.Utils;
 
 import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
@@ -16,8 +16,8 @@ import java.util.Random;
  * Created by swaini negi on 07/02/2018.
  */
 
-public class logfile {
-    private static final String Tag= logfile.class.getName();
+public class LogManager {
+    private static final String Tag= LogManager.class.getName();
 
     //time
     Date currentTime = Calendar.getInstance().getTime();
@@ -51,12 +51,12 @@ public class logfile {
     //read previous contents of the file and then append data with the existing content.
     public void appendLog(String text)
     {
-        File logFile = new File("sdcard/log.file");
-        if (!logFile.exists())
+        File LogManager = new File("sdcard/log.file");
+        if (!LogManager.exists())
         {
             try
             {
-                logFile.createNewFile();
+                LogManager.createNewFile();
             }
             catch (IOException e)
             {
@@ -67,7 +67,7 @@ public class logfile {
         try
         {
             //BufferedWriter for performance, true to set append to file flag
-            BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true));
+            BufferedWriter buf = new BufferedWriter(new FileWriter(LogManager, true));
             buf.append(text);
             buf.newLine();
             buf.close();

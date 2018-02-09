@@ -1,16 +1,24 @@
 package com.pixectra.app.Adapter;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.pixectra.app.R;
-import com.squareup.picasso.Picasso;
+
 
 /**
  * Created by Suhail on 2/6/2018.
@@ -47,7 +55,7 @@ public class PhotobookRecyclerViewAdapter extends RecyclerView.Adapter<Photobook
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(final MyViewHolder holder, int position) {
 
         if (title[position] != null) {
 
@@ -59,10 +67,18 @@ public class PhotobookRecyclerViewAdapter extends RecyclerView.Adapter<Photobook
         }
 
         if (image_links[position] != null) {
+            Glide.with(mcontext).load(image_links[position]).listener(new RequestListener<Drawable>() {
+                @Override
+                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                    return false;
+                }
 
-           //<-- loading image into view from links
-            Picasso.with(mcontext).setLoggingEnabled(true);
-            Picasso.with(mcontext).load(image_links[position]).into(holder.mimageview);
+                @Override
+                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                    holder.progress.setVisibility(View.GONE);
+                    return false;
+                }
+            }).into(holder.mimageview);
 
         } else {
             Log.d("Recycler View ", "Empty image link at : " + position);
@@ -79,10 +95,10 @@ public class PhotobookRecyclerViewAdapter extends RecyclerView.Adapter<Photobook
 
         ImageView mimageview;
         TextView image_title;
-
+        ProgressBar progress;
         public MyViewHolder(View itemView) {
             super(itemView);
-
+            progress=itemView.findViewById(R.id.progress_bar_photobook);
             image_title = itemView.findViewById(R.id.image_title_poster);
             mimageview = itemView.findViewById(R.id.imageview_poster_recycler_view);
 

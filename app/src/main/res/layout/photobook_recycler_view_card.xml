@@ -19,7 +19,9 @@
 
         card_view:cardElevation="8dp"
         card_view:cardUseCompatPadding="true">
-
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
         <ImageView
             android:id="@+id/imageview_poster_recycler_view"
             android:layout_width="match_parent"
@@ -30,7 +32,7 @@
             android:id="@+id/image_title_poster"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_gravity="bottom"
             android:layout_marginTop="20dp"
@@ -42,7 +44,12 @@
             android:textStyle="bold"
 
             />
-
+    <ProgressBar
+        android:id="@+id/progress_bar_photobook"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
+</RelativeLayout>
     </android.support.v7.widget.CardView>
 
 </LinearLayout>
