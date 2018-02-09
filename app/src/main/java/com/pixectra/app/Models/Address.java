@@ -1,5 +1,7 @@
 package com.pixectra.app.Models;
 
+import com.google.firebase.database.Exclude;
+
 import java.io.Serializable;
 
 /**
@@ -8,7 +10,8 @@ import java.io.Serializable;
  */
 
 public class Address implements Serializable {
-
+    @Exclude
+    String key;
     String name;
     String addNo;
     String street;
@@ -18,6 +21,9 @@ public class Address implements Serializable {
     String mobile;
     String optional;
 
+    public Address() {
+    }
+
     public Address(String name, String addNo, String street, String pincode, String city, String state, String mobile, String optional) {
         this.name = name;
         this.addNo = addNo;
@@ -26,6 +32,14 @@ public class Address implements Serializable {
         this.city = city;
         this.state = state;
         this.mobile = mobile;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getName() {

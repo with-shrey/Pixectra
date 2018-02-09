@@ -184,4 +184,8 @@ public class SessionHelper extends MainActivity {
         editor.apply();
     }
 
+    public String getUid(){
+        return sharedPreferences.getString(User_Uid,null);
+    }
+
 }

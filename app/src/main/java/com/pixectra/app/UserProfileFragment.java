@@ -1,12 +1,14 @@
 package com.pixectra.app;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +38,7 @@ public class UserProfileFragment extends Fragment{
     private String mParam2;
 ImageView profilePic;
 TextView userName;
+CardView address;
     private OnFragmentInteractionListener mListener;
 
     public UserProfileFragment() {
@@ -76,6 +79,8 @@ TextView userName;
         HashMap<String,String> data=new SessionHelper(getActivity()).getUserDetails();
         profilePic=view.findViewById(R.id.user_image);
         userName=view.findViewById(R.id.user_name);
+        address=view.findViewById(R.id.address_card_view);
+
         if (data.get(SessionHelper.User_Image) != null)
         Glide.with(getActivity()).load(Uri.parse(data.get(SessionHelper.User_Image))).listener(new RequestListener<Drawable>() {
             @Override
@@ -92,6 +97,13 @@ TextView userName;
             }
         }).into(profilePic);
         userName.setText(data.get(SessionHelper.User_Name));
+        address.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(getActivity(),SelectAddressActivity.class);
+                startActivity(intent);
+            }
+        });
         super.onViewCreated(view, savedInstanceState);
     }
 

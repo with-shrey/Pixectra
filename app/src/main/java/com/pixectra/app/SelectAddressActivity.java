@@ -8,9 +8,14 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.pixectra.app.Adapter.ShippingAddressAdapter;
 import com.pixectra.app.Models.Address;
+import com.pixectra.app.Utils.SessionHelper;
 
 import java.util.ArrayList;
 
@@ -23,12 +28,15 @@ public class SelectAddressActivity extends AppCompatActivity {
 
     RecyclerView recyclerview;
     DatabaseReference dataref;
-    ArrayList list;
-
+    ArrayList<Address> list;
+    FirebaseDatabase db;
+    DatabaseReference ref;
+    ShippingAddressAdapter adap;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.multiple_shipping);
-
+        db=FirebaseDatabase.getInstance();
+        ref=db.getReference("Users/"+new SessionHelper(this).getUid()+"/ShippingAddress");
         Toolbar toolbar = findViewById(R.id.toolbar3);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Delivery Address");
@@ -40,20 +48,31 @@ public class SelectAddressActivity extends AppCompatActivity {
                 finish();
             }
         });
+        list = new ArrayList<>();
+        adap = new ShippingAddressAdapter(this,list);
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                list.clear();
+                for (DataSnapshot data:dataSnapshot.getChildren()){
+                    Address address=data.getValue(Address.class);
+                    assert address != null;
+                    address.setKey(data.getKey());
+                    list.add(address);
+                }
+                adap.notifyDataSetChanged();
+            }
 
-        list = new ArrayList<Address>();
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
   //extract list from firebase
         // below is sudo list
-       list.add(new Address("prashu gupta","285,Gali no.10","pemwshwar gate","283203","firozabad","up","8439034578",null  ));
-        list.add(new Address("prashu gupta","Room no 221 Raman A","Iet lucknow","226021","lucknow","up","8439034578" ,null ));
-        list.add(new Address("prashu gupta","285,Gali no.10","pemwshwar gate","283203","firozabad","up","8439034578",null  ));
-        list.add(new Address("prashu gupta","Room no 221 Raman A","Iet lucknow","226021","lucknow","up","8439034578" ,null ));
-        list.add(new Address("prashu gupta","285,Gali no.10","pemwshwar gate","283203","firozabad","up","8439034578" ,null ));
-        list.add(new Address("prashu gupta","Room no 221 Raman A","Iet lucknow","226021","lucknow","up","8439034578" ,null ));
-
 
         RecyclerView recycler = (RecyclerView)findViewById(R.id.multi_ship_recycler);
-                ShippingAddressAdapter adap = new ShippingAddressAdapter(list);
+
                 recycler.setAdapter(adap);
                 LinearLayoutManager layout = new LinearLayoutManager(getApplicationContext());
                 recycler.setLayoutManager(layout);

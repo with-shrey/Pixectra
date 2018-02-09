@@ -12,9 +12,12 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.pixectra.app.R;
 import com.pixectra.app.Models.Address;
 import com.pixectra.app.ShippingAddressForm;
+import com.pixectra.app.Utils.SessionHelper;
 
 import java.util.ArrayList;
 
@@ -23,9 +26,11 @@ import java.util.ArrayList;
  */
 public class ShippingAddressAdapter extends RecyclerView.Adapter<ShippingAddressAdapter.viewHolder> {
     ArrayList arrayList;
+    Context c;
 
-    public ShippingAddressAdapter(ArrayList list) {
+    public ShippingAddressAdapter(Context context,ArrayList list) {
        this.arrayList=list;
+       c=context;
     }
 
     public static class viewHolder extends RecyclerView.ViewHolder{
@@ -49,7 +54,7 @@ public class ShippingAddressAdapter extends RecyclerView.Adapter<ShippingAddress
     }
 
     @Override
-    public void onBindViewHolder(final viewHolder holder, int position) {
+    public void onBindViewHolder(final viewHolder holder, final int position) {
          final Address add=(Address)arrayList.get(position);
         CardView cardView=holder.cardView;
         TextView name=(TextView)cardView.findViewById(R.id.card_name);
@@ -79,6 +84,11 @@ public class ShippingAddressAdapter extends RecyclerView.Adapter<ShippingAddress
             public void onClick(View view) {
                  //firebase code to remove the selected address
                 Toast.makeText(holder.context,"Removed",Toast.LENGTH_SHORT).show();
+                FirebaseDatabase db= FirebaseDatabase.getInstance();
+                DatabaseReference ref=db.getReference("Users/"+new SessionHelper(c).getUid()+"/ShippingAddress");
+                ref.child(add.getKey()).setValue(null);
+                arrayList.remove(position);
+                notifyItemChanged(position);
 
                 //remove
 

@@ -10,7 +10,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.pixectra.app.Models.Address;
+import com.pixectra.app.Utils.SessionHelper;
 
 /**
  * Created by  prashu on 2/6/2018.
@@ -21,11 +24,15 @@ public class ShippingAddressForm extends AppCompatActivity {
     String name,mobile,ward,street,pincode,state,city,optional;
     EditText Tname,Tmobile,Tward,Tstreet,Tpincode,Tstate,Tcity,Toptional;
     Button save,cancle;
+    FirebaseDatabase db;
+    DatabaseReference ref;
+    Address adress;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.shipping_address_activity);
-
+        db=FirebaseDatabase.getInstance();
+        ref=db.getReference("Users/"+new SessionHelper(this).getUid()+"/ShippingAddress");
         Toolbar toolbar = findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Delivery Address");
@@ -52,7 +59,7 @@ public class ShippingAddressForm extends AppCompatActivity {
         if(comefrom==0)
         {
             Bundle bundle = intent.getExtras();
-        Address adress=(Address)bundle.getSerializable("add");
+        adress=(Address)bundle.getSerializable("add");
 
             Tname.setText(adress.getName());
             Tmobile.setText(adress.getMobile());
@@ -107,6 +114,12 @@ public class ShippingAddressForm extends AppCompatActivity {
                 if(state.length()==0){Alert("State");return ;}
                 if(pincode.length()==0){Alert("Pincode"); return;}
                 Address add=new Address(name,ward,street,pincode,city,state,mobile,optional);//pojo class,have to save it on firebase
+                if (getIntent().getIntExtra("status",-1) == 0){
+                    ref.child(adress.getKey()).setValue(add);
+                }else {
+                    ref.push().setValue(add);
+                }
+                finish();
             }
         });
         //cancel button
