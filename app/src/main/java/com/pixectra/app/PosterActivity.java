@@ -50,7 +50,7 @@ public class PosterActivity extends AppCompatActivity {
         setuprecyclerview();
         //Type Of Activity
         int type=getIntent().getIntExtra("type",1);
-        title_page.setText(activityTitles[-1]);
+        title_page.setText(activityTitles[type-1]);
     }
 
 

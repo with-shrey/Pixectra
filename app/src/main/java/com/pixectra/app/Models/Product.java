@@ -11,6 +11,9 @@ public class Product {
     int pics;
     int price;
 
+    public Product() {
+    }
+
     public Product(int id, String title, String url, int pics, int price) {
         this.id = id;
         this.title = title;

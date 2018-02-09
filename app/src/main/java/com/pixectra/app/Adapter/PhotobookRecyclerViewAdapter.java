@@ -70,6 +70,9 @@ public class PhotobookRecyclerViewAdapter extends RecyclerView.Adapter<Photobook
             Glide.with(mcontext).load(image_links[position]).listener(new RequestListener<Drawable>() {
                 @Override
                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                    holder.mimageview.setImageResource(R.drawable.ic_picture);
+
+                    holder.progress.setVisibility(View.GONE);
                     return false;
                 }
 

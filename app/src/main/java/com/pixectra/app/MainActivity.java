@@ -14,8 +14,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import static com.pixectra.app.UserProfileFragment.*;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -43,9 +41,6 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
 
-        viewPager = findViewById(R.id.main_viewpager);
-        viewPager.setOffscreenPageLimit(3);
-
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         if (mFirebaseUser == null) {
@@ -56,6 +51,8 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
         } else {
             Toast.makeText(getApplicationContext(), "Signed in", Toast.LENGTH_SHORT).show();
         }
+        viewPager = findViewById(R.id.main_viewpager);
+        viewPager.setOffscreenPageLimit(3);
         viewPager.setAdapter(new ViewPagerAdapter(getSupportFragmentManager()));
         viewPager.setCurrentItem(1, true);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {

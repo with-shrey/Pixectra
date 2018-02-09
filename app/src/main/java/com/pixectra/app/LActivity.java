@@ -1,5 +1,6 @@
 package com.pixectra.app;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,6 +26,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -51,6 +54,7 @@ public class LActivity extends AppCompatActivity {
     String gpersonName, gpersonEmail;
     Uri gImageUrl;
     int RC_SIGN_IN = 1;
+    Dialog errorDialog;
     private static final String TAG = "HANDLESIGNINRESULT";
     CallbackManager mCallbackManager;
     private FirebaseAuth mAuth;
@@ -100,7 +104,8 @@ DatabaseReference ref;
             public void onClick(View v) {
                 switch (v.getId()) {
                     case R.id.google_login_button:
-                        signIn();
+                        if (checkPlayServices())
+                            signIn();
                         break;
                     // ...
                 }
@@ -169,6 +174,8 @@ DatabaseReference ref;
                                     ,fFirstName+" "+fLastName
                                     ,fEmail
                                     ,fImageurl);
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            updateUI(user);
                             Toast.makeText(LActivity.this, fFirstName+fEmail, Toast.LENGTH_SHORT).show();
                         }else{
                             ref.child(mAuth.getCurrentUser().getUid()).child("Info").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -179,6 +186,8 @@ DatabaseReference ref;
                                             ,user.getName()
                                             ,user.getEmail()
                                             ,Uri.parse(user.getProfilePic()));
+                                    FirebaseUser userfb = mAuth.getCurrentUser();
+                                    updateUI(userfb);
                                 }
 
                                 @Override
@@ -190,8 +199,7 @@ DatabaseReference ref;
                         // If sign in fails, display a message to the user. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
-                            Intent intent = new Intent(LActivity.this, MainActivity.class);
-                            startActivity(intent);
+
 
                         } else {
                             Log.w(TAG, "signInWithCredential", task.getException());
@@ -254,6 +262,8 @@ DatabaseReference ref;
                                             ,gpersonName
                                             ,gpersonEmail
                                             ,gImageUrl);
+                                    FirebaseUser user = mAuth.getCurrentUser();
+                                    updateUI(user);
                                     if (gImageUrl != null) {
                                         Toast.makeText(LActivity.this, "found image url", Toast.LENGTH_SHORT).show();
                                     }
@@ -268,6 +278,8 @@ DatabaseReference ref;
                                                 ,user.getName()
                                                 ,user.getEmail()
                                                 ,Uri.parse(user.getProfilePic()));
+                                        FirebaseUser userfire = mAuth.getCurrentUser();
+                                        updateUI(userfire);
                                     }
 
                                     @Override
@@ -276,8 +288,7 @@ DatabaseReference ref;
                                     }
                                 });
                             }
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            updateUI(user);
+
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.v("Google Signin", "signInWithCredential:failure", task.getException());
@@ -298,7 +309,6 @@ DatabaseReference ref;
         if (resultCode == RESULT_OK && requestCode == RC_SIGN_IN) {
             // The Task returned from this call is always completed, no need to attach
             // a listener..
-            progressBar.setVisibility(View.GONE);
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
 
@@ -315,7 +325,6 @@ DatabaseReference ref;
         }
         else
         {
-            progressBar.setVisibility(View.GONE);
         }
     }
 
@@ -327,6 +336,7 @@ DatabaseReference ref;
 
     void updateUI(Object o) {
         if (o != null) {
+            progressBar.setVisibility(View.GONE);
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             finish();
@@ -334,7 +344,28 @@ DatabaseReference ref;
             Toast.makeText(this, "Null", Toast.LENGTH_SHORT).show();
         }
     }
+    private boolean checkPlayServices() {
 
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+
+        int resultCode = googleApiAvailability.isGooglePlayServicesAvailable(this);
+
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (googleApiAvailability.isUserResolvableError(resultCode)) {
+
+                if (errorDialog == null) {
+                    errorDialog = googleApiAvailability.getErrorDialog(this, resultCode, 2404);
+                    errorDialog.setCancelable(false);
+                }
+
+                if (!errorDialog.isShowing())
+                    errorDialog.show();
+
+            }
+        }
+
+        return resultCode == ConnectionResult.SUCCESS;
+    }
 
 }
 
