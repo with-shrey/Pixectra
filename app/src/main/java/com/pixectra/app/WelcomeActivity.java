@@ -160,7 +160,7 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     /**
-     * View pager adapter
+     * View pager ShippingAddressAdapter
      */
     public class MyViewPagerAdapter extends PagerAdapter {
         private LayoutInflater layoutInflater;

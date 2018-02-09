@@ -1,28 +1,30 @@
-package com.pixectra.app;
+package com.pixectra.app.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.pixectra.app.R;
+import com.pixectra.app.Models.Address;
+import com.pixectra.app.ShippingAddressForm;
 
 import java.util.ArrayList;
 
 /**
  * Created by prashu on 07/02/2018.
  */
-public class adapter extends RecyclerView.Adapter<adapter.viewHolder> {
+public class ShippingAddressAdapter extends RecyclerView.Adapter<ShippingAddressAdapter.viewHolder> {
     ArrayList arrayList;
 
-    public adapter(ArrayList list) {
+    public ShippingAddressAdapter(ArrayList list) {
        this.arrayList=list;
     }
 
@@ -39,7 +41,7 @@ public class adapter extends RecyclerView.Adapter<adapter.viewHolder> {
         }
     }
     @Override
-    public adapter.viewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ShippingAddressAdapter.viewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         CardView itemView = (CardView) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.card_shipping, parent, false);
 
@@ -48,26 +50,26 @@ public class adapter extends RecyclerView.Adapter<adapter.viewHolder> {
 
     @Override
     public void onBindViewHolder(final viewHolder holder, int position) {
-         final shipaddClass add=(shipaddClass)arrayList.get(position);
+         final Address add=(Address)arrayList.get(position);
         CardView cardView=holder.cardView;
         TextView name=(TextView)cardView.findViewById(R.id.card_name);
-        name.setText(add.name);
+        name.setText(add.getName());
         TextView ward=(TextView)cardView.findViewById(R.id.card_ard);
-        ward.setText(add.addNo+","+add.street);
+        ward.setText(add.getAddNo()+","+add.getStreet());
         TextView fulladd=(TextView)cardView.findViewById(R.id.card_full_add);
-        String fulladdress=add.city+"-"+add.pincode+" , "+add.state;
+        String fulladdress=add.getCity()+"-"+add.getPincode()+" , "+add.getState();
         fulladd.setText(fulladdress);
         TextView mobile=(TextView)cardView.findViewById(R.id.card_mobile);
-        mobile.setText("Mobile:"+add.mobile);
+        mobile.setText("Mobile:"+add.getMobile());
 
         holder.edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               Intent intent= new Intent(holder.context,shipping_address.class);
+               Intent intent= new Intent(holder.context,ShippingAddressForm.class);
                Bundle b=new Bundle();
                b.putSerializable("add",add);
                intent.putExtras(b);
-               intent.putExtra("status",0);//0 indicates that shipping_address calls from edit button
+               intent.putExtra("status",0);//0 indicates that ShippingAddressForm calls from edit button
                 holder.context.startActivity(intent);
             }
 

@@ -1,4 +1,4 @@
-package com.pixectra.app;
+package com.pixectra.app.Models;
 
 import java.io.Serializable;
 
@@ -7,7 +7,7 @@ import java.io.Serializable;
  * Used to store shipping address of the user
  */
 
-public class shipaddClass implements Serializable {
+public class Address implements Serializable {
 
     String name;
     String addNo;
@@ -18,7 +18,7 @@ public class shipaddClass implements Serializable {
     String mobile;
     String optional;
 
-    public shipaddClass(String name, String addNo, String street, String pincode, String city, String state, String mobile,String optional) {
+    public Address(String name, String addNo, String street, String pincode, String city, String state, String mobile, String optional) {
         this.name = name;
         this.addNo = addNo;
         this.street = street;

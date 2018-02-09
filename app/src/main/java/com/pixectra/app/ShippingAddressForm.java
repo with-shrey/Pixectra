@@ -6,21 +6,18 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import java.io.Serializable;
+import com.pixectra.app.Models.Address;
 
 /**
  * Created by  prashu on 2/6/2018.
  * detail of the shipping address
  */
 
-public class shipping_address extends AppCompatActivity {
+public class ShippingAddressForm extends AppCompatActivity {
     String name,mobile,ward,street,pincode,state,city,optional;
     EditText Tname,Tmobile,Tward,Tstreet,Tpincode,Tstate,Tcity,Toptional;
     Button save,cancle;
@@ -55,16 +52,16 @@ public class shipping_address extends AppCompatActivity {
         if(comefrom==0)
         {
             Bundle bundle = intent.getExtras();
-        shipaddClass adress=(shipaddClass)bundle.getSerializable("add");
+        Address adress=(Address)bundle.getSerializable("add");
 
-            Tname.setText(adress.name);
-            Tmobile.setText(adress.mobile);
-            Tpincode.setText(adress.pincode);
-            Tstreet.setText(adress.street);
-            Tstate.setText(adress.state);
-            Tcity.setText(adress.city);
-            Tward.setText(adress.addNo);
-            Toptional.setText(adress.optional);
+            Tname.setText(adress.getName());
+            Tmobile.setText(adress.getMobile());
+            Tpincode.setText(adress.getPincode());
+            Tstreet.setText(adress.getStreet());
+            Tstate.setText(adress.getState());
+            Tcity.setText(adress.getCity());
+            Tward.setText(adress.getAddNo());
+            Toptional.setText(adress.getOptional());
         }
         Tmobile.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -109,7 +106,7 @@ public class shipping_address extends AppCompatActivity {
                 if(city.length()==0){Alert("City/District"); return;}
                 if(state.length()==0){Alert("State");return ;}
                 if(pincode.length()==0){Alert("Pincode"); return;}
-                shipaddClass add=new shipaddClass(name,ward,street,pincode,city,state,mobile,optional);//pojo class,have to save it on firebase
+                Address add=new Address(name,ward,street,pincode,city,state,mobile,optional);//pojo class,have to save it on firebase
             }
         });
         //cancel button
@@ -123,7 +120,7 @@ public class shipping_address extends AppCompatActivity {
 // function for alerts
     void Alert(String Message)
     {
-        AlertDialog alertDialog = new AlertDialog.Builder(shipping_address.this).create();
+        AlertDialog alertDialog = new AlertDialog.Builder(ShippingAddressForm.this).create();
         alertDialog.setTitle("Alert");
         alertDialog.setMessage("Please enter your "+Message);
         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
