@@ -16,6 +16,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".shipping_address"/>
+        <activity android:name=".multiple_shipp_add"/>
+
     </application>
 
 </manifest>
