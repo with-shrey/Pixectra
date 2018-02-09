@@ -24,6 +24,12 @@
 
 
         </activity>
+        <activity android:name=".InstaMain">
+
+        </activity>
+        <activity android:name=".AllMediaFiles"></activity>
+        <activity android:name=".Relationship"></activity>
+
     </application>
 
 </manifest>
