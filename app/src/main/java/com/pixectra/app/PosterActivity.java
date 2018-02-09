@@ -10,6 +10,7 @@ import com.pixectra.app.Adapter.PhotobookRecyclerViewAdapter;
 
 public class PosterActivity extends AppCompatActivity {
 
+    String[] activityTitles = {"Flipbook", "PostCard", "Polaroids", "Photos","Posters"} ;
 
     //<-- Dummy image names
                               // -->
@@ -47,16 +48,14 @@ public class PosterActivity extends AppCompatActivity {
         mrecyclerview = findViewById(R.id.poster_activity_recyclerview);
         mrecyclerview.setLayoutManager(new LinearLayoutManager(PosterActivity.this));
         setuprecyclerview();
-
-
-        title_page.setText("Posters");
-
+        //Type Of Activity
+        int type=getIntent().getIntExtra("type",1);
+        title_page.setText(activityTitles[-1]);
     }
 
 
-
-    /*
-    method to setup recycler view
+    /**
+     * Method To Setup Recycler View
      */
     private void setuprecyclerview() {
 

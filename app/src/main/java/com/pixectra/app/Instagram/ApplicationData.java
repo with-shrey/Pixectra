@@ -1,4 +1,4 @@
-package com.pixectra.app;
+package com.pixectra.app.Instagram;
 
 public class ApplicationData {
 	public static final String CLIENT_ID = "3e9606d5d7924267a81ac8a760fb85fc";

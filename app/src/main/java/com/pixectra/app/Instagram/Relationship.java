@@ -1,4 +1,4 @@
-package com.pixectra.app;
+package com.pixectra.app.Instagram;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -7,8 +7,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
-import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.Toast;
+
+import com.pixectra.app.R;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -16,27 +18,21 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
-public class AllMediaFiles extends Activity {
-	private GridView gvAllImages;
-	private HashMap<String, String> userInfo;
-	private ArrayList<String> imageThumbList = new ArrayList<String>();
+public class Relationship extends Activity {
+	private String url = "";
+	private ListView lvRelationShipAllUser;
+	private ArrayList<HashMap<String, String>> usersInfo = new ArrayList<HashMap<String, String>>();
 	private Context context;
 	private int WHAT_FINALIZE = 0;
 	private static int WHAT_ERROR = 1;
 	private ProgressDialog pd;
-	public static final String TAG_DATA = "data";
-	public static final String TAG_IMAGES = "images";
-	public static final String TAG_THUMBNAIL = "thumbnail";
-	public static final String TAG_URL = "url";
+
 	private Handler handler = new Handler(new Callback() {
 
 		@Override
 		public boolean handleMessage(Message msg) {
 			if (pd != null && pd.isShowing()) {
-				{
-					pd.dismiss();
-				}
+				pd.dismiss();
 			}
 			if (msg.what == WHAT_FINALIZE) {
 				setImageGridAdapter();
@@ -47,25 +43,31 @@ public class AllMediaFiles extends Activity {
 			return false;
 		}
 	});
+	public static final String TAG_DATA = "data";
+	public static final String TAG_ID = "id";
+	public static final String TAG_PROFILE_PICTURE = "profile_picture";
+	public static final String TAG_USERNAME = "username";
+	public static final String TAG_BIO = "bio";
+	public static final String TAG_WEBSITE = "website";
+	public static final String TAG_FULL_NAME = "full_name";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.all_media_list_files);
-		gvAllImages = (GridView) findViewById(R.id.gvAllImages);
-		userInfo = (HashMap<String, String>) getIntent().getSerializableExtra(
-				"userInfo");
-
-		context = AllMediaFiles.this;
+		setContentView(R.layout.relationship);
+		lvRelationShipAllUser = (ListView) findViewById(R.id.lvRelationShip);
+		url = getIntent().getStringExtra("userInfo");
+		context = Relationship.this;
 		getAllMediaImages();
 	}
 
 	private void setImageGridAdapter() {
-		gvAllImages.setAdapter(new MyGridListAdapter(context,imageThumbList));
+		lvRelationShipAllUser.setAdapter(new RelationShipAdapter(context,
+				usersInfo));
 	}
 
 	private void getAllMediaImages() {
-		pd = ProgressDialog.show(context, "", "Loading images...");
+		pd = ProgressDialog.show(context, "", "Loading...");
 		new Thread(new Runnable() {
 
 			@Override
@@ -74,33 +76,27 @@ public class AllMediaFiles extends Activity {
 				try {
 					// URL url = new URL(mTokenUrl + "&code=" + code);
 					JSONParser jsonParser = new JSONParser();
-					JSONObject jsonObject = jsonParser
-							.getJSONFromUrlByGet("https://api.instagram.com/v1/users/"
-									+ userInfo.get(InstagramApp.TAG_ID)
-									+ "/media/recent/?client_id="
-									+ ApplicationData.CLIENT_ID
-									+ "&count="
-									+ userInfo.get(InstagramApp.TAG_COUNTS));
+					JSONObject jsonObject = jsonParser.getJSONFromUrlByGet(url);
 					JSONArray data = jsonObject.getJSONArray(TAG_DATA);
 					for (int data_i = 0; data_i < data.length(); data_i++) {
+						HashMap<String, String> hashMap = new HashMap<String, String>();
 						JSONObject data_obj = data.getJSONObject(data_i);
+						String str_id = data_obj.getString(TAG_ID);
 
-						JSONObject images_obj = data_obj
-								.getJSONObject(TAG_IMAGES);
+						hashMap.put(TAG_PROFILE_PICTURE,
+								data_obj.getString(TAG_PROFILE_PICTURE));
 
-						JSONObject thumbnail_obj = images_obj
-								.getJSONObject(TAG_THUMBNAIL);
-
-						// String str_height =
-						// thumbnail_obj.getString(TAG_HEIGHT);
+						// String str_username =
+						// data_obj.getString(TAG_USERNAME);
 						//
-						// String str_width =
-						// thumbnail_obj.getString(TAG_WIDTH);
+						// String str_bio = data_obj.getString(TAG_BIO);
+						//
+						// String str_website = data_obj.getString(TAG_WEBSITE);
 
-						String str_url = thumbnail_obj.getString(TAG_URL);
-						imageThumbList.add(str_url);
+						hashMap.put(TAG_USERNAME,
+								data_obj.getString(TAG_USERNAME));
+						usersInfo.add(hashMap);
 					}
-
 					System.out.println("jsonObject::" + jsonObject);
 
 				} catch (Exception exception) {

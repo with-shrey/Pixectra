@@ -1,4 +1,4 @@
-package com.pixectra.app;
+package com.pixectra.app.Instagram;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;

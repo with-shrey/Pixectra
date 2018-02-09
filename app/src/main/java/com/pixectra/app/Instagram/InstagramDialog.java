@@ -1,4 +1,4 @@
-package com.pixectra.app;
+package com.pixectra.app.Instagram;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;

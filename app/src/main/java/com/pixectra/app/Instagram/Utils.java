@@ -1,4 +1,4 @@
-package com.pixectra.app;
+package com.pixectra.app.Instagram;
 
 import java.io.BufferedReader;
 import java.io.IOException;

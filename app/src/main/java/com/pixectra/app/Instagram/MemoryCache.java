@@ -1,4 +1,4 @@
-package com.pixectra.app;
+package com.pixectra.app.Instagram;
 
 import android.graphics.Bitmap;
 import android.util.Log;

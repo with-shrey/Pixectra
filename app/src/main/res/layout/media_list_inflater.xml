@@ -8,6 +8,6 @@
         android:id="@+id/ivImage"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:src="@drawable/profile" />
+        android:src="@drawable/ic_launcher_foreground" />
 
 </LinearLayout>

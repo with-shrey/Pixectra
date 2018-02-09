@@ -1,10 +1,12 @@
-package com.pixectra.app;
+package com.pixectra.app.Instagram;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.widget.ImageView;
+
+import com.pixectra.app.R;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,7 +37,7 @@ public class ImageLoader {
 		executorService = Executors.newFixedThreadPool(5);
 	}
 
-	final int stub_id = R.drawable.profile;
+	final int stub_id = R.drawable.ic_launcher_background;
 
 	public void DisplayImage(String url, ImageView imageView) {
 		imageViews.put(imageView, url);

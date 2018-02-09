@@ -19,16 +19,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".PhotobookActivity"></activity>
+        <activity android:name=".PhotobookActivity"/>
         <activity android:name=".PosterActivity">
 
 
         </activity>
-        <activity android:name=".InstaMain">
+        <activity android:name=".Instagram.InstaMain">
 
         </activity>
-        <activity android:name=".AllMediaFiles"></activity>
-        <activity android:name=".Relationship"></activity>
+        <activity android:name=".Instagram.AllMediaFiles"/>
+        <activity android:name=".Instagram.Relationship"/>
 
     </application>
 
