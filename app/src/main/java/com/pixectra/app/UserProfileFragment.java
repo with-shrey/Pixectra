@@ -3,10 +3,19 @@ package com.pixectra.app;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.pixectra.app.Utils.SessionHelper;
+
+import java.util.HashMap;
 
 /**
  * Created by Yugansh on 1/10/2018.
@@ -20,7 +29,8 @@ public class UserProfileFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
+ImageView profilePic;
+TextView userName;
     private OnFragmentInteractionListener mListener;
 
     public UserProfileFragment() {
@@ -51,6 +61,16 @@ public class UserProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_user_profile, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        HashMap<String,String> data=new SessionHelper(getActivity()).getUserDetails();
+        profilePic=view.findViewById(R.id.user_image);
+        userName=view.findViewById(R.id.user_name);
+        Glide.with(getActivity()).load(Uri.parse(data.get(SessionHelper.User_Image))).into(profilePic);
+        userName.setText(data.get(SessionHelper.User_Name));
+        super.onViewCreated(view, savedInstanceState);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

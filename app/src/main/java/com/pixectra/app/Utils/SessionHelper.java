@@ -3,8 +3,10 @@ package com.pixectra.app.Utils;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.pixectra.app.MainActivity;
 
 import java.util.HashMap;
@@ -29,10 +31,14 @@ public class SessionHelper extends MainActivity {
     private static final String IS_LOGIN = "IsLoggedIn";
 
     // Email address (make variable public to access from outside)
-    private static final String User_Email = "USER_EMAIL";
+    public static final String User_Email = "USER_EMAIL";
+    public static final String User_Image = "USER_Image";
+    public static final String User_Name = "USER_NAME";
+    public static final String User_Uid = "USER_UID";
 
     // Password (make variable public to access from outside)
     public static final String User_Password = "USER_PASSWORD";
+    private static final String IS_FIRST_TIME_LAUNCH = "IsFirstTimeLaunch";
 
 
     /**
@@ -46,7 +52,14 @@ public class SessionHelper extends MainActivity {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         editor = sharedPreferences.edit();
     }
+    public void setFirstTimeLaunch(boolean isFirstTime) {
+        editor.putBoolean(IS_FIRST_TIME_LAUNCH, isFirstTime);
+        editor.commit();
+    }
 
+    public boolean isFirstTimeLaunch() {
+        return sharedPreferences.getBoolean(IS_FIRST_TIME_LAUNCH, true);
+    }
     /**
      * @param email
      * @param password
@@ -73,7 +86,9 @@ public class SessionHelper extends MainActivity {
         user.put(User_Email, sharedPreferences.getString(User_Email, null));
 
         // user password
-        user.put(User_Password, sharedPreferences.getString(User_Password, null));
+        user.put(User_Image, sharedPreferences.getString(User_Image, null));
+        user.put(User_Name, sharedPreferences.getString(User_Name, null));
+        user.put(User_Uid, sharedPreferences.getString(User_Uid, null));
 
         // return user
         return user;
@@ -158,8 +173,15 @@ public class SessionHelper extends MainActivity {
         //Clearing all data from the shared preferences
         editor.clear();
         editor.commit();
+        FirebaseAuth.getInstance().signOut();
 
     }
-
+    public void setUserDetails(String uid,String name,String email,Uri url){
+        editor.putString(User_Image, url.toString());
+        editor.putString(User_Name, name);
+        editor.putString(User_Uid, uid);
+        editor.putString(User_Email, email);
+        editor.apply();
+    }
 
 }

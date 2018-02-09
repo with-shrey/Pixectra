@@ -4,10 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +17,9 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.pixectra.app.Utils.SessionHelper;
+
 @SuppressWarnings("deprecation")
 public class WelcomeActivity extends AppCompatActivity {
     private ViewPager viewPager;
@@ -25,14 +28,14 @@ public class WelcomeActivity extends AppCompatActivity {
     private TextView[] dots;
     private int[] layouts;
     private Button btnSkip, btnNext;
-    private PrefManager prefManager;
+    private SessionHelper sessionHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Checking for first time launch - before calling setContentView()
-        prefManager = new PrefManager(this);
-        if (!prefManager.isFirstTimeLaunch()) {
+        sessionHelper = new SessionHelper(this);
+        if (!sessionHelper.isFirstTimeLaunch()) {
             launchHomeScreen();
             finish();
         }
@@ -109,7 +112,7 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     private void launchHomeScreen() {
-        prefManager.setFirstTimeLaunch(false);
+        sessionHelper.setFirstTimeLaunch(false);
         startActivity(new Intent(WelcomeActivity.this,MainActivity.class));
         finish();
     }
