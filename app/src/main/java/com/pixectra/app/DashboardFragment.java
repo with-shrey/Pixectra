@@ -22,7 +22,7 @@ public class DashboardFragment extends Fragment {
 
     ViewPager viewPager;
     CircleIndicator circleIndicator;
-    int[] images = {R.drawable.demo,R.drawable.demo,R.drawable.demo};
+    int[] images = {R.drawable.demo, R.drawable.demo, R.drawable.demo};
 
 
     @Nullable
@@ -32,10 +32,10 @@ public class DashboardFragment extends Fragment {
         View view = inflater.inflate(R.layout.dashboard_fragment, null);
 
         viewPager = view.findViewById(R.id.home_viewpager);
-        viewPager.setPadding(120,24,120,0);
+        viewPager.setPadding(120, 24, 120, 0);
         SlideViewAdapter slideViewAdapter = new SlideViewAdapter(getActivity(), images);
         viewPager.setAdapter(slideViewAdapter);
-        viewPager.setCurrentItem(1,true);
+        viewPager.setCurrentItem(1, true);
 
         circleIndicator = view.findViewById(R.id.viewpager_indicator);
         circleIndicator.setViewPager(viewPager);
@@ -43,7 +43,7 @@ public class DashboardFragment extends Fragment {
         return view;
     }
 
-    private class SlideViewAdapter extends PagerAdapter{
+    private class SlideViewAdapter extends PagerAdapter {
 
         Activity activity;
         int[] images;
@@ -58,7 +58,7 @@ public class DashboardFragment extends Fragment {
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
 
             LayoutInflater layoutInflater = (activity).getLayoutInflater();
-            View itemView = layoutInflater.inflate(R.layout.home_viewpager_item_layout,container,false);
+            View itemView = layoutInflater.inflate(R.layout.home_viewpager_item_layout, container, false);
             ImageView imageView = itemView.findViewById(R.id.sliding_image);
             imageView.setImageResource(images[position]);
 

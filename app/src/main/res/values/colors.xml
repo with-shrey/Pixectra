@@ -10,7 +10,8 @@
     <color name="bg_screen3">#3395ff</color>
     <color name="bg_screen4">#c873f4</color>
     <color name="black">#000</color>
-
+<color name="skip_buttoncolor">#3CB371</color>
+    <color name="next_buttoncolor">#2E8B57</color>
     <color name="userProfileCardViewBlue">#FF0086FF</color>
     <!-- dots inactive colors -->
     <color name="dot_dark_screen1">#d1395c</color>

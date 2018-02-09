@@ -1,8 +1,9 @@
 <resources>
-    <string name="app_name">Pixectra</string>
+    <string name="app_name">pixectra</string>
     <string name="next">NEXT</string>
     <string name="skip">SKIP</string>
     <string name="start">GOT IT</string>
+    <string name="facebook_id">1929234940653651</string>
 
     <string name="lorem">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras venenatis vulputate odio pharetra placera.</string>
 </resources>
