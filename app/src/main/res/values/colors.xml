@@ -4,6 +4,6 @@
     <color name="colorPrimaryDark">#0288d1</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorGray">#616161</color>
-
+    <color name="colorwhite">#ffffff </color>
     <color name="userProfileCardViewBlue">#FF0086FF</color>
 </resources>
