@@ -2,6 +2,7 @@ package com.pixectra.app;
 
 import android.content.Intent;
 import android.media.MediaCas;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
@@ -42,8 +44,10 @@ import java.util.Arrays;
 
 public class LActivity extends AppCompatActivity {
     private ImageView imageView, facebookimageview1;
-    String fName, fEmail, fImageurl;
-    String gpersonName, gpersonEmail, gImageUrl;
+    String fFirstName,fLastName, fEmail;
+    Uri fImageurl;
+    String gpersonName, gpersonEmail;
+    Uri gImageUrl;
     int RC_SIGN_IN = 1;
     private static final String TAG = "HANDLESIGNINRESULT";
     CallbackManager mCallbackManager;
@@ -67,8 +71,7 @@ public class LActivity extends AppCompatActivity {
             public void onSuccess(LoginResult loginResult) {
                 Log.d("Login", "Login sucess");
                 firebaseAuthWithFacebook(loginResult.getAccessToken());
-                fName=loginResult.getAccessToken().getUserId();
-                Toast.makeText(LActivity.this,fName,Toast.LENGTH_SHORT).show();
+               // Toast.makeText(LActivity.this,fFirstName,Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -144,39 +147,52 @@ public class LActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
-
+                        if (task.isSuccessful()) {
+                        boolean isNew = task.getResult().getAdditionalUserInfo().isNewUser();
+                        Log.d("Facebook Sign In", "onComplete: " + (isNew ? "new user" : "old user"));
+                        Toast.makeText(LActivity.this, "onComplete: " + (isNew ? "new user" : "old user"), Toast.LENGTH_SHORT).show();
+                        if (isNew) {
+                            // mAuth.getCurrentUser().getUid();
+                            Profile profile=Profile.getCurrentProfile();
+                            fFirstName=profile.getFirstName();
+                            fLastName=profile.getLastName();
+                            fEmail=profile.getId();
+                            fImageurl=profile.getProfilePictureUri(400,400);
+                            Toast.makeText(LActivity.this, fFirstName+fEmail, Toast.LENGTH_SHORT).show();
+                        }else{
+                            Profile profile=Profile.getCurrentProfile();
+                            fImageurl=profile.getProfilePictureUri(400,400);
+                        }
                         // If sign in fails, display a message to the user. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
-                        if (!task.isSuccessful()) {
-                            Log.w(TAG, "signInWithCredential", task.getException());
-                            Toast.makeText(LActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-
                             Intent intent = new Intent(LActivity.this, MainActivity.class);
                             startActivity(intent);
 
+                        } else {
+                            Log.w(TAG, "signInWithCredential", task.getException());
+                            Toast.makeText(LActivity.this, "Already Signed In Using Google",
+                                    Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
     }
 
-    private void handleFacebookAccessToken(AccessToken token) {
-        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-        mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    Log.d("FacebookTag", "signincredentials", task.getException());
-                    Toast.makeText(LActivity.this, "Login success", Toast.LENGTH_SHORT).show();
-
-                } else {
-                    Toast.makeText(LActivity.this, "Authentication error", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
+//    private void handleFacebookAccessToken(AccessToken token) {
+//        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+//        mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+//            @Override
+//            public void onComplete(@NonNull Task<AuthResult> task) {
+//                if (task.isSuccessful()) {
+//                    Log.d("FacebookTag", "signincredentials", task.getException());
+//                    Toast.makeText(LActivity.this, "Login success", Toast.LENGTH_SHORT).show();
+//
+//                } else {
+//                    Toast.makeText(LActivity.this, "Authentication error", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
+//    }
 
     //showing error dialog of user accounts
     private void signIn() {
@@ -185,7 +201,7 @@ public class LActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
     }
 
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+    private void firebaseAuthWithGoogle(final GoogleSignInAccount acct, final GoogleSignInResult result) {
         Log.d("Google Sign In", "firebaseAuthWithGoogle:" + acct.getId());
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
@@ -201,6 +217,25 @@ public class LActivity extends AppCompatActivity {
                             Toast.makeText(LActivity.this, "onComplete: " + (isNew ? "new user" : "old user"), Toast.LENGTH_SHORT).show();
                             if (isNew) {
                                 // mAuth.getCurrentUser().getUid();
+                                Log.d("TAG", "handleSignInResult:" + result.isSuccess());
+                                if (result.isSuccess()) {
+                                    // Signed in successfully, show authenticated UI.
+                                    GoogleSignInAccount acct = result.getSignInAccount();
+
+                                    gpersonName = acct.getDisplayName();
+                                    gImageUrl = acct.getPhotoUrl();
+                                    gpersonEmail = acct.getEmail();
+
+                                    if (gImageUrl != null) {
+                                        Toast.makeText(LActivity.this, "found image url", Toast.LENGTH_SHORT).show();
+                                    }
+                                    Toast.makeText(LActivity.this, gpersonName + "\n" + gpersonEmail, Toast.LENGTH_SHORT).show();
+                                }
+                            }else{
+                                if (result.isSuccess()) {
+                                    GoogleSignInAccount acct = result.getSignInAccount();
+                                    gImageUrl = acct.getPhotoUrl();
+                                }
                             }
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
@@ -226,13 +261,12 @@ public class LActivity extends AppCompatActivity {
             // a listener..
             progressBar.setVisibility(View.GONE);
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            handleSignInResult(result);
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
 
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account);
+                firebaseAuthWithGoogle(account,result);
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
                 Log.v("Google Sign In", "Google sign in failed", e);
@@ -248,20 +282,7 @@ public class LActivity extends AppCompatActivity {
 
 
     private void handleSignInResult(GoogleSignInResult result) {
-        Log.d("TAG", "handleSignInResult:" + result.isSuccess());
-        if (result.isSuccess()) {
-            // Signed in successfully, show authenticated UI.
-            GoogleSignInAccount acct = result.getSignInAccount();
 
-            gpersonName = acct.getDisplayName();
-            gImageUrl = acct.getPhotoUrl().toString();
-            gpersonEmail = acct.getEmail();
-
-            if (gImageUrl != null) {
-                Toast.makeText(LActivity.this, "found image url", Toast.LENGTH_SHORT).show();
-            }
-            Toast.makeText(LActivity.this, gpersonName + "\n" + gpersonEmail, Toast.LENGTH_SHORT).show();
-        }
     }
 
 
