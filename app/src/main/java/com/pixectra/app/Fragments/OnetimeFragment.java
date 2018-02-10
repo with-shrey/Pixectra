@@ -1,7 +1,6 @@
 package com.pixectra.app.Fragments;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,11 +10,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.pixectra.app.Adapter.PhotobookRecyclerViewAdapter;
-import com.pixectra.app.PosterActivity;
+import com.pixectra.app.Models.Product;
 import com.pixectra.app.R;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -35,7 +40,7 @@ public class OnetimeFragment extends Fragment {
             "http://www.dummymag.com//media/img/dummy-logo.png"
     };
 
-
+    ArrayList<Product> data;
     RecyclerView mrecyclerview;
     PhotobookRecyclerViewAdapter mposterRecyclerViewAdapter;
 
@@ -53,21 +58,38 @@ public class OnetimeFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-
+        data=new ArrayList<>();
+        FirebaseDatabase database=FirebaseDatabase.getInstance();
+        DatabaseReference ref=database.getReference("CommonData").child("PhotoBooks");
        //<--setting up recycler view
         mrecyclerview = getActivity().findViewById(R.id.recyclerview_poster_onetime);
         mrecyclerview.setLayoutManager(new LinearLayoutManager(getActivity()));
         SetupRecyclerview();
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                data.clear();
+                for (DataSnapshot temp:dataSnapshot.getChildren()){
+                    data.add(temp.getValue(Product.class));
+                }
+                view.findViewById(R.id.onetime_progress).setVisibility(View.GONE);
+                mposterRecyclerViewAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                view.findViewById(R.id.onetime_progress).setVisibility(View.GONE);
+            }
+        });
     }
 
 
     private void SetupRecyclerview(){
 
 
-        mposterRecyclerViewAdapter = new PhotobookRecyclerViewAdapter(getActivity(), R.layout.photobook_recycler_view_card, image_links, title);
+        mposterRecyclerViewAdapter = new PhotobookRecyclerViewAdapter(getActivity(), R.layout.photobook_recycler_view_card, data);
         mrecyclerview.setAdapter(mposterRecyclerViewAdapter);
     }
 

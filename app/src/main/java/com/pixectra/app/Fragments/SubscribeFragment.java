@@ -12,8 +12,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.pixectra.app.Adapter.PhotobookRecyclerViewAdapter;
+import com.pixectra.app.Models.Product;
 import com.pixectra.app.R;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,7 +33,7 @@ public class SubscribeFragment extends Fragment {
 
     RecyclerView mrecyclerview;
     PhotobookRecyclerViewAdapter mposterRecyclerViewAdapter;
-
+    ArrayList<Product> data;
     //<--dummy image links
     String[] image_links = {"http://media.comicbook.com/2017/02/tokyoghoulseason3-234960-1280x0.jpg",
             "http://www.dummymag.com//media/img/dummy-logo.png",
@@ -46,10 +54,12 @@ public class SubscribeFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
+        data=new ArrayList<>();
+        FirebaseDatabase database=FirebaseDatabase.getInstance();
+        DatabaseReference ref=database.getReference("CommonData").child("PhotoBooks");
         //<--setting up recycler view
         if (getActivity().findViewById(R.id.recyclerview_poster_subscribe) != null) {
             mrecyclerview = getActivity().findViewById(R.id.recyclerview_poster_subscribe);
@@ -58,13 +68,29 @@ public class SubscribeFragment extends Fragment {
         } else {
             Log.d("onViewCreated", "null view");
         }
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                data.clear();
+                for (DataSnapshot temp:dataSnapshot.getChildren()){
+                    data.add(temp.getValue(Product.class));
+                }
+                view.findViewById(R.id.subscribe_progress).setVisibility(View.GONE);
+                mposterRecyclerViewAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                view.findViewById(R.id.subscribe_progress).setVisibility(View.GONE);
+            }
+        });
 
     }
 
 
     private void SetupRecyclerview() {
 
-        mposterRecyclerViewAdapter = new PhotobookRecyclerViewAdapter(getActivity(), R.layout.photobook_recycler_view_card, image_links, title);
+        mposterRecyclerViewAdapter = new PhotobookRecyclerViewAdapter(getActivity(), R.layout.photobook_recycler_view_card, data);
         mrecyclerview.setAdapter(mposterRecyclerViewAdapter);
     }
 }
