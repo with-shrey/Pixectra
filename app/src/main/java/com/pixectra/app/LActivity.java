@@ -145,8 +145,9 @@ DatabaseReference ref;
                 .getInstance()
                 .logInWithReadPermissions(
                         this,
-                        Arrays.asList("public_profile", "user_friends", "email")
+                        Arrays.asList("public_profile", "user_friends", "email","user_photos")
                 );
+        progressBar.setVisibility(View.VISIBLE);
     }
 
     private void firebaseAuthWithFacebook(AccessToken token) {
