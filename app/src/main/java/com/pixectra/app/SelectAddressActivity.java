@@ -60,12 +60,13 @@ public class SelectAddressActivity extends AppCompatActivity {
                     address.setKey(data.getKey());
                     list.add(address);
                 }
+                findViewById(R.id.progress_shipping).setVisibility(View.GONE);
                 adap.notifyDataSetChanged();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                findViewById(R.id.progress_shipping).setVisibility(View.GONE);
             }
         });
   //extract list from firebase
