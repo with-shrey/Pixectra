@@ -31,20 +31,19 @@ import java.util.ArrayList;
 
 public class PhotobookRecyclerViewAdapter extends RecyclerView.Adapter<PhotobookRecyclerViewAdapter.MyViewHolder> {
 
+
     int layout;
     Context mcontext;
-ArrayList<Product> list;
+    ArrayList<Product> list;
 
     public PhotobookRecyclerViewAdapter(Context mcontext, int layout, ArrayList<Product> data) {
-        if ( mcontext != null &&  layout != 0)
+        if (mcontext != null && layout != 0)
 
         {
-            list=data;
+            list = data;
             this.mcontext = mcontext;        //<-- context
             this.layout = layout;            //<-- layout
-        }
-        else
-        {
+        } else {
             Log.d("PhtbkRcyclrViewAdapter", "Empty Constructor Params");
         }
     }
@@ -58,10 +57,10 @@ ArrayList<Product> list;
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int position) {
-        Product product=list.get(position);
+        Product product = list.get(position);
         if (product.getTitle() != null) {
 
-           //<<-- setting image title
+            //<<-- setting image title
             holder.image_title.setText(product.getTitle());
 
         } else {
@@ -101,18 +100,19 @@ ArrayList<Product> list;
         ImageView mimageview;
         TextView image_title;
         ProgressBar progress;
+
         public MyViewHolder(View itemView) {
             super(itemView);
-            progress=itemView.findViewById(R.id.progress_bar_photobook);
+            progress = itemView.findViewById(R.id.progress_bar_photobook);
             image_title = itemView.findViewById(R.id.image_title_poster);
             mimageview = itemView.findViewById(R.id.imageview_poster_recycler_view);
-         itemView.setOnClickListener(new View.OnClickListener() {
-             @Override
-             public void onClick(View view) {
-                 Intent intent=new Intent(mcontext,ImageSelectActivity.class);
-                 mcontext.startActivity(intent);
-             }
-         });
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(mcontext, ImageSelectActivity.class);
+                    mcontext.startActivity(intent);
+                }
+            });
 
         }
     }
