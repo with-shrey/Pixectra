@@ -35,73 +35,24 @@
             android:layout_centerInParent="true"
             android:src="@drawable/loginwithfb"
             android:visibility="gone" />
-
-        <Button
-            android:id="@+id/selectBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:minWidth="200px"
-            android:text="Select" />
-
         <GridView
-            android:id="@+id/PhoneImageGrid"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
 
-            android:columnWidth="90dp"
-            android:gravity="center"
-            android:horizontalSpacing="10dp"
+            android:id="@+id/galleryGridView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="5dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
             android:numColumns="auto_fit"
+            android:columnWidth="114dp"
+            android:horizontalSpacing="5dp"
+            android:verticalSpacing="5dp"
+            android:gravity="center"
             android:stretchMode="columnWidth"
-            android:verticalSpacing="10dp" />
+            android:background="#ffffff">
+        </GridView>
 
 
-
-        <!--   <LinearLayout
-
-               android:id="@+id/select_imagefromphone_Llayout"
-               android:layout_width="match_parent"
-               android:layout_height="wrap_content"
-               android:orientation="vertical"
-               android:padding="10dp">
-
-               <android.support.v7.widget.CardView
-
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content"
-                   android:backgroundTint="@color/colorPrimaryDark"
-                   app:cardCornerRadius="15dp">
-
-                   <ImageView
-                       android:id="@+id/imageview_select_imagefromphone"
-                       android:layout_width="match_parent"
-                       android:layout_height="match_parent"
-                       android:scaleType="fitXY" />
-               </android.support.v7.widget.CardView>
-
-               <android.support.v4.widget.Space
-                   android:layout_width="match_parent"
-                   android:layout_height="10dp" />
-
-               <android.support.v7.widget.CardView
-
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content"
-                   android:backgroundTint="@color/colorPrimaryDark"
-                   app:cardCornerRadius="15dp">
-
-                   <Button
-                       android:id="@+id/button_select_imagefromphone"
-                       android:layout_width="match_parent"
-                       android:layout_height="wrap_content"
-                       android:background="@color/colorPrimaryDark"
-                       android:text="Select Image" />
-
-
-               </android.support.v7.widget.CardView>
-           </LinearLayout>-->
     </LinearLayout>
 </ScrollView>
 

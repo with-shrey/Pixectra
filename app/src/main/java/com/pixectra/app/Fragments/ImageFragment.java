@@ -2,12 +2,18 @@ package com.pixectra.app.Fragments;
 
 
 import android.Manifest;
+
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.res.Resources;
+
+import android.database.Cursor;
+import android.database.MergeCursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,35 +21,22 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.Bundle;
-import android.provider.MediaStore;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
@@ -51,124 +44,54 @@ import com.facebook.HttpMethod;
 import com.facebook.Profile;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.pixectra.app.Adapter.ImageSelectAdapter;
+import com.pixectra.app.MainActivity;
 import com.pixectra.app.Models.Images;
 import com.pixectra.app.R;
+import com.pixectra.app.Utils.AlbumActivity;
+import com.pixectra.app.Utils.Function;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
-import static android.support.v4.provider.FontsContractCompat.FontRequestCallback.RESULT_OK;
+import com.pixectra.app.Utils.MapComparator;
+
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class ImageFragment extends Fragment {
 
-    //LinearLayout ImageFromPhone;
-   // Button SelectImageText;
     private RecyclerView recyclerView;
     private ImageSelectAdapter adapter;
     ImageView noLoginView;
-   // ImageView LoadPhoneImage;
+    // ImageView LoadPhoneImage;
     int category;
     List<Images> imageData;
     GraphResponse lastGraphResponse;
     final int PICK_IMAGE_REQUEST = 1;
     GridView imagegrid;
-    Button selectBtn ;
+    Button selectBtn;
+
+
+
     /*
-   Images from device ->
+      <-- Images from device
     */
-    private int count;
-    private Bitmap[] thumbnails;
-    private boolean[] thumbnailsselection;
-    private String[] arrPath;
-    private ImageAdapter imageAdapter;
+
+    static final int REQUEST_PERMISSION_KEY = 1;
+    LoadAlbum loadAlbumTask;
+    GridView galleryGridView;
+    ArrayList<HashMap<String, String>> albumList = new ArrayList<HashMap<String, String>>();
+
+    //-->
 
 
-    public class ImageAdapter extends BaseAdapter {
-        private LayoutInflater mInflater;
-
-        public ImageAdapter() {
-            mInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        }
-
-        public int getCount() {
-            return count;
-        }
-
-        public Object getItem(int position) {
-            return position;
-        }
-
-        public long getItemId(int position) {
-            return position;
-        }
-
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder;
-            if (convertView == null) {
-                holder = new ViewHolder();
-                convertView = mInflater.inflate(
-                        R.layout.grid_phone_images, null);
-                holder.imageview = (ImageView) convertView.findViewById(R.id.thumbImage);
-                holder.checkbox = (CheckBox) convertView.findViewById(R.id.itemCheckBox);
-
-                convertView.setTag(holder);
-            }
-            else {
-                holder = (ViewHolder) convertView.getTag();
-            }
-            holder.checkbox.setId(position);
-            holder.imageview.setId(position);
-            holder.checkbox.setOnClickListener(new OnClickListener() {
-
-                public void onClick(View v) {
-                    // TODO Auto-generated method stub
-                    CheckBox cb = (CheckBox) v;
-                    int id = cb.getId();
-                    if (thumbnailsselection[id]){
-                        cb.setChecked(false);
-                        thumbnailsselection[id] = false;
-                    } else {
-                        cb.setChecked(true);
-                        thumbnailsselection[id] = true;
-                    }
-                }
-            });
-            holder.imageview.setOnClickListener(new OnClickListener() {
-
-                public void onClick(View v) {
-                    // TODO Auto-generated method stub
-                    int id = v.getId();
-                    Intent intent = new Intent();
-                    intent.setAction(Intent.ACTION_VIEW);
-                    intent.setDataAndType(Uri.parse("file://" + arrPath[id]), "image/*");
-                    startActivity(intent);
-                }
-            });
-            holder.imageview.setImageBitmap(thumbnails[position]);
-            holder.checkbox.setChecked(thumbnailsselection[position]);
-            holder.id = position;
-            return convertView;
-        }
-    }
-
-
-    class ViewHolder {
-        ImageView imageview;
-        CheckBox checkbox;
-        int id;
-    }
-
-
-    //-------------------------->
     public ImageFragment() {
     }
 
@@ -186,116 +109,190 @@ public class ImageFragment extends Fragment {
         super.onCreate(savedInstanceState);
         category = getArguments().getInt("type", -1);
 
-
-        //select
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View layout = inflater.inflate(R.layout.image_select_fragment, null);
-       // ImageFromPhone = layout.findViewById(R.id.select_imagefromphone_Llayout);
-       // SelectImageText = layout.findViewById(R.id.button_select_imagefromphone);
         imageData = new ArrayList<>();
-       // LoadPhoneImage = layout.findViewById(R.id.imageview_select_imagefromphone);
         recyclerView = layout.findViewById(R.id.Imagelist);
         noLoginView = layout.findViewById(R.id.no_login_view);
         adapter = new ImageSelectAdapter(getActivity(), imageData);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-        imagegrid = layout.findViewById(R.id.PhoneImageGrid);
-        selectBtn = layout.findViewById(R.id.selectBtn);
+        // imagegrid = layout.findViewById(R.id.PhoneImageGrid);
+        //   selectBtn = layout.findViewById(R.id.selectBtn);
+
+
+        //<--For first fragment
+
+        galleryGridView = layout.findViewById(R.id.galleryGridView);
+        galleryGridView.setNumColumns(3);
+
+        float iDisplayWidth = getResources().getDisplayMetrics().widthPixels;
+
+        Resources resources = getApplicationContext().getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float dp = iDisplayWidth / (metrics.densityDpi / 160f);
+
+        if (dp < 360) {
+            dp = (dp - 17) / 2;
+            float px = Function.convertDpToPixel(dp, getApplicationContext());
+            galleryGridView.setColumnWidth(Math.round(px));
+        }
+
+
+
+
         checkAndLoadData();
-
-
-
-
         return layout;
 
     }
 
-void loadimages()
-{
-    //<----
-    final String[] columns = { MediaStore.Images.Media.DATA, MediaStore.Images.Media._ID };
-    final String orderBy = MediaStore.Images.Media._ID;
-    Cursor imagecursor = getActivity().getContentResolver().query(
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, columns, null,
-            null, orderBy);
-    int image_column_index = imagecursor.getColumnIndex(MediaStore.Images.Media._ID);
-    this.count = imagecursor.getCount();
-    this.thumbnails = new Bitmap[this.count];
-    this.arrPath = new String[this.count];
-    this.thumbnailsselection = new boolean[this.count];
-    for (int i = 0; i < this.count; i++) {
-        imagecursor.moveToPosition(i);
-        int id = imagecursor.getInt(image_column_index);
-        int dataColumnIndex = imagecursor.getColumnIndex(MediaStore.Images.Media.DATA);
-        thumbnails[i] = MediaStore.Images.Thumbnails.getThumbnail(
-                getApplicationContext().getContentResolver(), id,
-                MediaStore.Images.Thumbnails.MICRO_KIND, null);
-        arrPath[i]= imagecursor.getString(dataColumnIndex);
-    }
 
-    imageAdapter = new ImageAdapter();
-    if (imageAdapter==null)
-    {Log.d("imageadapter","null");}
-    imagegrid.setAdapter(imageAdapter);
-    imagecursor.close();
+    //<---Methods and classes for first fragment------------------------------START-----------------
+    class LoadAlbum extends AsyncTask<String, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            albumList.clear();
+        }
+
+        protected String doInBackground(String... args) {
+            String xml = "";
+
+            String path = null;
+            String album = null;
+            String timestamp = null;
+            String countPhoto = null;
+            Uri uriExternal = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+            Uri uriInternal = android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI;
 
 
-    selectBtn.setOnClickListener(new OnClickListener() {
+            String[] projection = {MediaStore.MediaColumns.DATA,
+                    MediaStore.Images.Media.BUCKET_DISPLAY_NAME, MediaStore.MediaColumns.DATE_MODIFIED};
+            Cursor cursorExternal = getActivity().getContentResolver().query(uriExternal, projection, "_data IS NOT NULL) GROUP BY (bucket_display_name",
+                    null, null);
+            Cursor cursorInternal = getActivity().getContentResolver().query(uriInternal, projection, "_data IS NOT NULL) GROUP BY (bucket_display_name",
+                    null, null);
+            Cursor cursor = new MergeCursor(new Cursor[]{cursorExternal, cursorInternal});
 
-        public void onClick(View v) {
-            // TODO Auto-generated method stub
-            final int len = thumbnailsselection.length;
-            int cnt = 0;
-            String selectImages = "";
-            for (int i =0; i<len; i++)
-            {
-                if (thumbnailsselection[i]){
-                    cnt++;
-                    selectImages = selectImages + arrPath[i] + "|";
+            while (cursor.moveToNext()) {
+
+                path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA));
+                album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME));
+                timestamp = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_MODIFIED));
+                countPhoto = Function.getCount(getApplicationContext(), album);
+
+
+                Log.v("album", path + "," + album + "," + timestamp + "," + countPhoto);
+                if (timestamp == null) {
+                    timestamp = "1518331969";
                 }
+
+                albumList.add(Function.mappingInbox(album, path, timestamp, Function.converToTime(timestamp), countPhoto));
             }
-            if (cnt == 0){
-                Toast.makeText(getApplicationContext(),
-                        "Please select at least one image",
-                        Toast.LENGTH_LONG).show();
+            cursor.close();
+            Collections.sort(albumList, new MapComparator(Function.KEY_TIMESTAMP, "dsc")); // Arranging photo album by timestamp decending
+            return xml;
+        }
+
+        @Override
+        protected void onPostExecute(String xml) {
+
+            AlbumAdapter adapter = new AlbumAdapter(getActivity(), albumList);
+            galleryGridView.setAdapter(adapter);
+            galleryGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        final int position, long id) {
+                    Intent intent = new Intent(getActivity(), AlbumActivity.class);
+                    intent.putExtra("name", albumList.get(+position).get(Function.KEY_ALBUM));
+                    startActivity(intent);
+                }
+            });
+        }
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        String[] PERMISSIONS = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+        if (!Function.hasPermissions(getActivity(), PERMISSIONS)) {
+            ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, REQUEST_PERMISSION_KEY);
+        } else {
+
+        }
+
+    }
+
+
+    class AlbumAdapter extends BaseAdapter {
+        private Activity activity;
+        private ArrayList<HashMap<String, String>> data;
+
+        public AlbumAdapter(Activity a, ArrayList<HashMap<String, String>> d) {
+            activity = a;
+            data = d;
+        }
+
+        public int getCount() {
+            return data.size();
+        }
+
+        public Object getItem(int position) {
+            return position;
+        }
+
+        public long getItemId(int position) {
+            return position;
+        }
+
+        public View getView(int position, View convertView, ViewGroup parent) {
+            AlbumViewHolder holder = null;
+            if (convertView == null) {
+                holder = new AlbumViewHolder();
+                convertView = LayoutInflater.from(activity).inflate(
+                        R.layout.album_row, parent, false);
+
+                holder.galleryImage = convertView.findViewById(R.id.galleryImage);
+                holder.gallery_count = convertView.findViewById(R.id.gallery_count);
+                holder.gallery_title = convertView.findViewById(R.id.gallery_title);
+
+                convertView.setTag(holder);
             } else {
-                Toast.makeText(getApplicationContext(),
-                        "You've selected Total " + cnt + " image(s).",
-                        Toast.LENGTH_LONG).show();
-                Log.d("SelectedImages", selectImages);
+                holder = (AlbumViewHolder) convertView.getTag();
             }
-        }
-    });
+            holder.galleryImage.setId(position);
+            holder.gallery_count.setId(position);
+            holder.gallery_title.setId(position);
 
-}
+            HashMap<String, String> song = new HashMap<String, String>();
+            song = data.get(position);
+            try {
+                holder.gallery_title.setText(song.get(Function.KEY_ALBUM));
+                holder.gallery_count.setText(song.get(Function.KEY_COUNT));
 
-    /*
-    <-- To add and remove views in 1st fragment
-     */
-    /*void ChangeButtonText(int id) {
-        if (id == 1) {
-            SelectImageText.setText("Select Different Image");
-
-        } else if (id == 2) {
-            SelectImageText.setText("Select Image");
-
-        }
-
-    }
+                Glide.with(activity)
+                        .load(new File(song.get(Function.KEY_PATH))) // Uri of the picture
+                        .into(holder.galleryImage);
 
 
-    //<-- To ADD OR REMOVE LAYOUT OF 1ST FRAG
-    void Addremovelayout(int id) {
-        if (id == 1) {
-            ImageFromPhone.setVisibility(View.GONE);
-        } else if (id == 2) {
-            ImageFromPhone.setVisibility(View.VISIBLE);
+            } catch (Exception e) {
+            }
+            return convertView;
         }
     }
-*/
+
+
+    class AlbumViewHolder {
+        ImageView galleryImage;
+        TextView gallery_count, gallery_title;
+    }
+
+//<---Methods and classes for first fragment------------------END-----------------------------------
+
 
     /**
      * Main Driver Function Checks And Fetch Data from Different Places
@@ -304,39 +301,20 @@ void loadimages()
         switch (category) {
             case 0: //Device Photos
 
-               // Addremovelayout(2);
+                galleryGridView.setVisibility(View.VISIBLE);
                 if (ActivityCompat.checkSelfPermission(getActivity(),
                         Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)//Check For permission if not given show button
                     userLoggedIn(false);
                 else {
 
-                /*    ChangeButtonText(2);
-                    SelectImageText.setOnClickListener(
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
+                    loadAlbumTask = new LoadAlbum();
+                    loadAlbumTask.execute();
 
-                                    //<-- Choosing Image from device
-                                    Intent intent = new Intent();
-                                    // Show only images, no videos or anything else
-                                    intent.setType("image/*");
-                                    intent.setAction(Intent.ACTION_PICK);
-                                    // Always show the chooser (if there are multiple options available)
-                                    startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
-
-
-                                }
-                            }
-                    );
-
-
-                */
-                loadimages();
                 }
                 break;
-            case 1:
+            case 1://facebook
 
-               // Addremovelayout(1); //<-- To remove 1st frag layout
+                galleryGridView.setVisibility(View.GONE); //<-- To remove 1st frag layout
 
                 if (AccessToken.getCurrentAccessToken() == null)
                     userLoggedIn(false);
@@ -356,8 +334,7 @@ void loadimages()
                 break;
             case 2://Instagram
 
-
-                //Addremovelayout(1);  //<-- To remove 1st frag layout
+                galleryGridView.setVisibility(View.GONE);
 
 
                 if (true) {  // User Is Not Logged In
@@ -375,7 +352,7 @@ void loadimages()
                 break;
             case 3:  //Google Photos
 
-               // Addremovelayout(1);  //<-- To remove 1st frag layout
+                galleryGridView.setVisibility(View.GONE);
 
                 if (GoogleSignIn.getLastSignedInAccount(getActivity()) == null) {  // User Is Not Logged In
                     userLoggedIn(false);              // Display Sign In Button set true to remove button
@@ -393,8 +370,6 @@ void loadimages()
 
         }
     }
-
-
 
 
     /**
@@ -517,16 +492,40 @@ void loadimages()
         }
     }
 
+    /* @Override
+     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+         if (requestCode == 2) {
+             if (permissions[0].equals(Manifest.permission.READ_EXTERNAL_STORAGE)
+                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                 userLoggedIn(true);
+                 checkAndLoadData();
+             }
+         }
+     }
+ */
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == 2) {
-            if (permissions[0].equals(Manifest.permission.READ_EXTERNAL_STORAGE)
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                userLoggedIn(true);
-                checkAndLoadData();
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_PERMISSION_KEY: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    loadAlbumTask = new LoadAlbum();
+                    loadAlbumTask.execute();
+                } else {
+                    Toast.makeText(getActivity(), "You must accept permissions.", Toast.LENGTH_LONG).show();
+                }
             }
+            break;
+            case 2: {
+                if (permissions[0].equals(Manifest.permission.READ_EXTERNAL_STORAGE)
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    userLoggedIn(true);
+                    checkAndLoadData();
+                }
+                break;
+            }
+
         }
     }
-
 
 }

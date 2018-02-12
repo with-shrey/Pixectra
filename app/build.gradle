@@ -45,5 +45,8 @@ dependencies {
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
     compile 'com.google.android.gms:play-services-auth:11.8.0'
     implementation 'com.github.bumptech.glide:glide:4.4.0'
+    compile 'com.github.bumptech.glide:glide:4.0.0-RC1'
+
+    compile 'com.jsibbold:zoomage:1.1.0'
 }
 apply plugin: 'com.google.gms.google-services'

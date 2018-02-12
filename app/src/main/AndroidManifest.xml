@@ -25,6 +25,9 @@
 
 
         </activity>
+        <activity android:name=".Utils.GalleryPreview"/>
+
+        <activity android:name=".Utils.AlbumActivity"/>
         <activity android:name=".ShippingAddressForm" />
         <activity android:name=".SelectAddressActivity" />
         <activity android:name=".PhotobookActivity" />
