@@ -19,12 +19,31 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.Toast;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
@@ -47,20 +66,109 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.support.v4.provider.FontsContractCompat.FontRequestCallback.RESULT_OK;
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class ImageFragment extends Fragment {
 
-    LinearLayout ImageFromPhone;
-    Button SelectImageText;
+    //LinearLayout ImageFromPhone;
+   // Button SelectImageText;
     private RecyclerView recyclerView;
     private ImageSelectAdapter adapter;
     ImageView noLoginView;
-    ImageView LoadPhoneImage;
+   // ImageView LoadPhoneImage;
     int category;
     List<Images> imageData;
     GraphResponse lastGraphResponse;
     final int PICK_IMAGE_REQUEST = 1;
+    GridView imagegrid;
+    Button selectBtn ;
+    /*
+   Images from device ->
+    */
+    private int count;
+    private Bitmap[] thumbnails;
+    private boolean[] thumbnailsselection;
+    private String[] arrPath;
+    private ImageAdapter imageAdapter;
 
+
+    public class ImageAdapter extends BaseAdapter {
+        private LayoutInflater mInflater;
+
+        public ImageAdapter() {
+            mInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        public int getCount() {
+            return count;
+        }
+
+        public Object getItem(int position) {
+            return position;
+        }
+
+        public long getItemId(int position) {
+            return position;
+        }
+
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder holder;
+            if (convertView == null) {
+                holder = new ViewHolder();
+                convertView = mInflater.inflate(
+                        R.layout.grid_phone_images, null);
+                holder.imageview = (ImageView) convertView.findViewById(R.id.thumbImage);
+                holder.checkbox = (CheckBox) convertView.findViewById(R.id.itemCheckBox);
+
+                convertView.setTag(holder);
+            }
+            else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+            holder.checkbox.setId(position);
+            holder.imageview.setId(position);
+            holder.checkbox.setOnClickListener(new OnClickListener() {
+
+                public void onClick(View v) {
+                    // TODO Auto-generated method stub
+                    CheckBox cb = (CheckBox) v;
+                    int id = cb.getId();
+                    if (thumbnailsselection[id]){
+                        cb.setChecked(false);
+                        thumbnailsselection[id] = false;
+                    } else {
+                        cb.setChecked(true);
+                        thumbnailsselection[id] = true;
+                    }
+                }
+            });
+            holder.imageview.setOnClickListener(new OnClickListener() {
+
+                public void onClick(View v) {
+                    // TODO Auto-generated method stub
+                    int id = v.getId();
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_VIEW);
+                    intent.setDataAndType(Uri.parse("file://" + arrPath[id]), "image/*");
+                    startActivity(intent);
+                }
+            });
+            holder.imageview.setImageBitmap(thumbnails[position]);
+            holder.checkbox.setChecked(thumbnailsselection[position]);
+            holder.id = position;
+            return convertView;
+        }
+    }
+
+
+    class ViewHolder {
+        ImageView imageview;
+        CheckBox checkbox;
+        int id;
+    }
+
+
+    //-------------------------->
     public ImageFragment() {
     }
 
@@ -85,27 +193,89 @@ public class ImageFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View layout = inflater.inflate(R.layout.image_select_fragment, null);
-        ImageFromPhone = layout.findViewById(R.id.select_imagefromphone_Llayout);
-        SelectImageText = layout.findViewById(R.id.button_select_imagefromphone);
+       // ImageFromPhone = layout.findViewById(R.id.select_imagefromphone_Llayout);
+       // SelectImageText = layout.findViewById(R.id.button_select_imagefromphone);
         imageData = new ArrayList<>();
-        LoadPhoneImage = layout.findViewById(R.id.imageview_select_imagefromphone);
+       // LoadPhoneImage = layout.findViewById(R.id.imageview_select_imagefromphone);
         recyclerView = layout.findViewById(R.id.Imagelist);
         noLoginView = layout.findViewById(R.id.no_login_view);
         adapter = new ImageSelectAdapter(getActivity(), imageData);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-
-
+        imagegrid = layout.findViewById(R.id.PhoneImageGrid);
+        selectBtn = layout.findViewById(R.id.selectBtn);
         checkAndLoadData();
 
+
+
+
         return layout;
+
     }
 
+void loadimages()
+{
+    //<----
+    final String[] columns = { MediaStore.Images.Media.DATA, MediaStore.Images.Media._ID };
+    final String orderBy = MediaStore.Images.Media._ID;
+    Cursor imagecursor = getActivity().getContentResolver().query(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, columns, null,
+            null, orderBy);
+    int image_column_index = imagecursor.getColumnIndex(MediaStore.Images.Media._ID);
+    this.count = imagecursor.getCount();
+    this.thumbnails = new Bitmap[this.count];
+    this.arrPath = new String[this.count];
+    this.thumbnailsselection = new boolean[this.count];
+    for (int i = 0; i < this.count; i++) {
+        imagecursor.moveToPosition(i);
+        int id = imagecursor.getInt(image_column_index);
+        int dataColumnIndex = imagecursor.getColumnIndex(MediaStore.Images.Media.DATA);
+        thumbnails[i] = MediaStore.Images.Thumbnails.getThumbnail(
+                getApplicationContext().getContentResolver(), id,
+                MediaStore.Images.Thumbnails.MICRO_KIND, null);
+        arrPath[i]= imagecursor.getString(dataColumnIndex);
+    }
+
+    imageAdapter = new ImageAdapter();
+    if (imageAdapter==null)
+    {Log.d("imageadapter","null");}
+    imagegrid.setAdapter(imageAdapter);
+    imagecursor.close();
+
+
+    selectBtn.setOnClickListener(new OnClickListener() {
+
+        public void onClick(View v) {
+            // TODO Auto-generated method stub
+            final int len = thumbnailsselection.length;
+            int cnt = 0;
+            String selectImages = "";
+            for (int i =0; i<len; i++)
+            {
+                if (thumbnailsselection[i]){
+                    cnt++;
+                    selectImages = selectImages + arrPath[i] + "|";
+                }
+            }
+            if (cnt == 0){
+                Toast.makeText(getApplicationContext(),
+                        "Please select at least one image",
+                        Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(getApplicationContext(),
+                        "You've selected Total " + cnt + " image(s).",
+                        Toast.LENGTH_LONG).show();
+                Log.d("SelectedImages", selectImages);
+            }
+        }
+    });
+
+}
 
     /*
     <-- To add and remove views in 1st fragment
      */
-    void ChangeButtonText(int id) {
+    /*void ChangeButtonText(int id) {
         if (id == 1) {
             SelectImageText.setText("Select Different Image");
 
@@ -125,7 +295,7 @@ public class ImageFragment extends Fragment {
             ImageFromPhone.setVisibility(View.VISIBLE);
         }
     }
-
+*/
 
     /**
      * Main Driver Function Checks And Fetch Data from Different Places
@@ -134,13 +304,13 @@ public class ImageFragment extends Fragment {
         switch (category) {
             case 0: //Device Photos
 
-                Addremovelayout(2);
+               // Addremovelayout(2);
                 if (ActivityCompat.checkSelfPermission(getActivity(),
                         Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)//Check For permission if not given show button
                     userLoggedIn(false);
                 else {
 
-                    ChangeButtonText(2);
+                /*    ChangeButtonText(2);
                     SelectImageText.setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
@@ -158,11 +328,15 @@ public class ImageFragment extends Fragment {
                                 }
                             }
                     );
+
+
+                */
+                loadimages();
                 }
                 break;
             case 1:
 
-                Addremovelayout(1); //<-- To remove 1st frag layout
+               // Addremovelayout(1); //<-- To remove 1st frag layout
 
                 if (AccessToken.getCurrentAccessToken() == null)
                     userLoggedIn(false);
@@ -183,7 +357,7 @@ public class ImageFragment extends Fragment {
             case 2://Instagram
 
 
-                Addremovelayout(1);  //<-- To remove 1st frag layout
+                //Addremovelayout(1);  //<-- To remove 1st frag layout
 
 
                 if (true) {  // User Is Not Logged In
@@ -201,7 +375,7 @@ public class ImageFragment extends Fragment {
                 break;
             case 3:  //Google Photos
 
-                Addremovelayout(1);  //<-- To remove 1st frag layout
+               // Addremovelayout(1);  //<-- To remove 1st frag layout
 
                 if (GoogleSignIn.getLastSignedInAccount(getActivity()) == null) {  // User Is Not Logged In
                     userLoggedIn(false);              // Display Sign In Button set true to remove button
@@ -220,30 +394,7 @@ public class ImageFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == getActivity().RESULT_OK) {
-            try {
-                final Uri imageUri = data.getData();
-                final InputStream imageStream = getActivity().getContentResolver().openInputStream(imageUri);
-                final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                if (selectedImage == null) {
-                    Toast.makeText(getActivity(), "null", Toast.LENGTH_SHORT).show();
-                } else {
-                    ChangeButtonText(1);
-                    LoadPhoneImage.setImageBitmap(selectedImage);
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_LONG).show();
-            }
-
-        } else {
-            Toast.makeText(getActivity(), "You haven't picked Image", Toast.LENGTH_LONG).show();
-        }
-    }
 
 
     /**

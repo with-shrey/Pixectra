@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.READ_PROFILE" />
 
     <application
+        android:largeHeap="true"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
@@ -21,11 +22,7 @@
             android:value="@string/facebook_id" />
 
         <activity android:name=".SplashScreenActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
 
         </activity>
         <activity android:name=".ShippingAddressForm" />
@@ -46,7 +43,11 @@
         <activity
             android:name=".ImageSelectActivity"
             android:label="Select Images.." >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
 
         </activity>
     </application>
