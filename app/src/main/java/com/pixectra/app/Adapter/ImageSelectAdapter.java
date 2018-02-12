@@ -12,8 +12,10 @@ import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.pixectra.app.Models.Images;
 import com.pixectra.app.R;
@@ -44,25 +46,26 @@ Context c;
 
     @Override
     public void onBindViewHolder(final myViewHolder holder, int position) {
-
+        RequestOptions requestOptions = new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL);
         Images current = data.get(position);
-        Glide.with(c).load(current.getThumbnail()).listener(new RequestListener<Drawable>() {
-            @Override
-            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                holder.icon.setImageResource(R.drawable.ic_picture);
+        Glide.with(c).load(current.getThumbnail()).apply(requestOptions)
 
-                holder.progress.setVisibility(View.GONE);
-                return false;
-            }
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        holder.icon.setImageResource(R.drawable.ic_picture);
 
-            @Override
-            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                holder.progress.setVisibility(View.GONE);
-                return false;
-            }
-        }).into(holder.icon);
+                        holder.progress.setVisibility(View.GONE);
+                        return false;
+                    }
 
-
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        holder.progress.setVisibility(View.GONE);
+                        return false;
+                    }
+                })
+                .into(holder.icon);
     }
 
     @Override

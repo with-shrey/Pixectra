@@ -67,6 +67,7 @@ ArrayList<Product> data;
                 dataref=ref.child("Posters");
                 break;
         }
+        dataref.keepSynced(true);
         dataref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

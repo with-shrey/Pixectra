@@ -67,6 +67,7 @@ public class OnetimeFragment extends Fragment {
         mrecyclerview = getActivity().findViewById(R.id.recyclerview_poster_onetime);
         mrecyclerview.setLayoutManager(new LinearLayoutManager(getActivity()));
         SetupRecyclerview();
+        ref.keepSynced(true);
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

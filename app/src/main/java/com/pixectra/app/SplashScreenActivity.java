@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 
+import com.google.firebase.database.FirebaseDatabase;
+
 @SuppressWarnings("deprecation")
 public class SplashScreenActivity extends AppCompatActivity {
 
@@ -14,6 +16,11 @@ public class SplashScreenActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        try {
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         setContentView(R.layout.activity_splash_screen);
         splashimage = (ImageView) findViewById(R.id.splash_image);
         new Thread() {

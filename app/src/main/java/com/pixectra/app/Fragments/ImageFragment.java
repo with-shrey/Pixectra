@@ -10,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -172,6 +173,7 @@ GraphResponse lastGraphResponse;
      */
     void getFacebookImages(Profile profile){
         Bundle params  = new Bundle();
+        Log.v("permissions",AccessToken.getCurrentAccessToken().getPermissions().toString());
         params.putString("fields","images");
         new GraphRequest(
                 AccessToken.getCurrentAccessToken(),

@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.pixectra.app.Models.Banner;
 import com.pixectra.app.Models.Product;
 import com.pixectra.app.R;
 
@@ -31,6 +32,10 @@ public class AddCommonData extends AppCompatActivity {
         ref.child("PhotoBooks").push().setValue(new Product(12,"Lorem Ipsum","https://nubuntu.org/wp-content/uploads/2015/06/flipbook-12.gif",5,50,"50/Book"));
         ref.child("PhotoBooks").push().setValue(new Product(13,"Lorem Ipsum","https://nubuntu.org/wp-content/uploads/2015/06/flipbook-12.gif",10,200,"50/Book"));
         ref.child("PhotoBooks").push().setValue(new Product(14,"Lorem Ipsum","https://nubuntu.org/wp-content/uploads/2015/06/flipbook-12.gif",15,400,"50/Book"));
-
+        ref.child("Banner").push().setValue(new Banner("http://goulddiary.stanford.edu/gallery/images/postcard-b.jpg"));
+        ref.child("Banner").push().setValue(new Banner("http://goulddiary.stanford.edu/gallery/images/postcard-b.jpg"));
+        ref.child("Banner").push().setValue(new Banner("http://goulddiary.stanford.edu/gallery/images/postcard-b.jpg"));
+        ref.child("Banner").push().setValue(new Banner("http://goulddiary.stanford.edu/gallery/images/postcard-b.jpg"));
+        ref.child("Banner").push().setValue(new Banner("http://goulddiary.stanford.edu/gallery/images/postcard-b.jpg"));
     }
 }
