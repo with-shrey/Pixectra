@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.SEND_SMS"/>
 
     <application
         android:allowBackup="true"
@@ -20,7 +21,7 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_id" />
 
-        <activity android:name=".SplashScreenActivity">
+        <activity android:name=".mobile_verify">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -44,6 +45,7 @@
         <activity android:name=".Utils.AddCommonData" />
         <activity android:name=".ImageSelectActivity"
             android:label="Select Images.."/>
+
     </application>
 
 </manifest>

@@ -8,6 +8,7 @@ public class User {
     String name;
     String email;
     String profilePic;
+    String phone_no;
 
     public User() {
     }
@@ -28,5 +29,13 @@ public class User {
 
     public String getProfilePic() {
         return profilePic;
+    }
+
+    public String getPhone_no() {
+        return phone_no;
+    }
+
+    public void setPhone_no(String phone_no) {
+        this.phone_no = phone_no;
     }
 }
