@@ -8,15 +8,16 @@ public class User {
     String name;
     String email;
     String profilePic;
-    String phone_no;
+    String phoneNo;
 
     public User() {
     }
 
-    public User(String name, String email, String profilePic) {
+    public User(String name, String email, String profilePic, String phoneNo) {
         this.name = name;
         this.email = email;
         this.profilePic = profilePic;
+        this.phoneNo = phoneNo;
     }
 
     public String getName() {
@@ -31,11 +32,7 @@ public class User {
         return profilePic;
     }
 
-    public String getPhone_no() {
-        return phone_no;
-    }
-
-    public void setPhone_no(String phone_no) {
-        this.phone_no = phone_no;
+    public String getPhoneNo() {
+        return phoneNo;
     }
 }

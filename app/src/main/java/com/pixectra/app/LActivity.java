@@ -170,13 +170,15 @@ DatabaseReference ref;
                             fLastName=profile.getLastName();
                             fEmail=mAuth.getCurrentUser().getEmail();
                             fImageurl=profile.getProfilePictureUri(400,400);
-                            ref.child(mAuth.getCurrentUser().getUid()).child("Info").setValue(new User(fFirstName+" "+fLastName,fEmail,fImageurl.toString()));
+                            ref.child(mAuth.getCurrentUser().getUid()).child("Info").setValue(new User(fFirstName+" "+fLastName,fEmail,fImageurl.toString(),""));
                             new SessionHelper(LActivity.this).setUserDetails(mAuth.getCurrentUser().getUid()
                                     ,fFirstName+" "+fLastName
                                     ,fEmail
                                     ,fImageurl);
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            updateUI(user);
+                            Intent intent =new Intent(LActivity.this,mobile_verify.class);
+                            intent.putExtra("uid",mAuth.getCurrentUser().getUid());
+                            startActivity(intent);
+                            finish();
                             Toast.makeText(LActivity.this, fFirstName+fEmail, Toast.LENGTH_SHORT).show();
                         }else{
                             ref.child(mAuth.getCurrentUser().getUid()).child("Info").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -258,7 +260,7 @@ DatabaseReference ref;
                                     gpersonName = acct.getDisplayName();
                                     gImageUrl = acct.getPhotoUrl();
                                     gpersonEmail = acct.getEmail();
-                                    ref.child(mAuth.getCurrentUser().getUid()).child("Info").setValue(new User(gpersonName,gpersonEmail,gImageUrl.toString()));
+                                    ref.child(mAuth.getCurrentUser().getUid()).child("Info").setValue(new User(gpersonName,gpersonEmail,gImageUrl.toString(),""));
                                     new SessionHelper(LActivity.this).setUserDetails(mAuth.getCurrentUser().getUid()
                                             ,gpersonName
                                             ,gpersonEmail

@@ -35,6 +35,7 @@ public class SessionHelper extends MainActivity {
     public static final String User_Image = "USER_Image";
     public static final String User_Name = "USER_NAME";
     public static final String User_Uid = "USER_UID";
+    public static final String User_Phone = "USER_UID";
 
     // Password (make variable public to access from outside)
     public static final String User_Password = "USER_PASSWORD";
@@ -72,6 +73,11 @@ public class SessionHelper extends MainActivity {
 
     }
 
+    void setUser_Phone(String phone){
+        editor.putString(User_Phone,phone);
+        editor.apply();
+    }
+
     /**
      * HashMap to get the user currently logged in
      *
@@ -89,6 +95,7 @@ public class SessionHelper extends MainActivity {
         user.put(User_Image, sharedPreferences.getString(User_Image, null));
         user.put(User_Name, sharedPreferences.getString(User_Name, null));
         user.put(User_Uid, sharedPreferences.getString(User_Uid, null));
+        user.put(User_Phone, sharedPreferences.getString(User_Phone, null));
 
         // return user
         return user;
