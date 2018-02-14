@@ -40,6 +40,7 @@ public class UserProfileFragment extends Fragment{
 ImageView profilePic;
 TextView userName;
 CardView address;
+CardView linkAccount;
     private OnFragmentInteractionListener mListener;
 
     public UserProfileFragment() {
@@ -81,6 +82,7 @@ CardView address;
         profilePic=view.findViewById(R.id.user_image);
         userName=view.findViewById(R.id.user_name);
         address=view.findViewById(R.id.address_card_view);
+        linkAccount=view.findViewById(R.id.link_account_card_view);
 
         if (data.get(SessionHelper.User_Image) != null)
         Glide.with(getActivity()).load(Uri.parse(data.get(SessionHelper.User_Image))).listener(new RequestListener<Drawable>() {
@@ -102,6 +104,13 @@ CardView address;
             @Override
             public void onClick(View view) {
                 Intent intent=new Intent(getActivity(),AddCommonData.class);
+                startActivity(intent);
+            }
+        });
+        linkAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(getActivity(),LinkedAccounts.class);
                 startActivity(intent);
             }
         });
