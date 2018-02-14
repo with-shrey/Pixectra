@@ -72,7 +72,7 @@ public class InstagramApp {
 				+ clientId
 				+ "&redirect_uri="
 				+ mCallbackUrl
-				+ "&response_type=code&display=touch&scope=likes+comments+relationships";
+				+ "&response_type=code&display=touch&scope=basic";
 
 		InstagramDialog.OAuthDialogListener listener = new InstagramDialog.OAuthDialogListener() {
 			@Override
@@ -88,12 +88,9 @@ public class InstagramApp {
 
 		mDialog = new InstagramDialog(context, mAuthUrl, listener);
 		mProgress = new ProgressDialog(context);
-		mProgress.setCancelable(false);
 	}
 
 	private void getAccessToken(final String code) {
-		mProgress.setMessage("Getting access token ...");
-		mProgress.show();
 
 		new Thread() {
 			@Override

@@ -2,7 +2,6 @@ package com.pixectra.app.Instagram;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -163,9 +162,8 @@ public class InstaMain extends Activity implements OnClickListener {
 				InstaMain.this);
 		alertDialog.setTitle("Profile Info");
 
-		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		LayoutInflater inflater = getLayoutInflater();
 		View view = inflater.inflate(R.layout.profile_view, null);
-		alertDialog.setView(view);
 		ImageView ivProfile = (ImageView) view
 				.findViewById(R.id.ivProfileImage);
 		TextView tvName = (TextView) view.findViewById(R.id.tvUserName);
@@ -173,6 +171,7 @@ public class InstaMain extends Activity implements OnClickListener {
 				.findViewById(R.id.tvNoOfFollowers);
 		TextView tvNoOfFollowing = (TextView) view
 				.findViewById(R.id.tvNoOfFollowing);
+		alertDialog.setView(view);
 		new ImageLoader(InstaMain.this).DisplayImage(
 				userInfoHashmap.get(InstagramApp.TAG_PROFILE_PICTURE),
 				ivProfile);

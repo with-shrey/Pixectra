@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
+import android.util.Log;
 import android.widget.GridView;
 import android.widget.Toast;
 
@@ -43,7 +44,7 @@ public class AllMediaFiles extends Activity {
 			if (msg.what == WHAT_FINALIZE) {
 				setImageGridAdapter();
 			} else {
-				Toast.makeText(context, "Check your network.",
+				Toast.makeText(context, msg.toString()+"\nCheck your network.",
 						Toast.LENGTH_SHORT).show();
 			}
 			return false;
@@ -78,11 +79,14 @@ public class AllMediaFiles extends Activity {
 					JSONParser jsonParser = new JSONParser();
 					JSONObject jsonObject = jsonParser
 							.getJSONFromUrlByGet("https://api.instagram.com/v1/users/"
-									+ userInfo.get(InstagramApp.TAG_ID)
+									+ new InstagramSession(AllMediaFiles.this).getId()
 									+ "/media/recent/?client_id="
 									+ ApplicationData.CLIENT_ID
 									+ "&count="
-									+ userInfo.get(InstagramApp.TAG_COUNTS));
+									+ userInfo.get(InstagramApp.TAG_COUNTS)
+									+"&access_token="
+									+new InstagramSession(AllMediaFiles.this).getAccessToken());
+					Log.v("Images",jsonObject.toString());
 					JSONArray data = jsonObject.getJSONArray(TAG_DATA);
 					for (int data_i = 0; data_i < data.length(); data_i++) {
 						JSONObject data_obj = data.getJSONObject(data_i);
@@ -103,7 +107,7 @@ public class AllMediaFiles extends Activity {
 						imageThumbList.add(str_url);
 					}
 
-					System.out.println("jsonObject::" + jsonObject);
+					Log.v("jsonObject::" , jsonObject.toString());
 
 				} catch (Exception exception) {
 					exception.printStackTrace();

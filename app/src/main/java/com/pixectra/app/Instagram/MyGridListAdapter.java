@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.pixectra.app.R;
 
 import java.util.ArrayList;
@@ -14,9 +15,11 @@ import java.util.ArrayList;
 public class MyGridListAdapter extends BaseAdapter {
 	private ArrayList<String> imageThumbList;
 	private LayoutInflater inflater;
+	Context context;
 	private ImageLoader imageLoader;
 
 	public MyGridListAdapter(Context context, ArrayList<String> imageThumbList) {
+	    this.context=context;
 		inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.imageThumbList = imageThumbList;
@@ -40,11 +43,11 @@ public class MyGridListAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		View view = inflater.inflate(R.layout.media_list_inflater, null);
-		Holder holder = new Holder();
-		holder.ivPhoto = (ImageView) view.findViewById(R.id.ivImage);
-		imageLoader.DisplayImage(imageThumbList.get(position), holder.ivPhoto);
-		return view;
+		View view = inflater.inflate(R.layout.image_recycler_item, null);
+        Holder holder = new Holder();
+        holder.ivPhoto = (ImageView) view.findViewById(R.id.ListIcon);
+        Glide.with(context).load(imageThumbList.get(position)).into(holder.ivPhoto);
+        return view;
 	}
 
 	private class Holder {

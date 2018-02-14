@@ -103,7 +103,6 @@ public class DashboardFragment extends Fragment {
         FirebaseDatabase database=FirebaseDatabase.getInstance();
         DatabaseReference ref=database.getReference("CommonData").child("Banner");
         //<--setting up recycler view
-        ref.keepSynced(true);
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -123,6 +122,7 @@ public class DashboardFragment extends Fragment {
 //                view.findViewById(R.id.onetime_progress).setVisibility(View.GONE);
             }
         });
+        ref.keepSynced(true);
         i = images.size() / 2;
 //        timer = new Timer(); // At this line a new Thread will be created
 //        timer.scheduleAtFixedRate(new RemindTask(), 2000, 3000); // delay

@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
@@ -23,6 +24,10 @@ import com.facebook.HttpMethod;
 import com.facebook.Profile;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.pixectra.app.Adapter.ImageSelectAdapter;
+import com.pixectra.app.Instagram.ApplicationData;
+import com.pixectra.app.Instagram.InstagramApp;
+import com.pixectra.app.Instagram.InstagramSession;
+import com.pixectra.app.Instagram.JSONParser;
 import com.pixectra.app.Models.Images;
 import com.pixectra.app.R;
 
@@ -31,6 +36,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ImageFragment extends Fragment {
@@ -39,8 +45,13 @@ public class ImageFragment extends Fragment {
     private ImageSelectAdapter adapter;
     ImageView noLoginView;
 int category;
+    InstagramApp mApp;//Instagram
     List<Images> imageData ;
 GraphResponse lastGraphResponse;
+    public static final String TAG_DATA = "data";
+    public static final String TAG_IMAGES = "images";
+    public static final String TAG_THUMBNAIL = "thumbnail";
+    public static final String TAG_URL = "url";
     public ImageFragment() {
     }
     public static ImageFragment newInstance(int type) {
@@ -103,10 +114,31 @@ GraphResponse lastGraphResponse;
                     });
                 }
                 break;
-            case 2:   //Instagram
-                if(true){  // User Is Not Logged In
+            case 2:
+
+                mApp = new InstagramApp(getActivity(), ApplicationData.CLIENT_ID,
+                        ApplicationData.CLIENT_SECRET, ApplicationData.CALLBACK_URL);
+
+                if(!mApp.hasAccessToken()){
+                                 // User Is Not Logged In
                     userLoggedIn(false);   // Display Sign In Button set true to remove button
+                    mApp.setListener( new InstagramApp.OAuthAuthenticationListener() {
+
+                        @Override
+                        public void onSuccess() {
+                            // tvSummary.setText("Connected as " + mApp.getUserName());
+                            userLoggedIn(true);
+                        }
+
+                        @Override
+                        public void onFail(String error) {
+                            Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT)
+                                    .show();
+                        }
+                    });
                 }else{
+                    getAllMediaImages();
+
                     //TODO:LOAD DATA
 
                     recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {  //Load More Data on scroll
@@ -228,6 +260,17 @@ GraphResponse lastGraphResponse;
                     }
                 });
             }
+
+
+
+            if (category == 2){
+                noLoginView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mApp.authorize();
+                    }
+                });
+            }
         }
     }
 
@@ -262,5 +305,61 @@ GraphResponse lastGraphResponse;
         }
     }
 
+    private void getAllMediaImages() {
+      // ProgressDialog pd = ProgressDialog.show(getActivity(), "", "Loading images...");
+        new Thread(new Runnable() {
 
+            @Override
+            public void run() {
+//                int what = WHAT_FINALIZE;
+                try {
+                    HashMap<String,String> userInfo = mApp.getUserInfo();
+                    // URL url = new URL(mTokenUrl + "&code=" + code);
+                    JSONParser jsonParser = new JSONParser();
+                    JSONObject jsonObject = jsonParser
+                            .getJSONFromUrlByGet("https://api.instagram.com/v1/users/"
+                                    + new InstagramSession(getActivity()).getId()
+                                    + "/media/recent/?client_id="
+                                    + ApplicationData.CLIENT_ID
+//                                    + "&count="
+//                                    + userInfo.get(InstagramApp.TAG_COUNTS)
+                                    +"&access_token="
+                                    +new InstagramSession(getActivity()).getAccessToken());
+                    Log.v("Images",jsonObject.toString());
+                    JSONArray data = jsonObject.getJSONArray(TAG_DATA);
+                    for (int data_i = 0; data_i < data.length(); data_i++) {
+                        JSONObject data_obj = data.getJSONObject(data_i);
+
+                        JSONObject images_obj = data_obj
+                                .getJSONObject(TAG_IMAGES);
+
+                        JSONObject thumbnail_obj = images_obj
+                                .getJSONObject(TAG_THUMBNAIL);
+
+                        // String str_height =
+                        // thumbnail_obj.getString(TAG_HEIGHT);
+                        //
+                        // String str_width =
+                        // thumbnail_obj.getString(TAG_WIDTH);
+
+                        String str_url = thumbnail_obj.getString(TAG_URL);
+                        imageData.add(new Images(str_url,str_url));
+                    }
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
+                    Log.v("jsonObject::" , jsonObject.toString());
+
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                   // what = WHAT_ERROR;
+                }
+                // pd.dismiss();
+               // handler.sendEmptyMessage(what);
+            }
+        }).start();
+    }
 }
