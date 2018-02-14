@@ -20,6 +20,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,8 +31,20 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkError;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
@@ -39,11 +52,15 @@ import com.facebook.HttpMethod;
 import com.facebook.Profile;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.pixectra.app.Adapter.ImageSelectAdapter;
+import com.pixectra.app.Instagram.ApplicationData;
+import com.pixectra.app.Instagram.InstagramApp;
 import com.pixectra.app.Models.Images;
 import com.pixectra.app.R;
 import com.pixectra.app.Utils.AlbumActivity;
 import com.pixectra.app.Utils.Function;
 import com.pixectra.app.Utils.MapComparator;
+import com.pixectra.app.Utils.SessionHelper;
+import com.pixectra.app.Utils.VolleyQueue;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -64,10 +81,15 @@ public class ImageFragment extends Fragment {
     private RecyclerView recyclerView;
     private ImageSelectAdapter adapter;
     ImageView noLoginView;
-    // ImageView LoadPhoneImage;
-    int category;
-    List<Images> imageData;
-    GraphResponse lastGraphResponse;
+int category;
+    InstagramApp mApp;//Instagram
+    List<Images> imageData ;
+GraphResponse lastGraphResponse;
+    public static final String TAG_DATA = "data";
+    public static final String TAG_IMAGES = "images";
+    public static final String TAG_THUMBNAIL = "thumbnail";
+    public static final String TAG_URL = "url";
+
     final int PICK_IMAGE_REQUEST = 1;
     GridView imagegrid;
     Button selectBtn;
@@ -82,9 +104,6 @@ public class ImageFragment extends Fragment {
     LoadAlbum loadAlbumTask;
     GridView galleryGridView;
     ArrayList<HashMap<String, String>> albumList = new ArrayList<HashMap<String, String>>();
-
-    //-->
-
 
     public ImageFragment() {
     }
@@ -139,6 +158,7 @@ public class ImageFragment extends Fragment {
 
 
         checkAndLoadData();
+
         return layout;
 
     }
@@ -326,20 +346,41 @@ public class ImageFragment extends Fragment {
                     });
                 }
                 break;
-            case 2://Instagram
+            case 2:
 
-                galleryGridView.setVisibility(View.GONE);
+                mApp = new InstagramApp(getActivity(), ApplicationData.CLIENT_ID,
+                        ApplicationData.CLIENT_SECRET, ApplicationData.CALLBACK_URL);
 
-
-                if (true) {  // User Is Not Logged In
+                if(!mApp.hasAccessToken()) {
+                    // User Is Not Logged In
                     userLoggedIn(false);   // Display Sign In Button set true to remove button
-                } else {
+
+                    mApp.setListener( new InstagramApp.OAuthAuthenticationListener() {
+
+                        @Override
+                        public void onSuccess() {
+                            // tvSummary.setText("Connected as " + mApp.getUserName());
+                            userLoggedIn(true);
+                            getInstagramImages();
+                        }
+
+                        @Override
+                        public void onFail(String error) {
+                            Toast.makeText(getActivity(), "Connot Load Images", Toast.LENGTH_SHORT)
+                                    .show();
+                        }
+                    });
+                }else{
+                    getInstagramImages();
+
                     //TODO:LOAD DATA
 
                     recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {  //Load More Data on scroll
                         @Override
                         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                             super.onScrollStateChanged(recyclerView, newState);
+                            Toast.makeText(getActivity(), "Api In Sandbox mode 20 only", Toast.LENGTH_SHORT)
+                                    .show();
                         }
                     });
                 }
@@ -404,9 +445,10 @@ public class ImageFragment extends Fragment {
      *
      * @param profile
      */
-    void getFacebookImages(Profile profile) {
-        Bundle params = new Bundle();
-        params.putString("fields", "images");
+   void getFacebookImages(Profile profile){
+        Bundle params  = new Bundle();
+        Log.v("permissions",AccessToken.getCurrentAccessToken().getPermissions().toString());
+        params.putString("fields","images");
         new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
                 "/" + profile.getId() + "/photos",
@@ -470,6 +512,17 @@ public class ImageFragment extends Fragment {
                     }
                 });
             }
+
+
+
+            if (category == 2){
+                noLoginView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mApp.authorize();
+                    }
+                });
+            }
         }
     }
 
@@ -522,5 +575,81 @@ public class ImageFragment extends Fragment {
 
         }
     }
+    private void getInstagramImages() {
+      // ProgressDialog pd = ProgressDialog.show(getActivity(), "", "Loading images...");
+        String url="https://api.instagram.com/v1/users/"
+                + new SessionHelper(getActivity()).getId()
+                + "/media/recent/?client_id="
+                + ApplicationData.CLIENT_ID
+                +"&access_token="
+                +new SessionHelper(getActivity()).getAccessToken();
+        StringRequest jsonRequest = new StringRequest(Request.Method.GET,url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.v("response",response);
+                JSONObject jsonObject= null;
+                try {
+                    jsonObject = new JSONObject(response);
+                    parseInstagramJson(jsonObject);
+                } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                adapter.notifyDataSetChanged();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
 
+                String message = "Cannot Complete Request Kindly Contact Us";
+                if (volleyError instanceof NetworkError) {
+                    message = "Cannot connect to Internet...Please check your connection!";
+                } else if (volleyError instanceof ServerError) {
+                    message = "The server could not be found. Please try again after some time!!";
+                } else if (volleyError instanceof AuthFailureError) {
+                    message = "Cannot connect to Internet...Please check your connection!";
+                } else if (volleyError instanceof ParseError) {
+                    message = "Parsing error! Please try again after some time!!";
+                } else if (volleyError instanceof TimeoutError) {
+                    message = "Connection TimeOut! Please check your internet connection.";
+                }
+                Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+
+            }
+        });
+
+
+
+        int socketTimeout = 10000;
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+        jsonRequest.setRetryPolicy(policy);
+
+        VolleyQueue.getInstance(getActivity()).getRequestQueue().add(jsonRequest);
+
+    }
+
+    void parseInstagramJson(JSONObject jsonObject) throws JSONException {
+        JSONArray data = jsonObject.getJSONArray(TAG_DATA);
+        for (int data_i = 0; data_i < data.length(); data_i++) {
+            JSONObject data_obj = data.getJSONObject(data_i);
+
+            JSONObject images_obj = data_obj
+                    .getJSONObject(TAG_IMAGES);
+
+            JSONObject thumbnail_obj = images_obj
+                    .getJSONObject(TAG_THUMBNAIL);
+            JSONObject standard=images_obj
+                    .getJSONObject("standard_resolution");
+            // String str_height =
+            // thumbnail_obj.getString(TAG_HEIGHT);
+            //
+            // String str_width =
+            // thumbnail_obj.getString(TAG_WIDTH);
+
+            String thumb = thumbnail_obj.getString(TAG_URL);
+            String stand = standard.getString(TAG_URL);
+            imageData.add(new Images(stand,thumb));
+        }
+    }
 }

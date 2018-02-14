@@ -68,6 +68,7 @@ public class SubscribeFragment extends Fragment {
         } else {
             Log.d("onViewCreated", "null view");
         }
+        ref.keepSynced(true);
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

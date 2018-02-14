@@ -5,26 +5,24 @@ package com.pixectra.app.Models;
  */
 
 public class Product {
-    int id;
+    String id;
     String title;
     String url;
     int pics;
     int price;
-    String priceText;
 
     public Product() {
     }
 
-    public Product(int id, String title, String url, int pics, int price, String priceText) {
+    public Product(String id, String title, String url, int pics, int price) {
         this.id = id;
         this.title = title;
         this.url = url;
         this.pics = pics;
         this.price = price;
-        this.priceText = priceText;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
@@ -42,9 +40,5 @@ public class Product {
 
     public int getPrice() {
         return price;
-    }
-
-    public String getPriceText() {
-        return priceText;
     }
 }

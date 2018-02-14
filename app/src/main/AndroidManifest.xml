@@ -44,8 +44,10 @@
         <activity android:name=".WelcomeActivity" />
         <activity android:name=".LActivity" />
         <activity android:name=".Utils.AddCommonData" />
-        <activity android:name=".ImageSelectActivity"
-            android:label="Select Images.."/>
+        <activity
+            android:name=".ImageSelectActivity"
+            android:label="Select Images.." />
+        <activity android:name=".LinkedAccounts"></activity>
     </application>
 
 </manifest>
