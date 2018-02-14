@@ -17,6 +17,8 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+
 @SuppressWarnings("deprecation")
 public class MainActivity extends AppCompatActivity implements UserProfileFragment.OnFragmentInteractionListener {
 
@@ -36,7 +38,11 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setDefaultFontPath(getString(R.string.default_font_path))
+                .setFontAttrId(R.attr.fontPath)
+                .build()
+        );
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(getResources().getString(R.string.app_name));

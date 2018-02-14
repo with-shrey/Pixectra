@@ -5,7 +5,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.MergeCursor;
 import android.net.Uri;
@@ -18,14 +17,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -92,7 +87,7 @@ GraphResponse lastGraphResponse;
 
     static final int REQUEST_PERMISSION_KEY = 1;
     LoadAlbum loadAlbumTask;
-    GridView galleryGridView;
+    AlbumAdapter albumAdapter;
     ArrayList<HashMap<String, String>> albumList = new ArrayList<HashMap<String, String>>();
 
     public ImageFragment() {
@@ -120,33 +115,19 @@ GraphResponse lastGraphResponse;
         imageData = new ArrayList<>();
         recyclerView = layout.findViewById(R.id.Imagelist);
         noLoginView = layout.findViewById(R.id.no_login_view);
-        adapter = new ImageSelectAdapter(getActivity(), imageData);
-        recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-         //imagegrid = layout.findViewById(R.id.PhoneImageGrid);
+        albumAdapter = new AlbumAdapter(getActivity(), albumList);
+        adapter = new ImageSelectAdapter(getActivity(), imageData);
+        //imagegrid = layout.findViewById(R.id.PhoneImageGrid);
           // selectBtn = layout.findViewById(R.id.selectBtn);
 
 
         //<--For first fragment
-
-        galleryGridView = layout.findViewById(R.id.galleryGridView);
-        galleryGridView.setNumColumns(3);
-
-        float iDisplayWidth = getResources().getDisplayMetrics().widthPixels;
-
-        Resources resources = getApplicationContext().getResources();
-        DisplayMetrics metrics = resources.getDisplayMetrics();
-        float dp = iDisplayWidth / (metrics.densityDpi / 160f);
-
-        if (dp < 360) {
-            dp = (dp - 17) / 2;
-            float px = Function.convertDpToPixel(dp, getApplicationContext());
-            galleryGridView.setColumnWidth(Math.round(px));
+        if (category == 0) {
+            recyclerView.setAdapter(albumAdapter);
+        }else{
+            recyclerView.setAdapter(adapter);
         }
-
-
-
-
         checkAndLoadData();
 
         return layout;
@@ -204,16 +185,7 @@ GraphResponse lastGraphResponse;
         @Override
         protected void onPostExecute(String xml) {
 
-            AlbumAdapter adapter = new AlbumAdapter(getActivity(), albumList);
-            galleryGridView.setAdapter(adapter);
-            galleryGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                public void onItemClick(AdapterView<?> parent, View view,
-                                        final int position, long id) {
-                    Intent intent = new Intent(getActivity(), AlbumActivity.class);
-                    intent.putExtra("name", albumList.get(+position).get(Function.KEY_ALBUM));
-                    startActivity(intent);
-                }
-            });
+            albumAdapter.notifyDataSetChanged();
         }
     }
 
@@ -232,7 +204,7 @@ GraphResponse lastGraphResponse;
 //    }
 
 
-    class AlbumAdapter extends BaseAdapter {
+    class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHolder> {
         private Activity activity;
         private ArrayList<HashMap<String, String>> data;
 
@@ -241,59 +213,60 @@ GraphResponse lastGraphResponse;
             data = d;
         }
 
-        public int getCount() {
-            return data.size();
+
+
+
+        @Override
+        public AlbumViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.album_row, parent, false);
+            return new AlbumViewHolder(view);
         }
 
-        public Object getItem(int position) {
-            return position;
-        }
-
-        public long getItemId(int position) {
-            return position;
-        }
-
-        public View getView(int position, View convertView, ViewGroup parent) {
-            AlbumViewHolder holder = null;
-            if (convertView == null) {
-                holder = new AlbumViewHolder();
-                convertView = LayoutInflater.from(activity).inflate(
-                        R.layout.album_row, parent, false);
-
-                holder.galleryImage = convertView.findViewById(R.id.galleryImage);
-                holder.gallery_count = convertView.findViewById(R.id.gallery_count);
-                holder.gallery_title = convertView.findViewById(R.id.gallery_title);
-
-                convertView.setTag(holder);
-            } else {
-                holder = (AlbumViewHolder) convertView.getTag();
-            }
-            holder.galleryImage.setId(position);
-            holder.gallery_count.setId(position);
-            holder.gallery_title.setId(position);
-
-            HashMap<String, String> song = new HashMap<String, String>();
-            song = data.get(position);
-            try {
+        @Override
+        public void onBindViewHolder(AlbumViewHolder holder, int position) {
+            HashMap<String, String> song = data.get(position);
                 holder.gallery_title.setText(song.get(Function.KEY_ALBUM));
                 holder.gallery_count.setText(song.get(Function.KEY_COUNT));
 
                 Glide.with(activity)
                         .load(new File(song.get(Function.KEY_PATH))) // Uri of the picture
                         .into(holder.galleryImage);
+        }
+
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public int getItemCount() {
+            return data.size();
+        }
 
 
-            } catch (Exception e) {
+        class AlbumViewHolder extends RecyclerView.ViewHolder{
+            ImageView galleryImage;
+            TextView gallery_count, gallery_title;
+
+            public AlbumViewHolder(View convertView) {
+                super(convertView);
+                galleryImage = convertView.findViewById(R.id.galleryImage);
+                gallery_count = convertView.findViewById(R.id.gallery_count);
+                gallery_title = convertView.findViewById(R.id.gallery_title);
+                convertView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(getActivity(), AlbumActivity.class);
+                        intent.putExtra("name", albumList.get(+getAdapterPosition()).get(Function.KEY_ALBUM));
+                        startActivity(intent);
+                    }
+                });
+
             }
-            return convertView;
         }
     }
 
 
-    class AlbumViewHolder {
-        ImageView galleryImage;
-        TextView gallery_count, gallery_title;
-    }
+
 
 //<---Methods and classes for first fragment------------------END-----------------------------------
 
@@ -305,7 +278,6 @@ GraphResponse lastGraphResponse;
         switch (category) {
             case 0: //Device Photos
 
-                galleryGridView.setVisibility(View.VISIBLE);
                 if (ActivityCompat.checkSelfPermission(getActivity(),
                         Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)//Check For permission if not given show button
                     userLoggedIn(false);
@@ -318,7 +290,6 @@ GraphResponse lastGraphResponse;
                 break;
             case 1://facebook
 
-                galleryGridView.setVisibility(View.GONE); //<-- To remove 1st frag layout
 
                 if (AccessToken.getCurrentAccessToken() == null)
                     userLoggedIn(false);
@@ -379,8 +350,6 @@ GraphResponse lastGraphResponse;
                 }
                 break;
             case 3:  //Google Photos
-
-                galleryGridView.setVisibility(View.GONE);
 
                 if (GoogleSignIn.getLastSignedInAccount(getActivity()) == null) {  // User Is Not Logged In
                     userLoggedIn(false);              // Display Sign In Button set true to remove button
@@ -480,19 +449,11 @@ GraphResponse lastGraphResponse;
      */
     void userLoggedIn(boolean status) {
         if (status) {
-            if (category == 0){
-                galleryGridView.setVisibility(View.VISIBLE);
-            }else{
-                recyclerView.setVisibility(View.VISIBLE);
-            }
+            recyclerView.setVisibility(View.VISIBLE);
             noLoginView.setOnClickListener(null);
             noLoginView.setVisibility(View.GONE);
         } else {
-            if (category == 0){
-                galleryGridView.setVisibility(View.GONE);
-            }else {
-                recyclerView.setVisibility(View.GONE);
-            }
+            recyclerView.setVisibility(View.GONE);
             noLoginView.setVisibility(View.VISIBLE);
             setImage();
             if (category == 0) {
