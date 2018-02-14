@@ -7,9 +7,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
-    <uses-permission android:name="android.permission.SEND_SMS"/>
 
     <application
+        android:largeHeap="true"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
@@ -20,14 +20,18 @@
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_id" />
+        <activity android:name=".mobile_verify"/>
 
-        <activity android:name=".mobile_verify">
+        <activity android:name=".SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Utils.GalleryPreview"/>
+
+        <activity android:name=".Utils.AlbumActivity"/>
         <activity android:name=".ShippingAddressForm" />
         <activity android:name=".SelectAddressActivity" />
         <activity android:name=".PhotobookActivity" />
@@ -42,13 +46,6 @@
         <activity android:name=".Utils.AddCommonData" />
         <activity android:name=".ImageSelectActivity"
             android:label="Select Images.."/>
-        <activity android:name=".SplashScreenActivity" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>
