@@ -20,7 +20,7 @@
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_id" />
-        <activity android:name=".mobile_verify"/>
+        <activity android:name=".MobileVerifyActivity"/>
 
         <activity android:name=".SplashScreenActivity">
             <intent-filter>

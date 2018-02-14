@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  * Created by prashu on 2/11/2018.
  */
 
-public class mobile_verify extends AppCompatActivity {
+public class MobileVerifyActivity extends AppCompatActivity {
     View view;
     EditText e1, e2, e3, e4, mobile;
     String entered_otp;
@@ -94,9 +94,9 @@ public class mobile_verify extends AppCompatActivity {
 //
 //                    }
 //                }
-                        LayoutInflater factory = LayoutInflater.from(mobile_verify.this);
+                        LayoutInflater factory = LayoutInflater.from(MobileVerifyActivity.this);
                         final View deleteDialogView = factory.inflate(R.layout.dialog_otp, null);
-                        final AlertDialog deleteDialog = new AlertDialog.Builder(mobile_verify.this).create();
+                        final AlertDialog deleteDialog = new AlertDialog.Builder(MobileVerifyActivity.this).create();
 
                         mCallbacks= new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
                             @Override
@@ -112,9 +112,9 @@ public class mobile_verify extends AppCompatActivity {
                                 ref.setValue(mobile_no);
                                 deleteDialog.dismiss();
 
-                                Intent intent = new Intent(mobile_verify.this, MainActivity.class);
+                                Intent intent = new Intent(MobileVerifyActivity.this, MainActivity.class);
                                 startActivity(intent);
-                                mobile_verify.this.finish();
+                                MobileVerifyActivity.this.finish();
                             }
 
                             @Override
@@ -142,7 +142,7 @@ public class mobile_verify extends AppCompatActivity {
                                 mobile_no,        // Phone number to verify
                                 60,                 // Timeout duration
                                 TimeUnit.SECONDS,   // Unit of timeout
-                                mobile_verify.this,
+                                MobileVerifyActivity.this,
                                 mCallbacks// Activity (for callback binding)
                                 );
                         deleteDialog.setView(deleteDialogView);
@@ -160,7 +160,7 @@ public class mobile_verify extends AppCompatActivity {
                             @Override
                             public void onClick(View view) {
                                 PhoneAuthCredential credential = PhoneAuthProvider.getCredential(code, entered_otp);
-                                Toast.makeText(mobile_verify.this, credential.getSmsCode(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(MobileVerifyActivity.this, credential.getSmsCode(), Toast.LENGTH_SHORT).show();
                                 signInWithPhoneAuthCredential(mobile_no,credential);
 
 
@@ -274,9 +274,9 @@ public class mobile_verify extends AppCompatActivity {
                  }
                  ref = db.getReference("Users").child(uid).child("Info").child("phoneNo");
                  ref.setValue(mob);
-                 Intent intent = new Intent(mobile_verify.this, MainActivity.class);
+                 Intent intent = new Intent(MobileVerifyActivity.this, MainActivity.class);
                  startActivity(intent);
-                 mobile_verify.this.finish();
+                 MobileVerifyActivity.this.finish();
              }else {
                  if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
                      resendVerificationCode(mob,tokenCode);// The verification code entered was invalid

@@ -123,7 +123,7 @@
                             android:layout_marginLeft="32dp"
                             android:layout_marginStart="32dp"
                             android:layout_marginTop="8dp"
-                            android:text="small description"
+                            android:text="My Account Settings"
                             android:textColor="#ffffff"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/imageView11"
@@ -269,7 +269,7 @@
                             android:layout_marginBottom="8dp"
                             android:layout_marginLeft="32dp"
                             android:layout_marginStart="32dp"
-                            android:text="small description"
+                            android:text="Login/Logout Of Accounts"
                             android:textColor="#ffffff"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/imageView31" />
@@ -342,7 +342,7 @@
                             android:layout_marginBottom="8dp"
                             android:layout_marginLeft="32dp"
                             android:layout_marginStart="32dp"
-                            android:text="small description"
+                            android:text="Frequencly Asked Questions"
                             android:textColor="#ffffff"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/imageView41" />
@@ -414,7 +414,7 @@
                             android:layout_marginBottom="8dp"
                             android:layout_marginLeft="32dp"
                             android:layout_marginStart="32dp"
-                            android:text="small description"
+                            android:text="Active Subscriptions"
                             android:textColor="#ffffff"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/imageView51" />

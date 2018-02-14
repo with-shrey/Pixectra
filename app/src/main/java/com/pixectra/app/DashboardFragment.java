@@ -124,8 +124,8 @@ public class DashboardFragment extends Fragment {
         });
         ref.keepSynced(true);
         i = images.size() / 2;
-//        timer = new Timer(); // At this line a new Thread will be created
-//        timer.scheduleAtFixedRate(new RemindTask(), 2000, 3000); // delay
+        timer = new Timer(); // At this line a new Thread will be created
+        timer.scheduleAtFixedRate(new RemindTask(), 2000, 3000); // delay
         return  view;
     }
     Timer timer;

@@ -20,20 +20,16 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
@@ -45,6 +41,7 @@ import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.bumptech.glide.Glide;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
@@ -89,13 +86,6 @@ GraphResponse lastGraphResponse;
     public static final String TAG_IMAGES = "images";
     public static final String TAG_THUMBNAIL = "thumbnail";
     public static final String TAG_URL = "url";
-
-    final int PICK_IMAGE_REQUEST = 1;
-    GridView imagegrid;
-    Button selectBtn;
-
-
-
     /*
       <-- Images from device
     */
@@ -133,8 +123,8 @@ GraphResponse lastGraphResponse;
         adapter = new ImageSelectAdapter(getActivity(), imageData);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-        // imagegrid = layout.findViewById(R.id.PhoneImageGrid);
-        //   selectBtn = layout.findViewById(R.id.selectBtn);
+         //imagegrid = layout.findViewById(R.id.PhoneImageGrid);
+          // selectBtn = layout.findViewById(R.id.selectBtn);
 
 
         //<--For first fragment
@@ -379,8 +369,11 @@ GraphResponse lastGraphResponse;
                         @Override
                         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                             super.onScrollStateChanged(recyclerView, newState);
-                            Toast.makeText(getActivity(), "Api In Sandbox mode 20 only", Toast.LENGTH_SHORT)
-                                    .show();
+                            if (!recyclerView.canScrollVertically(1)) {
+                                Toast.makeText(getActivity(), "Api In Sandbox mode 20 only", Toast.LENGTH_SHORT)
+                                        .show();
+                            }
+
                         }
                     });
                 }

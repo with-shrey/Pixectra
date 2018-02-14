@@ -175,7 +175,7 @@ DatabaseReference ref;
                                     ,fFirstName+" "+fLastName
                                     ,fEmail
                                     ,fImageurl);
-                            Intent intent =new Intent(LActivity.this,mobile_verify.class);
+                            Intent intent =new Intent(LActivity.this,MobileVerifyActivity.class);
                             intent.putExtra("uid",mAuth.getCurrentUser().getUid());
                             startActivity(intent);
                             finish();

@@ -5,11 +5,11 @@ package com.pixectra.app.Models;
  */
 
 public class Product {
-    String id;
-    String title;
-    String url;
-    int pics;
-    int price;
+    private String id;
+    private String title;
+    private String url;
+    private int pics;
+    private int price;
 
     public Product() {
     }

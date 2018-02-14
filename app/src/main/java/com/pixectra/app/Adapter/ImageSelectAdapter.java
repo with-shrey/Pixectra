@@ -19,6 +19,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.pixectra.app.Models.Images;
 import com.pixectra.app.R;
+import com.pixectra.app.Utils.CartHolder;
 
 import java.util.Collections;
 import java.util.List;
@@ -73,15 +74,28 @@ Context c;
         return data.size();
     }
 
-    class myViewHolder extends RecyclerView.ViewHolder {
+    class myViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        ImageView icon;
+        ImageView icon,overlay;
         ProgressBar progress;
 
         public myViewHolder(View itemView) {
             super(itemView);
             icon  = (ImageView)itemView.findViewById(R.id.ListIcon);
+            overlay  = (ImageView)itemView.findViewById(R.id.selected_view);
             progress  = itemView.findViewById(R.id.image_loading_progress);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            if (overlay.getVisibility() == View.GONE) {
+                overlay.setVisibility(View.VISIBLE);
+                CartHolder.getInstance().addImage("x", data.get(getAdapterPosition()));
+            }else{
+                overlay.setVisibility(View.GONE);
+                CartHolder.getInstance().removeImage("x", data.get(getAdapterPosition()));
+            }
         }
     }
 }

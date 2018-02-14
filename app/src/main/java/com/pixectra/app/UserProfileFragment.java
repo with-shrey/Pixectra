@@ -20,7 +20,6 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.pixectra.app.Utils.AddCommonData;
 import com.pixectra.app.Utils.SessionHelper;
 
 import java.util.HashMap;
@@ -103,7 +102,7 @@ CardView linkAccount;
         address.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(getActivity(),AddCommonData.class);
+                Intent intent=new Intent(getActivity(),SelectAddressActivity.class);
                 startActivity(intent);
             }
         });
