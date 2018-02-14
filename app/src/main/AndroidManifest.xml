@@ -31,9 +31,6 @@
         <activity android:name=".SelectAddressActivity" />
         <activity android:name=".PhotobookActivity" />
         <activity android:name=".PosterActivity" />
-        <activity android:name=".Instagram.InstaMain" />
-        <activity android:name=".Instagram.AllMediaFiles" />
-        <activity android:name=".Instagram.Relationship" />
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"

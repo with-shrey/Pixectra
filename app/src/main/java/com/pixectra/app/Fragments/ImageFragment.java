@@ -17,6 +17,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkError;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
@@ -26,17 +37,16 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.pixectra.app.Adapter.ImageSelectAdapter;
 import com.pixectra.app.Instagram.ApplicationData;
 import com.pixectra.app.Instagram.InstagramApp;
-import com.pixectra.app.Instagram.InstagramSession;
-import com.pixectra.app.Instagram.JSONParser;
 import com.pixectra.app.Models.Images;
 import com.pixectra.app.R;
+import com.pixectra.app.Utils.SessionHelper;
+import com.pixectra.app.Utils.VolleyQueue;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class ImageFragment extends Fragment {
@@ -128,16 +138,17 @@ GraphResponse lastGraphResponse;
                         public void onSuccess() {
                             // tvSummary.setText("Connected as " + mApp.getUserName());
                             userLoggedIn(true);
+                            getInstagramImages();
                         }
 
                         @Override
                         public void onFail(String error) {
-                            Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT)
+                            Toast.makeText(getActivity(), "Connot Load Images", Toast.LENGTH_SHORT)
                                     .show();
                         }
                     });
                 }else{
-                    getAllMediaImages();
+                    getInstagramImages();
 
                     //TODO:LOAD DATA
 
@@ -145,6 +156,8 @@ GraphResponse lastGraphResponse;
                         @Override
                         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                             super.onScrollStateChanged(recyclerView, newState);
+                            Toast.makeText(getActivity(), "Api In Sandbox mode 20 only", Toast.LENGTH_SHORT)
+                                    .show();
                         }
                     });
                 }
@@ -305,61 +318,81 @@ GraphResponse lastGraphResponse;
         }
     }
 
-    private void getAllMediaImages() {
+    private void getInstagramImages() {
       // ProgressDialog pd = ProgressDialog.show(getActivity(), "", "Loading images...");
-        new Thread(new Runnable() {
-
+        String url="https://api.instagram.com/v1/users/"
+                + new SessionHelper(getActivity()).getId()
+                + "/media/recent/?client_id="
+                + ApplicationData.CLIENT_ID
+                +"&access_token="
+                +new SessionHelper(getActivity()).getAccessToken();
+        StringRequest jsonRequest = new StringRequest(Request.Method.GET,url, new Response.Listener<String>() {
             @Override
-            public void run() {
-//                int what = WHAT_FINALIZE;
+            public void onResponse(String response) {
+                Log.v("response",response);
+                JSONObject jsonObject= null;
                 try {
-                    HashMap<String,String> userInfo = mApp.getUserInfo();
-                    // URL url = new URL(mTokenUrl + "&code=" + code);
-                    JSONParser jsonParser = new JSONParser();
-                    JSONObject jsonObject = jsonParser
-                            .getJSONFromUrlByGet("https://api.instagram.com/v1/users/"
-                                    + new InstagramSession(getActivity()).getId()
-                                    + "/media/recent/?client_id="
-                                    + ApplicationData.CLIENT_ID
-//                                    + "&count="
-//                                    + userInfo.get(InstagramApp.TAG_COUNTS)
-                                    +"&access_token="
-                                    +new InstagramSession(getActivity()).getAccessToken());
-                    Log.v("Images",jsonObject.toString());
-                    JSONArray data = jsonObject.getJSONArray(TAG_DATA);
-                    for (int data_i = 0; data_i < data.length(); data_i++) {
-                        JSONObject data_obj = data.getJSONObject(data_i);
-
-                        JSONObject images_obj = data_obj
-                                .getJSONObject(TAG_IMAGES);
-
-                        JSONObject thumbnail_obj = images_obj
-                                .getJSONObject(TAG_THUMBNAIL);
-
-                        // String str_height =
-                        // thumbnail_obj.getString(TAG_HEIGHT);
-                        //
-                        // String str_width =
-                        // thumbnail_obj.getString(TAG_WIDTH);
-
-                        String str_url = thumbnail_obj.getString(TAG_URL);
-                        imageData.add(new Images(str_url,str_url));
+                    jsonObject = new JSONObject(response);
+                    parseInstagramJson(jsonObject);
+                } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                adapter.notifyDataSetChanged();
-                            }
-                        });
-                    Log.v("jsonObject::" , jsonObject.toString());
-
-                } catch (Exception exception) {
-                    exception.printStackTrace();
-                   // what = WHAT_ERROR;
-                }
-                // pd.dismiss();
-               // handler.sendEmptyMessage(what);
+                adapter.notifyDataSetChanged();
             }
-        }).start();
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+                String message = "Cannot Complete Request Kindly Contact Us";
+                if (volleyError instanceof NetworkError) {
+                    message = "Cannot connect to Internet...Please check your connection!";
+                } else if (volleyError instanceof ServerError) {
+                    message = "The server could not be found. Please try again after some time!!";
+                } else if (volleyError instanceof AuthFailureError) {
+                    message = "Cannot connect to Internet...Please check your connection!";
+                } else if (volleyError instanceof ParseError) {
+                    message = "Parsing error! Please try again after some time!!";
+                } else if (volleyError instanceof TimeoutError) {
+                    message = "Connection TimeOut! Please check your internet connection.";
+                }
+                Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+
+            }
+        });
+
+           
+        
+        int socketTimeout = 10000;
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+        jsonRequest.setRetryPolicy(policy);
+
+        VolleyQueue.getInstance(getActivity()).getRequestQueue().add(jsonRequest);
+
+    }
+
+    void parseInstagramJson(JSONObject jsonObject) throws JSONException {
+        JSONArray data = jsonObject.getJSONArray(TAG_DATA);
+        for (int data_i = 0; data_i < data.length(); data_i++) {
+            JSONObject data_obj = data.getJSONObject(data_i);
+
+            JSONObject images_obj = data_obj
+                    .getJSONObject(TAG_IMAGES);
+
+            JSONObject thumbnail_obj = images_obj
+                    .getJSONObject(TAG_THUMBNAIL);
+            JSONObject standard=images_obj
+                    .getJSONObject("standard_resolution");
+            // String str_height =
+            // thumbnail_obj.getString(TAG_HEIGHT);
+            //
+            // String str_width =
+            // thumbnail_obj.getString(TAG_WIDTH);
+
+            String thumb = thumbnail_obj.getString(TAG_URL);
+            String stand = standard.getString(TAG_URL);
+            imageData.add(new Images(stand,thumb));
+        }
     }
 }
