@@ -43,6 +43,7 @@ import com.facebook.HttpMethod;
 import com.facebook.Profile;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.pixectra.app.Adapter.ImageSelectAdapter;
+import com.pixectra.app.FacebookActivity;
 import com.pixectra.app.Instagram.ApplicationData;
 import com.pixectra.app.Instagram.InstagramApp;
 import com.pixectra.app.Models.Images;
@@ -64,6 +65,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import static android.app.Activity.RESULT_OK;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class ImageFragment extends Fragment {
@@ -156,6 +158,7 @@ public class ImageFragment extends Fragment {
                 if (AccessToken.getCurrentAccessToken() == null)
                     userLoggedIn(false);
                 else {
+                    userLoggedIn(true);
                     Profile profile = Profile.getCurrentProfile();
                     getFacebookImages(profile);
                     recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -345,7 +348,16 @@ public class ImageFragment extends Fragment {
                 });
             }
 
-
+            if (category == 1) {
+                noLoginView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(getActivity(), FacebookActivity.class);
+                        intent.putExtra("auth", false);
+                        startActivityForResult(intent, 3);
+                    }
+                });
+            }
 
             if (category == 2){
                 noLoginView.setOnClickListener(new View.OnClickListener() {
@@ -383,7 +395,7 @@ public class ImageFragment extends Fragment {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
-            case REQUEST_PERMISSION_KEY: {
+            case REQUEST_PERMISSION_KEY:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     userLoggedIn(true);
                     loadAlbumTask = new LoadAlbum();
@@ -392,8 +404,18 @@ public class ImageFragment extends Fragment {
                     Toast.makeText(getActivity(), "You must accept permissions.", Toast.LENGTH_LONG).show();
                 }
                 break;
-            }
 
+
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == 3) {
+                checkAndLoadData();
+            }
         }
     }
 

@@ -102,7 +102,9 @@ CardView insta;
             facebook.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                    Intent intent = new Intent(LinkedAccounts.this, FacebookActivity.class);
+                    intent.putExtra("auth", false);
+                    startActivityForResult(intent, 3);
                 }
             });
         }
@@ -168,6 +170,8 @@ CardView insta;
                 // ...
             }
             googleHandler();
+        } else if (resultCode == RESULT_OK && requestCode == 3) {
+            facebookHandler();
         }
     }
 }

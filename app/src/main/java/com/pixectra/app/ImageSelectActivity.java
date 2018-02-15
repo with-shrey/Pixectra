@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,10 +30,14 @@ TabLayout tabLayout;
     RecyclerView selectedImages;
     Vector<Bitmap> selectedItems;
     SelectedItemsAdapter selectedItemsAdapter;
+    int w;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_select);
+        DisplayMetrics dm = new DisplayMetrics();
+        ImageSelectActivity.this.getWindowManager().getDefaultDisplay().getMetrics(dm);
+        w = dm.widthPixels / 3;
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar3));
         getSupportActionBar().setElevation(0);
         selectedItems = CartHolder.getInstance().getAllImages(getIntent().getStringExtra("key"));
@@ -132,8 +137,11 @@ TabLayout tabLayout;
 
             public ViewHolder(View itemView) {
                 super(itemView);
+
+                itemView.getLayoutParams().width = w;
                 image = itemView.findViewById(R.id.ListIcon);
                 itemView.findViewById(R.id.image_loading_progress).setVisibility(View.GONE);
+                itemView.setOnClickListener(this);
             }
 
             @Override

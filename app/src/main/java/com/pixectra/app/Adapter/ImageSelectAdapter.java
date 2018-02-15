@@ -98,7 +98,6 @@ Context c;
         @Override
         public void onClick(View view) {
             if (overlay.getVisibility() == View.INVISIBLE) {
-                overlay.setVisibility(View.VISIBLE);
                 progress.setVisibility(View.VISIBLE);
                 try {
                     GlideHelper.getBitmap(c, data.get(getAdapterPosition()).getUrl(), new RequestListener() {
@@ -112,6 +111,7 @@ Context c;
                         @Override
                         public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
                             progress.setVisibility(View.GONE);
+                            overlay.setVisibility(View.VISIBLE);
                             CartHolder.getInstance().addImage(key, (Bitmap) resource);
                             return false;
                         }
@@ -123,7 +123,6 @@ Context c;
                 }
 
             }else{
-                overlay.setVisibility(View.INVISIBLE);
                 try {
                     GlideHelper.getBitmap(c, data.get(getAdapterPosition()).getUrl(), new RequestListener() {
                         @Override
@@ -134,6 +133,7 @@ Context c;
                         @Override
                         public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
                             CartHolder.getInstance().removeImage(key, (Bitmap) resource);
+                            overlay.setVisibility(View.INVISIBLE);
                             return false;
                         }
                     });

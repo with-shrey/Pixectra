@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -25,7 +26,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -37,10 +37,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.pixectra.app.Models.User;
 import com.pixectra.app.Utils.SessionHelper;
 
-import java.util.Arrays;
-
 public class LActivity extends AppCompatActivity {
-    private ImageView imageView, facebookimageview1;
     private static final String TAG = "HANDLESIGNINRESULT";
     String fFirstName,fLastName, fEmail;
     Uri fImageurl;
@@ -48,13 +45,14 @@ public class LActivity extends AppCompatActivity {
     Uri gImageUrl;
     int RC_SIGN_IN = 1;
     Dialog errorDialog;
-    private static final String TAG = "HANDLESIGNINRESULT";
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
     GoogleSignInClient mGoogleSignInClient;
     ProgressBar progressBar;
 FirebaseDatabase db;
 DatabaseReference ref;
+    private ImageView imageView, facebookimageview1;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,9 +60,9 @@ DatabaseReference ref;
         db = FirebaseDatabase.getInstance();
         ref = db.getReference("Users");
         mAuth = FirebaseAuth.getInstance();
-        imageView = (ImageView) findViewById(R.id.google_login_button);
-        facebookimageview1 = (ImageView) findViewById(R.id.facebook_login_button);
-        progressBar = (ProgressBar) findViewById(R.id.simpleProgressBar);
+        imageView = findViewById(R.id.google_login_button);
+        facebookimageview1 = findViewById(R.id.facebook_login_button);
+        progressBar = findViewById(R.id.simpleProgressBar);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.google_token))
                 .requestEmail()
@@ -117,7 +115,7 @@ DatabaseReference ref;
     public void onFacebookLogInClicked(View view) {
 
         Intent intent = new Intent(LActivity.this, FacebookActivity.class);
-        intent.putExtra("LActivity","loggedin");
+        intent.putExtra("auth", true);
         startActivity(intent);
 
     }
@@ -191,9 +189,10 @@ DatabaseReference ref;
 
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.v("Google Signin", "signInWithCredential:failure", task.getException());
-                            Toast.makeText(LActivity.this, "Failed Auth", Toast.LENGTH_SHORT).show();
-                            updateUI(null);
+                            Log.w("TAG", "signInWithCredential", task.getException());
+                            Toast.makeText(LActivity.this, "Try Logging In Using Facebook\nAlready Registered Using Facebook",
+                                    Toast.LENGTH_LONG).show();
+                            progressBar.setVisibility(View.GONE);
                         }
 
                         // ...
@@ -217,11 +216,14 @@ DatabaseReference ref;
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account, result);
             } catch (ApiException e) {
+                Toast.makeText(this, "Failed SignIn Exception Key: Google Sign In ", Toast.LENGTH_SHORT).show();
                 // Google Sign In failed, update UI appropriately
                 Log.v("Google Sign In", "Google sign in failed", e);
                 // ...
             }
 
+        } else {
+            Toast.makeText(this, "" + requestCode + "NOT OK", Toast.LENGTH_SHORT).show();
         }
 
     }

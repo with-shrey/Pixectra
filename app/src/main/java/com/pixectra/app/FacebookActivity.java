@@ -2,12 +2,10 @@ package com.pixectra.app;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -18,7 +16,6 @@ import com.facebook.FacebookSdk;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -37,21 +34,20 @@ import com.pixectra.app.Utils.SessionHelper;
 import java.util.Arrays;
 
 public class FacebookActivity extends AppCompatActivity {
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
     FirebaseDatabase db;
     DatabaseReference ref;
-    ProgressBar progressBar;
     CallbackManager mCallbackManager;
-    String fFirstName, fLastName, fEmail,fauthentication;
+    String fFirstName, fLastName, fEmail;
     Uri fImageurl;
+    boolean auth;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_facebook2);
-        Bundle bundle=getIntent().getExtras();
-        fauthentication=bundle.getString("LActivity","loggedin");
+        auth = getIntent().getBooleanExtra("auth", false);
         userdetails();
         FacebookSdk.sdkInitialize(getApplicationContext());
         db = FirebaseDatabase.getInstance();
@@ -62,17 +58,28 @@ public class FacebookActivity extends AppCompatActivity {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.d("Login", "Login sucess");
-                firebaseAuthWithFacebook(loginResult.getAccessToken());
+                if (auth)
+                    firebaseAuthWithFacebook(loginResult.getAccessToken());
+                else {
+                    setResult(RESULT_OK);
+                    finish();
+                }
             }
 
             @Override
             public void onCancel() {
                 Toast.makeText(FacebookActivity.this, "Login cancelled", Toast.LENGTH_SHORT).show();
+                if (!auth) {
+                    setResult(RESULT_CANCELED);
+                    finish();
+                }
             }
 
             @Override
             public void onError(FacebookException error) {
                 Toast.makeText(getApplicationContext(), "" + error.getMessage(), Toast.LENGTH_LONG).show();
+                setResult(RESULT_CANCELED);
+                finish();
             }
         });
 
@@ -98,18 +105,16 @@ public class FacebookActivity extends AppCompatActivity {
                                 fLastName = profile.getLastName();
                                 fEmail = mAuth.getCurrentUser().getEmail();
                                 fImageurl = profile.getProfilePictureUri(400, 400);
-                                ref.child(mAuth.getCurrentUser().getUid()).child("Info").setValue(new User(fFirstName + " " + fLastName, fEmail, fImageurl.toString()));
+                                ref.child(mAuth.getCurrentUser().getUid()).child("Info").setValue(new User(fFirstName + " " + fLastName, fEmail, fImageurl.toString(), ""));
                                 new SessionHelper(FacebookActivity.this).setUserDetails(mAuth.getCurrentUser().getUid()
                                         , fFirstName + " " + fLastName
                                         , fEmail
                                         , fImageurl);
-                                FirebaseUser user = mAuth.getCurrentUser();
-                                updateUI(user);
+                                Intent intent = new Intent(FacebookActivity.this, MobileVerifyActivity.class);
+                                intent.putExtra("uid", mAuth.getCurrentUser().getUid());
+                                startActivity(intent);
+                                finish();
 
-                            }
-                            else if(isNew&&fauthentication!="loggedin")
-                            {
-                                updateUI(null);
                             }
                             else {
                                 ref.child(mAuth.getCurrentUser().getUid()).child("Info").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -139,6 +144,7 @@ public class FacebookActivity extends AppCompatActivity {
                             Log.w("TAG", "signInWithCredential", task.getException());
                             Toast.makeText(FacebookActivity.this, "Already Signed In Using Google",
                                     Toast.LENGTH_SHORT).show();
+                            finish();
                         }
                     }
                 });
