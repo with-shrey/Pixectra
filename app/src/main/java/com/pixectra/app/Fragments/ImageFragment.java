@@ -311,15 +311,17 @@ public class ImageFragment extends Fragment {
      * @param lastGraphResponse
      */
     void getNextImages(GraphResponse lastGraphResponse) {
-        GraphRequest nextResultsRequests = lastGraphResponse.getRequestForPagedResults(GraphResponse.PagingDirection.NEXT);
-        if (nextResultsRequests != null) {
-            nextResultsRequests.setCallback(new GraphRequest.Callback() {
-                @Override
-                public void onCompleted(GraphResponse response) {
-                    parseFacebookJson(response);
-                }
-            });
-            nextResultsRequests.executeAsync();
+        if (lastGraphResponse != null) {
+            GraphRequest nextResultsRequests = lastGraphResponse.getRequestForPagedResults(GraphResponse.PagingDirection.NEXT);
+            if (nextResultsRequests != null) {
+                nextResultsRequests.setCallback(new GraphRequest.Callback() {
+                    @Override
+                    public void onCompleted(GraphResponse response) {
+                        parseFacebookJson(response);
+                    }
+                });
+                nextResultsRequests.executeAsync();
+            }
         }
     }
 
