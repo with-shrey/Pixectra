@@ -121,4 +121,21 @@ public class GlideHelper {
             }
         }).start();
     }
+
+    public static void getBitmap(final Context context, final File url, final RequestListener requestListener) throws ExecutionException, InterruptedException {
+        final RequestOptions requestOptions = new RequestOptions()
+                .diskCacheStrategy(DiskCacheStrategy.ALL);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Bitmap bitmap = (Bitmap) Glide.with(context).asBitmap().load(url).listener(requestListener).apply(requestOptions).submit().get();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
 }

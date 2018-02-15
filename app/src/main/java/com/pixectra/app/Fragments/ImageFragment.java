@@ -132,6 +132,7 @@ public class ImageFragment extends Fragment {
 
     }
 
+
     /**
      * Main Driver Function Checks And Fetch Data from Different Places
      */
@@ -576,6 +577,7 @@ public class ImageFragment extends Fragment {
                     public void onClick(View view) {
                         Intent intent = new Intent(getActivity(), AlbumActivity.class);
                         intent.putExtra("name", albumList.get(+getAdapterPosition()).get(Function.KEY_ALBUM));
+                        intent.putExtra("key", key);
                         startActivity(intent);
                     }
                 });

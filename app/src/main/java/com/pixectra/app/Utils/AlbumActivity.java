@@ -9,10 +9,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.MergeCursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,13 +23,19 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.pixectra.app.R;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 
 
 public class AlbumActivity extends Activity {
@@ -43,6 +51,7 @@ public class AlbumActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_album);
+        setFinishOnTouchOutside(false);
         Intent intent = getIntent();
         album_name = intent.getStringExtra("name");
 //        setTitle(album_name);
@@ -182,10 +191,49 @@ public class AlbumActivity extends Activity {
             public void onClick(View view) {
                 if (overlay.getVisibility() == View.INVISIBLE) {
                     overlay.setVisibility(View.VISIBLE);
-                    // CartHolder.getInstance().addImage("x", data.get(getAdapterPosition()));
+                    loader.setVisibility(View.VISIBLE);
+                    try {
+                        GlideHelper.getBitmap(AlbumActivity.this, new File(data.get(getAdapterPosition()).get(Function.KEY_PATH)), new RequestListener() {
+                            @Override
+                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target target, boolean isFirstResource) {
+                                loader.setVisibility(View.GONE);
+                                Toast.makeText(AlbumActivity.this, "Unable To Fetch Full Size Image", Toast.LENGTH_SHORT).show();
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
+                                loader.setVisibility(View.GONE);
+                                CartHolder.getInstance().addImage(getIntent().getStringExtra("key"), (Bitmap) resource);
+                                return false;
+                            }
+                        });
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
                 } else {
                     overlay.setVisibility(View.INVISIBLE);
-                    //CartHolder.getInstance().removeImage("x", data.get(getAdapterPosition()));
+                    try {
+                        GlideHelper.getBitmap(AlbumActivity.this, new File(data.get(getAdapterPosition()).get(Function.KEY_PATH)), new RequestListener() {
+                            @Override
+                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target target, boolean isFirstResource) {
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
+                                CartHolder.getInstance().removeImage(getIntent().getStringExtra("key"), (Bitmap) resource);
+                                return false;
+                            }
+                        });
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }

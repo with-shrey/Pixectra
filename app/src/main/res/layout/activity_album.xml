@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
         android:elevation="6dp"
-        android:theme="@style/ToolbarStyle"></android.support.v7.widget.Toolbar>
+        android:theme="@style/ToolbarStyle" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/galleryGridView"

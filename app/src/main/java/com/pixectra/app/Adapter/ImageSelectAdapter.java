@@ -19,7 +19,6 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
-import com.pixectra.app.ImageSelectActivity;
 import com.pixectra.app.Models.Images;
 import com.pixectra.app.R;
 import com.pixectra.app.Utils.CartHolder;
@@ -44,9 +43,7 @@ Context c;
         this.data = data;
         this.key = key;
         c=context;
-        setToolbarText(0);
     }
-
 
     @Override
     public myViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -78,9 +75,7 @@ Context c;
                 .into(holder.icon);
     }
 
-    void setToolbarText(int count) {
-        ((ImageSelectActivity) c).getSupportActionBar().setTitle("Select Images (" + count + "/" + ((ImageSelectActivity) c).getIntent().getIntExtra("pics", 0) + ")");
-    }
+
 
     @Override
     public int getItemCount() {
@@ -117,7 +112,7 @@ Context c;
                         @Override
                         public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
                             progress.setVisibility(View.GONE);
-                            setToolbarText(CartHolder.getInstance().addImage(key, (Bitmap) resource));
+                            CartHolder.getInstance().addImage(key, (Bitmap) resource);
                             return false;
                         }
                     });
@@ -138,7 +133,7 @@ Context c;
 
                         @Override
                         public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
-                            setToolbarText(CartHolder.getInstance().removeImage(key, (Bitmap) resource));
+                            CartHolder.getInstance().removeImage(key, (Bitmap) resource);
                             return false;
                         }
                     });
@@ -150,4 +145,5 @@ Context c;
             }
         }
     }
+
 }
