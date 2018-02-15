@@ -28,7 +28,6 @@ TabLayout tabLayout;
         tabLayout.setupWithViewPager(viewPager);
         setTabIcons(tabLayout);
     }
-
     void setTabIcons(TabLayout tabs){
         int[] icons = {R.drawable.device, R.drawable.facebook, R.drawable.instagram, R.drawable.google_photos};
         for (int i=0;i<4;i++)

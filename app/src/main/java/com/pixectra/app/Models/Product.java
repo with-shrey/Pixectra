@@ -1,10 +1,13 @@
 package com.pixectra.app.Models;
 
+import com.google.firebase.database.Exclude;
+
 /**
  * Created by XCODER on 2/10/2018.
  */
 
 public class Product {
+    @Exclude
     private String id;
     private String title;
     private String url;
@@ -14,8 +17,7 @@ public class Product {
     public Product() {
     }
 
-    public Product(String id, String title, String url, int pics, int price) {
-        this.id = id;
+    public Product(String title, String url, int pics, int price) {
         this.title = title;
         this.url = url;
         this.pics = pics;
@@ -24,6 +26,10 @@ public class Product {
 
     public String getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getTitle() {

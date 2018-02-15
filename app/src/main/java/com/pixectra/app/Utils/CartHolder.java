@@ -1,6 +1,6 @@
 package com.pixectra.app.Utils;
 
-import com.pixectra.app.Models.Images;
+import android.graphics.Bitmap;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,7 +8,7 @@ import java.util.HashSet;
 public class CartHolder {
 
     private static CartHolder sSoleInstance;
-    private  static HashMap<String,HashSet<Images>> data;
+    private static HashMap<String, HashSet<Bitmap>> data;
     private CartHolder(){
         data=new HashMap<>();
     }  //private constructor.
@@ -20,23 +20,30 @@ public class CartHolder {
 
         return sSoleInstance;
     }
-    
-    public void addImage(String key,Images image){
+
+    public int addImage(String key, Bitmap image) {
         if (data.containsKey(key)){
                 data.get(key).add(image);
         }else{
-               HashSet<Images> set=new HashSet<Images>();
+            HashSet<Bitmap> set = new HashSet<Bitmap>();
                 set.add(image);
                 data.put(key,set);
         }
+        return data.get(key).size();
 
     }
-    public boolean isImagePresent(String key,Images image) {
+
+    public boolean isImagePresent(String key, Bitmap image) {
         return data.containsKey(key) && data.get(key).contains(image);
     }
-    public void removeImage(String key,Images image){
+
+    public int removeImage(String key, Bitmap image) {
         if (isImagePresent(key,image)){
             data.get(key).remove(image);
         }
+        if (data.containsKey(key))
+            return data.get(key).size();
+        else
+            return 0;
     }
 }

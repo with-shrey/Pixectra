@@ -9,12 +9,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.MergeCursor;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -24,11 +22,6 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.pixectra.app.R;
 
 import java.io.File;
@@ -42,6 +35,7 @@ public class AlbumActivity extends Activity {
     ArrayList<HashMap<String, String>> imageList = new ArrayList<HashMap<String, String>>();
     String album_name = "";
     LoadAlbumImages loadAlbumTask;
+    SingleAlbumAdapter adapter;
 
 
     @Override
@@ -56,7 +50,17 @@ public class AlbumActivity extends Activity {
 
         galleryGridView = findViewById(R.id.galleryGridView);
         galleryGridView.setLayoutManager(new GridLayoutManager(this, 3));
-
+        adapter = new SingleAlbumAdapter(AlbumActivity.this, imageList);
+        galleryGridView.setAdapter(adapter);
+        galleryGridView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (!recyclerView.canScrollVertically(1)) {
+                    adapter.loadMore();
+                }
+            }
+        });
 
         loadAlbumTask = new LoadAlbumImages();
         loadAlbumTask.execute();
@@ -104,21 +108,20 @@ public class AlbumActivity extends Activity {
 
         @Override
         protected void onPostExecute(String xml) {
-
-            SingleAlbumAdapter adapter = new SingleAlbumAdapter(AlbumActivity.this, imageList);
-            galleryGridView.setAdapter(adapter);
-
+            adapter.notifyDataSetChanged();
         }
     }
 
 
     class SingleAlbumAdapter extends RecyclerView.Adapter<SingleAlbumAdapter.SingleAlbumViewHolder> {
+        int count;
         private Activity activity;
         private ArrayList<HashMap<String, String>> data;
 
-        public SingleAlbumAdapter(Activity a, ArrayList<HashMap<String, String>> d) {
+        SingleAlbumAdapter(Activity a, ArrayList<HashMap<String, String>> d) {
             activity = a;
             data = d;
+            count = 30;
         }
 
         @Override
@@ -131,38 +134,42 @@ public class AlbumActivity extends Activity {
         @Override
         public void onBindViewHolder(final SingleAlbumViewHolder holder, int position) {
             HashMap<String, String> song = data.get(position);
-
-            Glide.with(activity)
-                    .load(new File(song.get(Function.KEY_PATH))).listener(new RequestListener<Drawable>() {
-                @Override
-                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                    holder.loader.setVisibility(View.GONE);
-                    return false;
-                }
-
-                @Override
-                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                    holder.loader.setVisibility(View.GONE);
-                    return false;
-                }
-            }) // Uri of the picture
-                    .into(holder.galleryImage);
+            GlideHelper.load(activity, new File(song.get(Function.KEY_PATH))
+                    , holder.galleryImage, holder.loader, 200, 200);
         }
 
+        void loadMore() {
+            if (count + 30 <= data.size()) {
+                int prev = count;
+                count += 30;
+                notifyDataSetChanged();
+                //notifyItemRangeChanged(prev, 30);
+            } else {
+                int prev = count;
+                count = data.size();
+                notifyDataSetChanged();
+                //notifyItemRangeChanged(prev, data.size());
+
+            }
+        }
         public long getItemId(int position) {
             return position;
         }
 
         @Override
         public int getItemCount() {
-            return data.size();
+            if (count <= 0) {
+                count = 30;
+            }
+            count = data.size() > count ? count : data.size();
+            return count;
         }
 
         class SingleAlbumViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
             ImageView galleryImage, overlay;
             ProgressBar loader;
 
-            public SingleAlbumViewHolder(View itemView) {
+            SingleAlbumViewHolder(View itemView) {
                 super(itemView);
                 galleryImage = itemView.findViewById(R.id.ListIcon);
                 overlay = itemView.findViewById(R.id.selected_view);
@@ -173,11 +180,11 @@ public class AlbumActivity extends Activity {
 
             @Override
             public void onClick(View view) {
-                if (overlay.getVisibility() == View.GONE) {
+                if (overlay.getVisibility() == View.INVISIBLE) {
                     overlay.setVisibility(View.VISIBLE);
                     // CartHolder.getInstance().addImage("x", data.get(getAdapterPosition()));
                 } else {
-                    overlay.setVisibility(View.GONE);
+                    overlay.setVisibility(View.INVISIBLE);
                     //CartHolder.getInstance().removeImage("x", data.get(getAdapterPosition()));
                 }
             }

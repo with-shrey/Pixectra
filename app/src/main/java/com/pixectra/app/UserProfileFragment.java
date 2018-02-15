@@ -2,7 +2,6 @@ package com.pixectra.app;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,13 +12,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
+import com.pixectra.app.Utils.GlideHelper;
 import com.pixectra.app.Utils.SessionHelper;
 
 import java.util.HashMap;
@@ -32,14 +28,13 @@ public class UserProfileFragment extends Fragment{
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 ImageView profilePic;
 TextView userName;
 CardView address;
 CardView linkAccount;
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
     private OnFragmentInteractionListener mListener;
 
     public UserProfileFragment() {
@@ -84,20 +79,8 @@ CardView linkAccount;
         linkAccount=view.findViewById(R.id.link_account_card_view);
 
         if (data.get(SessionHelper.User_Image) != null)
-        Glide.with(getActivity()).load(Uri.parse(data.get(SessionHelper.User_Image))).listener(new RequestListener<Drawable>() {
-            @Override
-            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                profilePic.setImageResource(R.drawable.ic_picture);
-                view.findViewById(R.id.progress_user_img).setVisibility(View.GONE);
-                return false;
-            }
-
-            @Override
-            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                view.findViewById(R.id.progress_user_img).setVisibility(View.GONE);
-                return false;
-            }
-        }).into(profilePic);
+            GlideHelper.load(getActivity(), Uri.parse(data.get(SessionHelper.User_Image)), profilePic
+                    , (ProgressBar) view.findViewById(R.id.progress_user_img));
         userName.setText(data.get(SessionHelper.User_Name));
         address.setOnClickListener(new View.OnClickListener() {
             @Override

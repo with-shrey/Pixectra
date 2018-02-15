@@ -2,7 +2,6 @@ package com.pixectra.app;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,19 +14,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pixectra.app.Models.Banner;
+import com.pixectra.app.Utils.GlideHelper;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -46,6 +39,9 @@ public class DashboardFragment extends Fragment {
     ArrayList<Banner> images;
     int i;
     SlideViewAdapter slideViewAdapter;
+    Timer timer;
+    boolean increment = true;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -123,17 +119,23 @@ public class DashboardFragment extends Fragment {
             }
         });
         ref.keepSynced(true);
-        i = images.size() / 2;
+        i = viewPager.getCurrentItem();
         timer = new Timer(); // At this line a new Thread will be created
         timer.scheduleAtFixedRate(new RemindTask(), 2000, 3000); // delay
         return  view;
     }
-    Timer timer;
-    boolean increment=true;
+
+    void startPosterActivity(int id) {
+        Intent intent = new Intent(getActivity(), PosterActivity.class);
+        intent.putExtra("type", id);
+        startActivity(intent);
+    }
+
     class RemindTask extends TimerTask {
 
         @Override
         public void run() {
+            i = viewPager.getCurrentItem();
             if (i == images.size())
                 increment=false;
             if (i == 0)
@@ -152,12 +154,6 @@ public class DashboardFragment extends Fragment {
         }
     }
 
-    void startPosterActivity(int id){
-        Intent intent=new Intent(getActivity(),PosterActivity.class);
-        intent.putExtra("type",id);
-        startActivity(intent);
-    }
-
     private class SlideViewAdapter extends PagerAdapter {
 
         Activity activity;
@@ -174,26 +170,7 @@ public class DashboardFragment extends Fragment {
             LayoutInflater layoutInflater = (activity).getLayoutInflater();
             View itemView = layoutInflater.inflate(R.layout.home_viewpager_item_layout, container, false);
             ImageView imageView = itemView.findViewById(R.id.sliding_image);
-            RequestOptions requestOptions = new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL);
-            Glide.with(activity).load(images.get(position).getImage()).apply(requestOptions)
-
-                    .listener(new RequestListener<Drawable>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                            //imageView.setImageResource(R.drawable.ic_picture);
-
-                           // imageView.progress.setVisibility(View.GONE);
-                            return false;
-                        }
-
-                        @Override
-                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                           // holder.progress.setVisibility(View.GONE);
-                            return false;
-                        }
-                    })
-                    .into(imageView);
-
+            GlideHelper.load(activity, images.get(position).getImage(), imageView, null, 300, 500);
             container.addView(itemView);
             return itemView;
         }

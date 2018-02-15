@@ -2,8 +2,6 @@ package com.pixectra.app.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,16 +11,10 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
 import com.pixectra.app.ImageSelectActivity;
 import com.pixectra.app.Models.Product;
 import com.pixectra.app.R;
+import com.pixectra.app.Utils.GlideHelper;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -71,23 +63,7 @@ public class PhotobookRecyclerViewAdapter extends RecyclerView.Adapter<Photobook
         }
 
         if (product.getUrl() != null) {
-            RequestOptions requestOptions = new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL);
-            Glide.with(mcontext).load(product.getUrl()).apply(requestOptions).listener(new RequestListener<Drawable>() {
-                @Override
-                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                    holder.mimageview.setImageResource(R.drawable.ic_picture);
-
-                    holder.progress.setVisibility(View.GONE);
-                    return false;
-                }
-
-                @Override
-                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                    holder.progress.setVisibility(View.GONE);
-                    return false;
-                }
-            }).into(holder.mimageview);
-
+            GlideHelper.load(mcontext, product.getUrl(), holder.mimageview, holder.progress);
         } else {
             Log.d("Recycler View ", "Empty image link at : " + position);
         }
@@ -124,6 +100,7 @@ public class PhotobookRecyclerViewAdapter extends RecyclerView.Adapter<Photobook
                 public void onClick(View view) {
                     Intent intent = new Intent(mcontext, ImageSelectActivity.class);
                     intent.putExtra("pics", list.get(getAdapterPosition()).getPics());
+                    intent.putExtra("key", list.get(getAdapterPosition()).getId());
                     mcontext.startActivity(intent);
                 }
             });

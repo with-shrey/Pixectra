@@ -1,9 +1,10 @@
 package com.pixectra.app;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -19,7 +20,7 @@ import java.util.ArrayList;
 
 public class PosterActivity extends AppCompatActivity {
 
-    String[] activityTitles = {"Flipbook", "PostCard", "Polaroids", "Photos","Posters"} ;
+    String[] activityTitles = {"FlipBook", "PostCard", "Polaroids", "Photos", "Posters"};
 
 
 
@@ -28,7 +29,7 @@ public class PosterActivity extends AppCompatActivity {
     TextView title_page;
     RecyclerView mrecyclerview;
     PhotobookRecyclerViewAdapter mposterRecyclerViewAdapter;
-
+    int type;
 
 
 
@@ -48,32 +49,19 @@ ArrayList<Product> data;
         mrecyclerview.setLayoutManager(new LinearLayoutManager(PosterActivity.this));
         setuprecyclerview();
         //Type Of Activity
-        int type=getIntent().getIntExtra("type",1);
+        type = getIntent().getIntExtra("type", 1);
         title_page.setText(activityTitles[type-1]);
-        switch (type){
-            case 1:
-                dataref=ref.child("FlipBook");
-                break;
-            case 2:
-                dataref=ref.child("PostCard");
-                break;
-            case 3:
-                dataref=ref.child("Polaroids");
-                break;
-            case 4:
-                dataref=ref.child("Photos");
-                break;
-            case 5:
-                dataref=ref.child("Posters");
-                break;
-        }
-        dataref.keepSynced(true);
+
+        dataref = ref.child(activityTitles[type - 1]);
+
         dataref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 data.clear();
                 for (DataSnapshot temp:dataSnapshot.getChildren()){
-                    data.add(temp.getValue(Product.class));
+                    Product product = temp.getValue(Product.class);
+                    product.setId(TextUtils.join("~", new String[]{activityTitles[type - 1], product.getTitle()}));
+                    data.add(product);
                 }
                 findViewById(R.id.poster_acivity_progress).setVisibility(View.GONE);
                 mposterRecyclerViewAdapter.notifyDataSetChanged();
@@ -84,6 +72,7 @@ ArrayList<Product> data;
                 findViewById(R.id.poster_acivity_progress).setVisibility(View.GONE);
             }
         });
+        dataref.keepSynced(true);
     }
 
 

@@ -267,7 +267,10 @@ DatabaseReference ref;
                                             ,gpersonEmail
                                             ,gImageUrl);
                                     FirebaseUser user = mAuth.getCurrentUser();
-                                    updateUI(user);
+                                    Intent intent = new Intent(LActivity.this, MobileVerifyActivity.class);
+                                    intent.putExtra("uid", mAuth.getCurrentUser().getUid());
+                                    startActivity(intent);
+                                    finish();
                                     if (gImageUrl != null) {
                                         Toast.makeText(LActivity.this, "found image url", Toast.LENGTH_SHORT).show();
                                     }

@@ -36,7 +36,6 @@ import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.bumptech.glide.Glide;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
@@ -50,6 +49,7 @@ import com.pixectra.app.Models.Images;
 import com.pixectra.app.R;
 import com.pixectra.app.Utils.AlbumActivity;
 import com.pixectra.app.Utils.Function;
+import com.pixectra.app.Utils.GlideHelper;
 import com.pixectra.app.Utils.MapComparator;
 import com.pixectra.app.Utils.SessionHelper;
 import com.pixectra.app.Utils.VolleyQueue;
@@ -75,6 +75,7 @@ public class ImageFragment extends Fragment {
     static final int REQUEST_PERMISSION_KEY = 1;
     ImageView noLoginView;
     int category;
+    String key;
     InstagramApp mApp;//Instagram
     List<Images> imageData;
     GraphResponse lastGraphResponse;
@@ -107,14 +108,14 @@ public class ImageFragment extends Fragment {
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+        key = getActivity().getIntent().getStringExtra("key");
         View layout = inflater.inflate(R.layout.image_select_fragment, null);
         imageData = new ArrayList<>();
         recyclerView = layout.findViewById(R.id.Imagelist);
         noLoginView = layout.findViewById(R.id.no_login_view);
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
         albumAdapter = new AlbumAdapter(getActivity(), albumList);
-        adapter = new ImageSelectAdapter(getActivity(), imageData);
+        adapter = new ImageSelectAdapter(getActivity(), key, imageData);
         //imagegrid = layout.findViewById(R.id.PhoneImageGrid);
           // selectBtn = layout.findViewById(R.id.selectBtn);
 
@@ -548,10 +549,7 @@ public class ImageFragment extends Fragment {
             HashMap<String, String> song = data.get(position);
             holder.gallery_title.setText(song.get(Function.KEY_ALBUM));
             holder.gallery_count.setText(song.get(Function.KEY_COUNT));
-
-            Glide.with(activity)
-                    .load(new File(song.get(Function.KEY_PATH))) // Uri of the picture
-                    .into(holder.galleryImage);
+            GlideHelper.load(activity, new File(song.get(Function.KEY_PATH)), holder.galleryImage, null, 200, 200);
         }
 
         public long getItemId(int position) {

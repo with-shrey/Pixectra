@@ -1,6 +1,7 @@
 package com.pixectra.app.Adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -17,25 +19,32 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.pixectra.app.ImageSelectActivity;
 import com.pixectra.app.Models.Images;
 import com.pixectra.app.R;
 import com.pixectra.app.Utils.CartHolder;
+import com.pixectra.app.Utils.GlideHelper;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Compu1 on 09-Feb-18.
  */
 
 public class ImageSelectAdapter extends  RecyclerView.Adapter<ImageSelectAdapter.myViewHolder> {
-    private LayoutInflater inflater;
     List<Images> data = Collections.emptyList();
+    String key;
 Context c;
-    public ImageSelectAdapter(Context context, List<Images> data){
+    private LayoutInflater inflater;
+
+    public ImageSelectAdapter(Context context, String key, List<Images> data) {
         inflater = LayoutInflater.from(context);
         this.data = data;
+        this.key = key;
         c=context;
+        setToolbarText(0);
     }
 
 
@@ -69,6 +78,10 @@ Context c;
                 .into(holder.icon);
     }
 
+    void setToolbarText(int count) {
+        ((ImageSelectActivity) c).getSupportActionBar().setTitle("Select Images (" + count + "/" + ((ImageSelectActivity) c).getIntent().getIntExtra("pics", 0) + ")");
+    }
+
     @Override
     public int getItemCount() {
         return data.size();
@@ -81,20 +94,59 @@ Context c;
 
         public myViewHolder(View itemView) {
             super(itemView);
-            icon  = (ImageView)itemView.findViewById(R.id.ListIcon);
-            overlay  = (ImageView)itemView.findViewById(R.id.selected_view);
+            icon = itemView.findViewById(R.id.ListIcon);
+            overlay = itemView.findViewById(R.id.selected_view);
             progress  = itemView.findViewById(R.id.image_loading_progress);
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            if (overlay.getVisibility() == View.GONE) {
+            if (overlay.getVisibility() == View.INVISIBLE) {
                 overlay.setVisibility(View.VISIBLE);
-                CartHolder.getInstance().addImage("x", data.get(getAdapterPosition()));
+                progress.setVisibility(View.VISIBLE);
+                try {
+                    GlideHelper.getBitmap(c, data.get(getAdapterPosition()).getUrl(), new RequestListener() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target target, boolean isFirstResource) {
+                            progress.setVisibility(View.GONE);
+                            Toast.makeText(c, "Unable To Fetch Full Size Image", Toast.LENGTH_SHORT).show();
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
+                            progress.setVisibility(View.GONE);
+                            setToolbarText(CartHolder.getInstance().addImage(key, (Bitmap) resource));
+                            return false;
+                        }
+                    });
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
             }else{
-                overlay.setVisibility(View.GONE);
-                CartHolder.getInstance().removeImage("x", data.get(getAdapterPosition()));
+                overlay.setVisibility(View.INVISIBLE);
+                try {
+                    GlideHelper.getBitmap(c, data.get(getAdapterPosition()).getUrl(), new RequestListener() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target target, boolean isFirstResource) {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
+                            setToolbarText(CartHolder.getInstance().removeImage(key, (Bitmap) resource));
+                            return false;
+                        }
+                    });
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
