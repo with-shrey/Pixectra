@@ -48,21 +48,22 @@ import com.pixectra.app.Utils.SessionHelper;
 import java.util.Arrays;
 
 public class LActivity extends AppCompatActivity {
-    private ImageView imageView, facebookimageview1;
+    private static final String TAG = "HANDLESIGNINRESULT";
     String fFirstName,fLastName, fEmail;
     Uri fImageurl;
     String gpersonName, gpersonEmail;
     Uri gImageUrl;
     int RC_SIGN_IN = 1;
     Dialog errorDialog;
-    private static final String TAG = "HANDLESIGNINRESULT";
     CallbackManager mCallbackManager;
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
     GoogleSignInClient mGoogleSignInClient;
     ProgressBar progressBar;
 FirebaseDatabase db;
 DatabaseReference ref;
+    private ImageView imageView, facebookimageview1;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,9 +71,9 @@ DatabaseReference ref;
         db=FirebaseDatabase.getInstance();
         ref=db.getReference("Users");
         mAuth = FirebaseAuth.getInstance();
-        imageView = (ImageView) findViewById(R.id.google_login_button);
-        facebookimageview1 = (ImageView) findViewById(R.id.facebook_login_button);
-        progressBar=(ProgressBar)findViewById(R.id.simpleProgressBar);
+        imageView = findViewById(R.id.google_login_button);
+        facebookimageview1 = findViewById(R.id.facebook_login_button);
+        progressBar = findViewById(R.id.simpleProgressBar);
         mCallbackManager = CallbackManager.Factory.create();
         FacebookSdk.sdkInitialize(getApplicationContext());
         LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
@@ -94,7 +95,7 @@ DatabaseReference ref;
             }
         });
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("802114397478-121sl0s0bfr0ts2ojchta7b22lc98q5n.apps.googleusercontent.com")
+                .requestIdToken(getString(R.string.google_token))
                 .requestEmail()
                 .build();
 

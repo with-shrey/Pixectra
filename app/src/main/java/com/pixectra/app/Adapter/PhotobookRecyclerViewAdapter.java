@@ -25,6 +25,7 @@ import com.pixectra.app.Models.Product;
 import com.pixectra.app.R;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 
 /**
@@ -61,10 +62,10 @@ public class PhotobookRecyclerViewAdapter extends RecyclerView.Adapter<Photobook
     public void onBindViewHolder(final MyViewHolder holder, int position) {
         Product product = list.get(position);
         if (product.getTitle() != null) {
-
+            setPrice(holder.price, product.getPrice());
             //<<-- setting image title
             holder.image_title.setText(product.getTitle());
-
+            setPicsCount(holder.count, product.getPics());
         } else {
             Log.d("Recycler View ", "Empty Image title at : " + position);
         }
@@ -93,6 +94,13 @@ public class PhotobookRecyclerViewAdapter extends RecyclerView.Adapter<Photobook
 
     }
 
+    void setPrice(TextView textView, int price) {
+        textView.setText(String.format(Locale.getDefault(), "%s %d/UNIT", mcontext.getResources().getString(R.string.Rs), price));
+    }
+
+    void setPicsCount(TextView textView, int count) {
+        textView.setText(String.format(Locale.getDefault(), "%d PHOTOS", count));
+    }
     @Override
     public int getItemCount() {
         return list.size();
@@ -101,18 +109,21 @@ public class PhotobookRecyclerViewAdapter extends RecyclerView.Adapter<Photobook
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         ImageView mimageview;
-        TextView image_title;
+        TextView image_title, price, count;
         ProgressBar progress;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             progress = itemView.findViewById(R.id.progress_bar_photobook);
             image_title = itemView.findViewById(R.id.image_title_poster);
+            price = itemView.findViewById(R.id.image_price_poster);
+            count = itemView.findViewById(R.id.image_count_poster);
             mimageview = itemView.findViewById(R.id.imageview_poster_recycler_view);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(mcontext, ImageSelectActivity.class);
+                    intent.putExtra("pics", list.get(getAdapterPosition()).getPics());
                     mcontext.startActivity(intent);
                 }
             });

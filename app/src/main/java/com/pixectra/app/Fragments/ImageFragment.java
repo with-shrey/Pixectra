@@ -66,29 +66,26 @@ import java.util.List;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
-;
-
 public class ImageFragment extends Fragment {
 
-    private RecyclerView recyclerView;
-    private ImageSelectAdapter adapter;
-    ImageView noLoginView;
-int category;
-    InstagramApp mApp;//Instagram
-    List<Images> imageData ;
-GraphResponse lastGraphResponse;
     public static final String TAG_DATA = "data";
     public static final String TAG_IMAGES = "images";
     public static final String TAG_THUMBNAIL = "thumbnail";
     public static final String TAG_URL = "url";
+    static final int REQUEST_PERMISSION_KEY = 1;
+    ImageView noLoginView;
+    int category;
+    InstagramApp mApp;//Instagram
+    List<Images> imageData;
+    GraphResponse lastGraphResponse;
+    LoadAlbum loadAlbumTask;
     /*
       <-- Images from device
     */
-
-    static final int REQUEST_PERMISSION_KEY = 1;
-    LoadAlbum loadAlbumTask;
     AlbumAdapter albumAdapter;
     ArrayList<HashMap<String, String>> albumList = new ArrayList<HashMap<String, String>>();
+    private RecyclerView recyclerView;
+    private ImageSelectAdapter adapter;
 
     public ImageFragment() {
     }
@@ -133,143 +130,6 @@ GraphResponse lastGraphResponse;
         return layout;
 
     }
-
-
-    //<---Methods and classes for first fragment------------------------------START-----------------
-    class LoadAlbum extends AsyncTask<String, Void, String> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            albumList.clear();
-        }
-
-        protected String doInBackground(String... args) {
-            String xml = "";
-
-            String path = null;
-            String album = null;
-            String timestamp = null;
-            String countPhoto = null;
-            Uri uriExternal = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-            Uri uriInternal = android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI;
-
-
-            String[] projection = {MediaStore.MediaColumns.DATA,
-                    MediaStore.Images.Media.BUCKET_DISPLAY_NAME, MediaStore.MediaColumns.DATE_MODIFIED};
-            Cursor cursorExternal = getActivity().getContentResolver().query(uriExternal, projection, "_data IS NOT NULL) GROUP BY (bucket_display_name",
-                    null, null);
-            Cursor cursorInternal = getActivity().getContentResolver().query(uriInternal, projection, "_data IS NOT NULL) GROUP BY (bucket_display_name",
-                    null, null);
-            Cursor cursor = new MergeCursor(new Cursor[]{cursorExternal, cursorInternal});
-
-            while (cursor.moveToNext()) {
-
-                path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA));
-                album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME));
-                timestamp = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_MODIFIED));
-                countPhoto = Function.getCount(getApplicationContext(), album);
-
-
-                Log.v("album", path + "," + album + "," + timestamp + "," + countPhoto);
-                if (timestamp == null) {
-                    timestamp = "1518331969";
-                }
-
-                albumList.add(Function.mappingInbox(album, path, timestamp, Function.converToTime(timestamp), countPhoto));
-            }
-            cursor.close();
-            Collections.sort(albumList, new MapComparator(Function.KEY_TIMESTAMP, "dsc")); // Arranging photo album by timestamp decending
-            return xml;
-        }
-
-        @Override
-        protected void onPostExecute(String xml) {
-
-            albumAdapter.notifyDataSetChanged();
-        }
-    }
-
-
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//
-//        String[] PERMISSIONS = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-//        if (!Function.hasPermissions(getActivity(), PERMISSIONS)) {
-//            ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, REQUEST_PERMISSION_KEY);
-//        } else {
-//
-//        }
-//
-//    }
-
-
-    class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHolder> {
-        private Activity activity;
-        private ArrayList<HashMap<String, String>> data;
-
-        public AlbumAdapter(Activity a, ArrayList<HashMap<String, String>> d) {
-            activity = a;
-            data = d;
-        }
-
-
-
-
-        @Override
-        public AlbumViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.album_row, parent, false);
-            return new AlbumViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(AlbumViewHolder holder, int position) {
-            HashMap<String, String> song = data.get(position);
-                holder.gallery_title.setText(song.get(Function.KEY_ALBUM));
-                holder.gallery_count.setText(song.get(Function.KEY_COUNT));
-
-                Glide.with(activity)
-                        .load(new File(song.get(Function.KEY_PATH))) // Uri of the picture
-                        .into(holder.galleryImage);
-        }
-
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public int getItemCount() {
-            return data.size();
-        }
-
-
-        class AlbumViewHolder extends RecyclerView.ViewHolder{
-            ImageView galleryImage;
-            TextView gallery_count, gallery_title;
-
-            public AlbumViewHolder(View convertView) {
-                super(convertView);
-                galleryImage = convertView.findViewById(R.id.galleryImage);
-                gallery_count = convertView.findViewById(R.id.gallery_count);
-                gallery_title = convertView.findViewById(R.id.gallery_title);
-                convertView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(getActivity(), AlbumActivity.class);
-                        intent.putExtra("name", albumList.get(+getAdapterPosition()).get(Function.KEY_ALBUM));
-                        startActivity(intent);
-                    }
-                });
-
-            }
-        }
-    }
-
-
-
-
-//<---Methods and classes for first fragment------------------END-----------------------------------
-
 
     /**
      * Main Driver Function Checks And Fetch Data from Different Places
@@ -369,6 +229,19 @@ GraphResponse lastGraphResponse;
     }
 
 
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//
+//        String[] PERMISSIONS = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+//        if (!Function.hasPermissions(getActivity(), PERMISSIONS)) {
+//            ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, REQUEST_PERMISSION_KEY);
+//        } else {
+//
+//        }
+//
+//    }
+
     /**
      * Parse Response And Add To List
      *
@@ -401,6 +274,9 @@ GraphResponse lastGraphResponse;
         }
         adapter.notifyDataSetChanged();
     }
+
+
+//<---Methods and classes for first fragment------------------END-----------------------------------
 
     /**
      * Fetch Images From Facebook Make Request
@@ -501,17 +377,6 @@ GraphResponse lastGraphResponse;
         }
     }
 
-    /* @Override
-     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-         if (requestCode == 2) {
-             if (permissions[0].equals(Manifest.permission.READ_EXTERNAL_STORAGE)
-                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                 userLoggedIn(true);
-                 checkAndLoadData();
-             }
-         }
-     }
- */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -529,6 +394,7 @@ GraphResponse lastGraphResponse;
 
         }
     }
+
     private void getInstagramImages() {
       // ProgressDialog pd = ProgressDialog.show(getActivity(), "", "Loading images...");
         String url="https://api.instagram.com/v1/users/"
@@ -604,6 +470,119 @@ GraphResponse lastGraphResponse;
             String thumb = thumbnail_obj.getString(TAG_URL);
             String stand = standard.getString(TAG_URL);
             imageData.add(new Images(stand,thumb));
+        }
+    }
+
+    //<---Methods and classes for first fragment------------------------------START-----------------
+    class LoadAlbum extends AsyncTask<String, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            albumList.clear();
+        }
+
+        protected String doInBackground(String... args) {
+            String xml = "";
+
+            String path = null;
+            String album = null;
+            String timestamp = null;
+            String countPhoto = null;
+            Uri uriExternal = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+            Uri uriInternal = android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI;
+
+
+            String[] projection = {MediaStore.MediaColumns.DATA,
+                    MediaStore.Images.Media.BUCKET_DISPLAY_NAME, MediaStore.MediaColumns.DATE_MODIFIED};
+            Cursor cursorExternal = getActivity().getContentResolver().query(uriExternal, projection, "_data IS NOT NULL) GROUP BY (bucket_display_name",
+                    null, null);
+            Cursor cursorInternal = getActivity().getContentResolver().query(uriInternal, projection, "_data IS NOT NULL) GROUP BY (bucket_display_name",
+                    null, null);
+            Cursor cursor = new MergeCursor(new Cursor[]{cursorExternal, cursorInternal});
+
+            while (cursor.moveToNext()) {
+
+                path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA));
+                album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME));
+                timestamp = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_MODIFIED));
+                countPhoto = Function.getCount(getApplicationContext(), album);
+
+
+                Log.v("album", path + "," + album + "," + timestamp + "," + countPhoto);
+                if (timestamp == null) {
+                    timestamp = "1518331969";
+                }
+
+                albumList.add(Function.mappingInbox(album, path, timestamp, Function.converToTime(timestamp), countPhoto));
+            }
+            cursor.close();
+            Collections.sort(albumList, new MapComparator(Function.KEY_TIMESTAMP, "dsc")); // Arranging photo album by timestamp decending
+            return xml;
+        }
+
+        @Override
+        protected void onPostExecute(String xml) {
+
+            albumAdapter.notifyDataSetChanged();
+        }
+    }
+
+    class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHolder> {
+        private Activity activity;
+        private ArrayList<HashMap<String, String>> data;
+
+        public AlbumAdapter(Activity a, ArrayList<HashMap<String, String>> d) {
+            activity = a;
+            data = d;
+        }
+
+
+        @Override
+        public AlbumViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.album_row, parent, false);
+            return new AlbumViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(AlbumViewHolder holder, int position) {
+            HashMap<String, String> song = data.get(position);
+            holder.gallery_title.setText(song.get(Function.KEY_ALBUM));
+            holder.gallery_count.setText(song.get(Function.KEY_COUNT));
+
+            Glide.with(activity)
+                    .load(new File(song.get(Function.KEY_PATH))) // Uri of the picture
+                    .into(holder.galleryImage);
+        }
+
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public int getItemCount() {
+            return data.size();
+        }
+
+
+        class AlbumViewHolder extends RecyclerView.ViewHolder {
+            ImageView galleryImage;
+            TextView gallery_count, gallery_title;
+
+            public AlbumViewHolder(View convertView) {
+                super(convertView);
+                galleryImage = convertView.findViewById(R.id.galleryImage);
+                gallery_count = convertView.findViewById(R.id.gallery_count);
+                gallery_title = convertView.findViewById(R.id.gallery_title);
+                convertView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(getActivity(), AlbumActivity.class);
+                        intent.putExtra("name", albumList.get(+getAdapterPosition()).get(Function.KEY_ALBUM));
+                        startActivity(intent);
+                    }
+                });
+
+            }
         }
     }
 }

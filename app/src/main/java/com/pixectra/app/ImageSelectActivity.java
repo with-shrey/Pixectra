@@ -30,10 +30,16 @@ TabLayout tabLayout;
     }
 
     void setTabIcons(TabLayout tabs){
-        int[] icons={R.drawable.ic_letter,R.drawable.facebook,R.drawable.instagram,R.drawable.google_photos};
+        int[] icons = {R.drawable.device, R.drawable.facebook, R.drawable.instagram, R.drawable.google_photos};
         for (int i=0;i<4;i++)
             tabs.getTabAt(i).setIcon(icons[i]);
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
     class PagerAdapter extends FragmentPagerAdapter{
 
         public PagerAdapter(FragmentManager fm) {
@@ -49,10 +55,5 @@ TabLayout tabLayout;
         public int getCount() {
             return 4;
         }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }
