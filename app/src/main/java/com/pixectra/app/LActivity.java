@@ -1,5 +1,6 @@
 package com.pixectra.app;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -11,15 +12,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import com.facebook.AccessToken;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
-import com.facebook.Profile;
-import com.facebook.login.LoginManager;
-import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -49,50 +41,28 @@ import java.util.Arrays;
 
 public class LActivity extends AppCompatActivity {
     private ImageView imageView, facebookimageview1;
-    String fFirstName,fLastName, fEmail;
-    Uri fImageurl;
     String gpersonName, gpersonEmail;
     Uri gImageUrl;
     int RC_SIGN_IN = 1;
     Dialog errorDialog;
     private static final String TAG = "HANDLESIGNINRESULT";
-    CallbackManager mCallbackManager;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     GoogleSignInClient mGoogleSignInClient;
     ProgressBar progressBar;
-FirebaseDatabase db;
-DatabaseReference ref;
+    FirebaseDatabase db;
+    DatabaseReference ref;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_l);
-        db=FirebaseDatabase.getInstance();
-        ref=db.getReference("Users");
+        db = FirebaseDatabase.getInstance();
+        ref = db.getReference("Users");
         mAuth = FirebaseAuth.getInstance();
         imageView = (ImageView) findViewById(R.id.google_login_button);
         facebookimageview1 = (ImageView) findViewById(R.id.facebook_login_button);
-        progressBar=(ProgressBar)findViewById(R.id.simpleProgressBar);
-        mCallbackManager = CallbackManager.Factory.create();
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                Log.d("Login", "Login sucess");
-                firebaseAuthWithFacebook(loginResult.getAccessToken());
-               // Toast.makeText(LActivity.this,fFirstName,Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onCancel() {
-                Toast.makeText(LActivity.this, "Login cancelled", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onError(FacebookException error) {
-                Toast.makeText(getApplicationContext(), "" + error.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
+        progressBar = (ProgressBar) findViewById(R.id.simpleProgressBar);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken("802114397478-121sl0s0bfr0ts2ojchta7b22lc98q5n.apps.googleusercontent.com")
                 .requestEmail()
@@ -111,13 +81,14 @@ DatabaseReference ref;
                 }
             }
         });
+
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     updateUI(user);
-                 Log.d("Tag","user already Exists");
+                    Log.d("Tag", "user already Exists");
                 }
             }
         };
@@ -140,92 +111,15 @@ DatabaseReference ref;
         }
     }
 
+    @SuppressLint("LongLogTag")
     public void onFacebookLogInClicked(View view) {
-        LoginManager
-                .getInstance()
-                .logInWithReadPermissions(
-                        this,
-                        Arrays.asList("public_profile", "user_friends", "email","user_photos")
-                );
-        progressBar.setVisibility(View.VISIBLE);
+
+        Intent intent = new Intent(LActivity.this, FacebookActivity.class);
+        intent.putExtra("LActivity","loggedin");
+        startActivity(intent);
+
     }
 
-    private void firebaseAuthWithFacebook(AccessToken token) {
-        Log.d(TAG, "handleFacebookAccessToken:" + token);
-
-        final AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
-                        if (task.isSuccessful()) {
-                        boolean isNew = task.getResult().getAdditionalUserInfo().isNewUser();
-                        Log.d("Facebook Sign In", "onComplete: " + (isNew ? "new user" : "old user"));
-                        Toast.makeText(LActivity.this, "onComplete: " + (isNew ? "new user" : "old user"), Toast.LENGTH_SHORT).show();
-                        if (isNew) {
-                            // mAuth.getCurrentUser().getUid();
-                            Profile profile=Profile.getCurrentProfile();
-                            fFirstName=profile.getFirstName();
-                            fLastName=profile.getLastName();
-                            fEmail=mAuth.getCurrentUser().getEmail();
-                            fImageurl=profile.getProfilePictureUri(400,400);
-                            ref.child(mAuth.getCurrentUser().getUid()).child("Info").setValue(new User(fFirstName+" "+fLastName,fEmail,fImageurl.toString()));
-                            new SessionHelper(LActivity.this).setUserDetails(mAuth.getCurrentUser().getUid()
-                                    ,fFirstName+" "+fLastName
-                                    ,fEmail
-                                    ,fImageurl);
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            updateUI(user);
-                            Toast.makeText(LActivity.this, fFirstName+fEmail, Toast.LENGTH_SHORT).show();
-                        }else{
-                            ref.child(mAuth.getCurrentUser().getUid()).child("Info").addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    User user=dataSnapshot.getValue(User.class);
-                                    new SessionHelper(LActivity.this).setUserDetails(mAuth.getCurrentUser().getUid()
-                                            ,user.getName()
-                                            ,user.getEmail()
-                                            ,Uri.parse(user.getProfilePic()));
-                                    FirebaseUser userfb = mAuth.getCurrentUser();
-                                    updateUI(userfb);
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-
-                                }
-                            });
-                        }
-                        // If sign in fails, display a message to the user. If sign in succeeds
-                        // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
-
-
-                        } else {
-                            Log.w(TAG, "signInWithCredential", task.getException());
-                            Toast.makeText(LActivity.this, "Already Signed In Using Google",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-    }
-
-//    private void handleFacebookAccessToken(AccessToken token) {
-//        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-//        mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-//            @Override
-//            public void onComplete(@NonNull Task<AuthResult> task) {
-//                if (task.isSuccessful()) {
-//                    Log.d("FacebookTag", "signincredentials", task.getException());
-//                    Toast.makeText(LActivity.this, "Login success", Toast.LENGTH_SHORT).show();
-//
-//                } else {
-//                    Toast.makeText(LActivity.this, "Authentication error", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
-//    }
 
     //showing error dialog of user accounts
     private void signIn() {
@@ -258,27 +152,23 @@ DatabaseReference ref;
                                     gpersonName = acct.getDisplayName();
                                     gImageUrl = acct.getPhotoUrl();
                                     gpersonEmail = acct.getEmail();
-                                    ref.child(mAuth.getCurrentUser().getUid()).child("Info").setValue(new User(gpersonName,gpersonEmail,gImageUrl.toString()));
+                                    ref.child(mAuth.getCurrentUser().getUid()).child("Info").setValue(new User(gpersonName, gpersonEmail, gImageUrl.toString()));
                                     new SessionHelper(LActivity.this).setUserDetails(mAuth.getCurrentUser().getUid()
-                                            ,gpersonName
-                                            ,gpersonEmail
-                                            ,gImageUrl);
+                                            , gpersonName
+                                            , gpersonEmail
+                                            , gImageUrl);
                                     FirebaseUser user = mAuth.getCurrentUser();
                                     updateUI(user);
-                                    if (gImageUrl != null) {
-                                        Toast.makeText(LActivity.this, "found image url", Toast.LENGTH_SHORT).show();
-                                    }
-                                    Toast.makeText(LActivity.this, gpersonName + "\n" + gpersonEmail, Toast.LENGTH_SHORT).show();
                                 }
-                            }else{
+                            } else {
                                 ref.child(mAuth.getCurrentUser().getUid()).child("Info").addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
-                                        User user=dataSnapshot.getValue(User.class);
+                                        User user = dataSnapshot.getValue(User.class);
                                         new SessionHelper(LActivity.this).setUserDetails(mAuth.getCurrentUser().getUid()
-                                                ,user.getName()
-                                                ,user.getEmail()
-                                                ,Uri.parse(user.getProfilePic()));
+                                                , user.getName()
+                                                , user.getEmail()
+                                                , Uri.parse(user.getProfilePic()));
                                         FirebaseUser userfire = mAuth.getCurrentUser();
                                         updateUI(userfire);
                                     }
@@ -305,7 +195,7 @@ DatabaseReference ref;
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        mCallbackManager.onActivityResult(requestCode, resultCode, data);
+
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (resultCode == RESULT_OK && requestCode == RC_SIGN_IN) {
             // The Task returned from this call is always completed, no need to attach
@@ -316,7 +206,7 @@ DatabaseReference ref;
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account,result);
+                firebaseAuthWithGoogle(account, result);
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
                 Log.v("Google Sign In", "Google sign in failed", e);
@@ -324,16 +214,8 @@ DatabaseReference ref;
             }
 
         }
-        else
-        {
-        }
-    }
-
-
-    private void handleSignInResult(GoogleSignInResult result) {
 
     }
-
 
     void updateUI(Object o) {
         if (o != null) {
@@ -341,10 +223,9 @@ DatabaseReference ref;
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             finish();
-        } else {
-            Toast.makeText(this, "Null", Toast.LENGTH_SHORT).show();
         }
     }
+
     private boolean checkPlayServices() {
 
         GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();

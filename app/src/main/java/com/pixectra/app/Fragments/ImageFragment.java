@@ -2,6 +2,7 @@ package com.pixectra.app.Fragments;
 
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,10 +11,12 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
@@ -22,6 +25,7 @@ import com.facebook.HttpMethod;
 import com.facebook.Profile;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.pixectra.app.Adapter.ImageSelectAdapter;
+import com.pixectra.app.FacebookActivity;
 import com.pixectra.app.Models.Images;
 import com.pixectra.app.R;
 
@@ -37,6 +41,7 @@ public class ImageFragment extends Fragment {
     private RecyclerView recyclerView;
     private ImageSelectAdapter adapter;
     ImageView noLoginView;
+    private String profiletokenid;
 int category;
     List<Images> imageData ;
 GraphResponse lastGraphResponse;
@@ -172,6 +177,7 @@ GraphResponse lastGraphResponse;
      */
     void getFacebookImages(Profile profile){
         Bundle params  = new Bundle();
+        Log.v("permissions",AccessToken.getCurrentAccessToken().getPermissions().toString());
         params.putString("fields","images");
         new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
@@ -223,6 +229,15 @@ GraphResponse lastGraphResponse;
                         requestPermissions(
                                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                                 2);
+                    }
+                });
+            }
+            if (category == 1){
+                noLoginView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent= new Intent(getActivity(), FacebookActivity.class);
+                        startActivity(intent);
                     }
                 });
             }
