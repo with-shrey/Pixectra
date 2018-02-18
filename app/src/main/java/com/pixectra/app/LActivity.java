@@ -344,6 +344,7 @@ DatabaseReference ref;
             startActivity(intent);
             finish();
         } else {
+            Log.d(TAG, "updateUI: ");
             Toast.makeText(this, "Null", Toast.LENGTH_SHORT).show();
         }
     }

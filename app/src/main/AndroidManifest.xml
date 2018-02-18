@@ -21,7 +21,7 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_id" />
 
-        <activity android:name=".mobile_verify">
+        <activity android:name=".profile">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
