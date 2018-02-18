@@ -3,6 +3,7 @@ package com.pixectra.app;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -17,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.pixectra.app.Fragments.ImageFragment;
@@ -30,6 +32,7 @@ TabLayout tabLayout;
     RecyclerView selectedImages;
     Vector<Bitmap> selectedItems;
     SelectedItemsAdapter selectedItemsAdapter;
+    FloatingActionButton save;
     int w;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +44,22 @@ TabLayout tabLayout;
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar3));
         getSupportActionBar().setElevation(0);
         selectedItems = CartHolder.getInstance().getAllImages(getIntent().getStringExtra("key"));
+        save = findViewById(R.id.save_images);
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (CartHolder.getInstance().getSize(getIntent().getStringExtra("key")) == getIntent().getIntExtra("pics", 0)) {
+//                    Intent intent=new Intent(ImageSelectActivity.this,Cart.class);
+//                    startActivity(intent);
+                } else {
+                    Toast.makeText(ImageSelectActivity.this, "Please Select "
+                                    + (getIntent().getIntExtra("pics", 0)
+                                    - CartHolder.getInstance().getSize(getIntent().getStringExtra("key")))
+                                    + " More Images"
+                            , Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         selectedItemsAdapter = new SelectedItemsAdapter();
         viewPager=findViewById(R.id.image_select_pager);
         selectedImages = findViewById(R.id.selected_images_recycler);
@@ -48,6 +67,7 @@ TabLayout tabLayout;
         selectedImages.setAdapter(selectedItemsAdapter);
         if (selectedItems.size() > 0) {
             selectedImages.setVisibility(View.VISIBLE);
+            save.setVisibility(View.VISIBLE);
             selectedItemsAdapter.notifyDataSetChanged();
         }
         setToolbarText(CartHolder.getInstance().getSize(getIntent().getStringExtra("key")));
@@ -60,6 +80,7 @@ TabLayout tabLayout;
             @Override
             public void onImageAdded(Bitmap img, int size) {
                 if (size > 0) {
+                    save.setVisibility(View.VISIBLE);
                     selectedImages.setVisibility(View.VISIBLE);
                     selectedItems.add(img);
                     selectedItemsAdapter.notifyDataSetChanged();
@@ -72,10 +93,15 @@ TabLayout tabLayout;
             public void onImageDeleted(Bitmap img, int size) {
                 selectedItems.remove(img);
                 selectedItemsAdapter.notifyDataSetChanged();
-                if (size > 0)
+                if (size > 0) {
+                    save.setVisibility(View.VISIBLE);
                     selectedImages.setVisibility(View.VISIBLE);
-                else
+
+                } else {
+                    save.setVisibility(View.GONE);
                     selectedImages.setVisibility(View.GONE);
+
+                }
                 if (getSupportActionBar() != null)
                     setToolbarText(CartHolder.getInstance().getSize(getIntent().getStringExtra("key")));
             }
@@ -138,7 +164,8 @@ TabLayout tabLayout;
             public ViewHolder(View itemView) {
                 super(itemView);
 
-                itemView.getLayoutParams().width = w;
+                itemView.getLayoutParams().width = (int) ImageSelectActivity.this.getResources().getDimension(R.dimen.selected_images_dimen);
+                itemView.getLayoutParams().height = (int) ImageSelectActivity.this.getResources().getDimension(R.dimen.selected_images_dimen);
                 image = itemView.findViewById(R.id.ListIcon);
                 itemView.findViewById(R.id.image_loading_progress).setVisibility(View.GONE);
                 itemView.setOnClickListener(this);

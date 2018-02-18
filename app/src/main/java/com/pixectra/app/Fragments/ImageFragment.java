@@ -17,6 +17,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -87,9 +88,9 @@ public class ImageFragment extends Fragment {
     */
     AlbumAdapter albumAdapter;
     ArrayList<HashMap<String, String>> albumList = new ArrayList<HashMap<String, String>>();
+    int pics;
     private RecyclerView recyclerView;
     private ImageSelectAdapter adapter;
-
     public ImageFragment() {
     }
 
@@ -111,13 +112,14 @@ public class ImageFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         key = getActivity().getIntent().getStringExtra("key");
+        pics = getActivity().getIntent().getIntExtra("pics", 0);
         View layout = inflater.inflate(R.layout.image_select_fragment, null);
         imageData = new ArrayList<>();
         recyclerView = layout.findViewById(R.id.Imagelist);
         noLoginView = layout.findViewById(R.id.no_login_view);
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
         albumAdapter = new AlbumAdapter(getActivity(), albumList);
-        adapter = new ImageSelectAdapter(getActivity(), key, imageData);
+        adapter = new ImageSelectAdapter(getActivity(), key, getActivity().getIntent().getIntExtra("pics", 0), imageData);
         //imagegrid = layout.findViewById(R.id.PhoneImageGrid);
           // selectBtn = layout.findViewById(R.id.selectBtn);
 
@@ -160,7 +162,9 @@ public class ImageFragment extends Fragment {
                 else {
                     userLoggedIn(true);
                     Profile profile = Profile.getCurrentProfile();
-                    getFacebookImages(profile);
+                    if (profile != null) {
+                        getFacebookImages(profile);
+                    }
                     recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                         @Override
                         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -321,6 +325,8 @@ public class ImageFragment extends Fragment {
                     }
                 });
                 nextResultsRequests.executeAsync();
+            } else {
+                Toast.makeText(getActivity(), "No Results To Load", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -554,12 +560,15 @@ public class ImageFragment extends Fragment {
     }
 
     class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHolder> {
+        int w;
         private Activity activity;
         private ArrayList<HashMap<String, String>> data;
-
         public AlbumAdapter(Activity a, ArrayList<HashMap<String, String>> d) {
             activity = a;
             data = d;
+            DisplayMetrics dm = new DisplayMetrics();
+            a.getWindowManager().getDefaultDisplay().getMetrics(dm);
+            w = (dm.widthPixels / 3) - (int) (a.getResources().getDimension(R.dimen.image_cell_padding) * 3);
         }
 
 
@@ -602,9 +611,11 @@ public class ImageFragment extends Fragment {
                         Intent intent = new Intent(getActivity(), AlbumActivity.class);
                         intent.putExtra("name", albumList.get(+getAdapterPosition()).get(Function.KEY_ALBUM));
                         intent.putExtra("key", key);
+                        intent.putExtra("pics", pics);
                         startActivity(intent);
                     }
                 });
+                convertView.getLayoutParams().height = w;
 
             }
         }

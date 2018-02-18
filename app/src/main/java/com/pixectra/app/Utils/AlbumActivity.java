@@ -17,6 +17,7 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -124,6 +125,7 @@ public class AlbumActivity extends Activity {
 
     class SingleAlbumAdapter extends RecyclerView.Adapter<SingleAlbumAdapter.SingleAlbumViewHolder> {
         int count;
+        int w;
         private Activity activity;
         private ArrayList<HashMap<String, String>> data;
 
@@ -131,6 +133,9 @@ public class AlbumActivity extends Activity {
             activity = a;
             data = d;
             count = 30;
+            DisplayMetrics dm = new DisplayMetrics();
+            (AlbumActivity.this).getWindowManager().getDefaultDisplay().getMetrics(dm);
+            w = (dm.widthPixels / 3) - (int) (AlbumActivity.this.getResources().getDimension(R.dimen.image_cell_padding) * 5);
         }
 
         @Override
@@ -161,6 +166,7 @@ public class AlbumActivity extends Activity {
 
             }
         }
+
         public long getItemId(int position) {
             return position;
         }
@@ -183,38 +189,43 @@ public class AlbumActivity extends Activity {
                 galleryImage = itemView.findViewById(R.id.ListIcon);
                 overlay = itemView.findViewById(R.id.selected_view);
                 loader = itemView.findViewById(R.id.image_loading_progress);
-
+                itemView.getLayoutParams().height = w;
                 itemView.setOnClickListener(this);
             }
 
             @Override
             public void onClick(View view) {
-                if (overlay.getVisibility() == View.INVISIBLE) {
-                    overlay.setVisibility(View.VISIBLE);
-                    loader.setVisibility(View.VISIBLE);
-                    try {
-                        GlideHelper.getBitmap(AlbumActivity.this, new File(data.get(getAdapterPosition()).get(Function.KEY_PATH)), new RequestListener() {
-                            @Override
-                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target target, boolean isFirstResource) {
-                                loader.setVisibility(View.GONE);
-                                Toast.makeText(AlbumActivity.this, "Unable To Fetch Full Size Image", Toast.LENGTH_SHORT).show();
-                                return false;
-                            }
+                if (CartHolder.getInstance().getSize(getIntent().getStringExtra("key")) < getIntent().getIntExtra("pics", 0)) {
+                    if (overlay.getVisibility() == View.INVISIBLE) {
+                        loader.setVisibility(View.VISIBLE);
+                        try {
+                            GlideHelper.getBitmap(AlbumActivity.this, new File(data.get(getAdapterPosition()).get(Function.KEY_PATH)), new RequestListener() {
+                                @Override
+                                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target target, boolean isFirstResource) {
+                                    loader.setVisibility(View.GONE);
+                                    Toast.makeText(AlbumActivity.this, "Unable To Fetch Full Size Image", Toast.LENGTH_SHORT).show();
+                                    return false;
+                                }
 
-                            @Override
-                            public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
-                                loader.setVisibility(View.GONE);
-                                CartHolder.getInstance().addImage(getIntent().getStringExtra("key"), (Bitmap) resource);
-                                return false;
-                            }
-                        });
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                                @Override
+                                public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
+                                    loader.setVisibility(View.GONE);
+                                    overlay.setVisibility(View.VISIBLE);
+                                    CartHolder.getInstance().addImage(getIntent().getStringExtra("key"), (Bitmap) resource);
+                                    return false;
+                                }
+                            });
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
                     }
-
                 } else {
+                    Toast.makeText(activity, "Images Already Selected", Toast.LENGTH_SHORT).show();
+                }
+                if (overlay.getVisibility() == View.VISIBLE) {
                     overlay.setVisibility(View.INVISIBLE);
                     try {
                         GlideHelper.getBitmap(AlbumActivity.this, new File(data.get(getAdapterPosition()).get(Function.KEY_PATH)), new RequestListener() {

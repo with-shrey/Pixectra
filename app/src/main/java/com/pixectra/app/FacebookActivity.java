@@ -61,7 +61,8 @@ public class FacebookActivity extends AppCompatActivity {
                 if (auth)
                     firebaseAuthWithFacebook(loginResult.getAccessToken());
                 else {
-                    setResult(RESULT_OK);
+                    Intent intent = new Intent();
+                    setResult(RESULT_OK, intent);
                     finish();
                 }
             }
@@ -70,7 +71,10 @@ public class FacebookActivity extends AppCompatActivity {
             public void onCancel() {
                 Toast.makeText(FacebookActivity.this, "Login cancelled", Toast.LENGTH_SHORT).show();
                 if (!auth) {
-                    setResult(RESULT_CANCELED);
+                    Intent intent = new Intent();
+                    setResult(RESULT_CANCELED, intent);
+                    finish();
+                } else {
                     finish();
                 }
             }
@@ -78,8 +82,13 @@ public class FacebookActivity extends AppCompatActivity {
             @Override
             public void onError(FacebookException error) {
                 Toast.makeText(getApplicationContext(), "" + error.getMessage(), Toast.LENGTH_LONG).show();
-                setResult(RESULT_CANCELED);
-                finish();
+                if (!auth) {
+                    Intent intent = new Intent();
+                    setResult(RESULT_CANCELED, intent);
+                    finish();
+                } else {
+                    finish();
+                }
             }
         });
 

@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -121,7 +122,7 @@ public class DashboardFragment extends Fragment {
         ref.keepSynced(true);
         i = images.size() / 2;
         timer = new Timer(); // At this line a new Thread will be created
-        timer.scheduleAtFixedRate(new RemindTask(), 2000, 2000); // delay
+        timer.scheduleAtFixedRate(new RemindTask(), 4000, 4000); // delay
         return  view;
     }
 
@@ -169,7 +170,8 @@ public class DashboardFragment extends Fragment {
             LayoutInflater layoutInflater = (activity).getLayoutInflater();
             View itemView = layoutInflater.inflate(R.layout.home_viewpager_item_layout, container, false);
             ImageView imageView = itemView.findViewById(R.id.sliding_image);
-            GlideHelper.load(activity, images.get(position).getImage(), imageView, null, 300, 500);
+            ProgressBar progressBar = itemView.findViewById(R.id.banner_loader);
+            GlideHelper.load(activity, images.get(position).getImage(), imageView, progressBar);
             container.addView(itemView);
             return itemView;
         }

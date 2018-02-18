@@ -33,13 +33,15 @@ public class GlideHelper {
         Glide.with(context).load(url).apply(requestOptions).listener(new RequestListener<Drawable>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                progress.setVisibility(View.GONE);
+                if (progress != null)
+                    progress.setVisibility(View.GONE);
                 return false;
             }
 
             @Override
             public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                progress.setVisibility(View.GONE);
+                if (progress != null)
+                    progress.setVisibility(View.GONE);
                 return false;
             }
         }).transition(DrawableTransitionOptions.withCrossFade()).into(imageView);
