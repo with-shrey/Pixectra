@@ -62,6 +62,7 @@ TabLayout tabLayout;
         });
         selectedItemsAdapter = new SelectedItemsAdapter();
         viewPager=findViewById(R.id.image_select_pager);
+        viewPager.setOffscreenPageLimit(3);
         selectedImages = findViewById(R.id.selected_images_recycler);
         selectedImages.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         selectedImages.setAdapter(selectedItemsAdapter);
@@ -71,7 +72,6 @@ TabLayout tabLayout;
             selectedItemsAdapter.notifyDataSetChanged();
         }
         setToolbarText(CartHolder.getInstance().getSize(getIntent().getStringExtra("key")));
-        viewPager.setOffscreenPageLimit(4);
         viewPager.setAdapter(new PagerAdapter(getSupportFragmentManager()));
         tabLayout=findViewById(R.id.image_select_tabs);
         tabLayout.setupWithViewPager(viewPager);
@@ -129,7 +129,7 @@ TabLayout tabLayout;
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    class PagerAdapter extends FragmentPagerAdapter{
+    class PagerAdapter extends FragmentPagerAdapter {
 
         public PagerAdapter(FragmentManager fm) {
             super(fm);

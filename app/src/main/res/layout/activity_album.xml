@@ -29,15 +29,21 @@
             android:textSize="20sp"
             tools:ignore="RtlSymmetry" />
     </LinearLayout>
-    <android.support.v7.widget.RecyclerView
+
+    <android.support.v7.widget.RecyclerView xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/galleryGridView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="8dp"
         android:fadeScrollbars="false"
         android:paddingLeft="@dimen/image_cell_padding"
         android:paddingRight="@dimen/image_cell_padding"
-        android:scrollbarSize="2dp"
-        android:scrollbars="vertical">
+        android:scrollbarSize="4dp"
+        android:scrollbars="vertical"
+        app:layoutManager="android.support.v7.widget.GridLayoutManager"
+        app:spanCount="3"
+        tools:listitem="@layout/image_recycler_item">
 
     </android.support.v7.widget.RecyclerView>
 

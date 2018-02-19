@@ -69,16 +69,6 @@ public class AlbumActivity extends Activity {
         galleryGridView.setLayoutManager(new GridLayoutManager(this, 3));
         adapter = new SingleAlbumAdapter(AlbumActivity.this, imageList);
         galleryGridView.setAdapter(adapter);
-        galleryGridView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (!recyclerView.canScrollVertically(1)) {
-                    adapter.loadMore();
-                }
-            }
-        });
-
         loadAlbumTask = new LoadAlbumImages();
         loadAlbumTask.execute();
 
@@ -131,7 +121,6 @@ public class AlbumActivity extends Activity {
 
 
     class SingleAlbumAdapter extends RecyclerView.Adapter<SingleAlbumAdapter.SingleAlbumViewHolder> {
-        int count;
         int w;
         private Activity activity;
         private ArrayList<HashMap<String, String>> data;
@@ -139,7 +128,6 @@ public class AlbumActivity extends Activity {
         SingleAlbumAdapter(Activity a, ArrayList<HashMap<String, String>> d) {
             activity = a;
             data = d;
-            count = 30;
             DisplayMetrics dm = new DisplayMetrics();
             (AlbumActivity.this).getWindowManager().getDefaultDisplay().getMetrics(dm);
             w = (dm.widthPixels / 3) - (int) (AlbumActivity.this.getResources().getDimension(R.dimen.image_cell_padding) * 5);
@@ -159,20 +147,7 @@ public class AlbumActivity extends Activity {
                     , holder.galleryImage, holder.loader, 200, 200);
         }
 
-        void loadMore() {
-            if (count + 30 <= data.size()) {
-                int prev = count;
-                count += 30;
-                notifyDataSetChanged();
-                //notifyItemRangeChanged(prev, 30);
-            } else {
-                int prev = count;
-                count = data.size();
-                notifyDataSetChanged();
-                //notifyItemRangeChanged(prev, data.size());
 
-            }
-        }
 
         public long getItemId(int position) {
             return position;
@@ -180,11 +155,8 @@ public class AlbumActivity extends Activity {
 
         @Override
         public int getItemCount() {
-            if (count <= 0) {
-                count = 30;
-            }
-            count = data.size() > count ? count : data.size();
-            return count;
+
+            return data.size();
         }
 
         class SingleAlbumViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

@@ -22,7 +22,7 @@
             android:value="@string/facebook_id" />
         <activity android:name=".MobileVerifyActivity"/>
 
-        <activity android:name=".profile">
+        <activity android:name=".MyProfileActivity" />
         <activity android:name=".SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

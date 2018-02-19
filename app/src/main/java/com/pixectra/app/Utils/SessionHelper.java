@@ -5,9 +5,19 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 
+import com.facebook.AccessToken;
+import com.facebook.login.LoginManager;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.pixectra.app.Instagram.ApplicationData;
+import com.pixectra.app.Instagram.InstagramApp;
 import com.pixectra.app.MainActivity;
+import com.pixectra.app.R;
 
 import java.util.HashMap;
 
@@ -17,19 +27,6 @@ import java.util.HashMap;
 
 public class SessionHelper extends MainActivity {
 
-    SharedPreferences sharedPreferences;
-
-    //Editor for shared preferences..
-    SharedPreferences.Editor editor;
-    Context context;
-
-    int PRIVATE_MODE = 0;
-    private static final String PREF_NAME = "LoginSharedPreferences";
-
-    // All Shared Preferences Keys
-
-    private static final String IS_LOGIN = "IsLoggedIn";
-
     // Email address (make variable public to access from outside)
     public static final String User_Email = "USER_EMAIL";
     public static final String User_Image = "USER_Image";
@@ -37,14 +34,21 @@ public class SessionHelper extends MainActivity {
     public static final String User_Uid = "USER_UID";
     public static final String User_Phone = "USER_UID";
 
+    // All Shared Preferences Keys
+    // Password (make variable public to access from outside)
+    public static final String User_Password = "USER_PASSWORD";
+    private static final String PREF_NAME = "LoginSharedPreferences";
+    private static final String IS_LOGIN = "IsLoggedIn";
     private static final String API_USERNAME = "username";
     private static final String API_ID = "id";
     private static final String API_NAME = "name";
     private static final String API_ACCESS_TOKEN = "access_token";
-    
-    // Password (make variable public to access from outside)
-    public static final String User_Password = "USER_PASSWORD";
     private static final String IS_FIRST_TIME_LAUNCH = "IsFirstTimeLaunch";
+    SharedPreferences sharedPreferences;
+    //Editor for shared preferences..
+    SharedPreferences.Editor editor;
+    Context context;
+    int PRIVATE_MODE = 0;
 
 
     /**
@@ -58,14 +62,16 @@ public class SessionHelper extends MainActivity {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         editor = sharedPreferences.edit();
     }
+
+    public boolean isFirstTimeLaunch() {
+        return sharedPreferences.getBoolean(IS_FIRST_TIME_LAUNCH, true);
+    }
+
     public void setFirstTimeLaunch(boolean isFirstTime) {
         editor.putBoolean(IS_FIRST_TIME_LAUNCH, isFirstTime);
         editor.commit();
     }
 
-    public boolean isFirstTimeLaunch() {
-        return sharedPreferences.getBoolean(IS_FIRST_TIME_LAUNCH, true);
-    }
     /**
      * @param email
      * @param password
@@ -186,6 +192,24 @@ public class SessionHelper extends MainActivity {
         editor.clear();
         editor.commit();
         FirebaseAuth.getInstance().signOut();
+        if (GoogleSignIn.getLastSignedInAccount(context) != null) {
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.google_token))
+                    .requestEmail()
+                    .build();
+
+            GoogleSignIn.getClient(context, gso).signOut().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+
+                }
+            });
+        }
+        if (AccessToken.getCurrentAccessToken() != null) {
+            LoginManager.getInstance().logOut();
+        }
+        new InstagramApp(context, ApplicationData.CLIENT_ID,
+                ApplicationData.CLIENT_SECRET, ApplicationData.CALLBACK_URL).resetAccessToken();
 
     }
     public void setUserDetails(String uid,String name,String email,Uri url){

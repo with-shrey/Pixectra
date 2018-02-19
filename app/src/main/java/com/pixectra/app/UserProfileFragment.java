@@ -31,7 +31,7 @@ public class UserProfileFragment extends Fragment{
 ImageView profilePic;
 TextView userName;
 CardView address;
-CardView linkAccount;
+    CardView linkAccount, account;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -77,6 +77,7 @@ CardView linkAccount;
         userName=view.findViewById(R.id.user_name);
         address=view.findViewById(R.id.address_card_view);
         linkAccount=view.findViewById(R.id.link_account_card_view);
+        account = view.findViewById(R.id.account_card_view);
 
         if (data.get(SessionHelper.User_Image) != null)
             GlideHelper.load(getActivity(), Uri.parse(data.get(SessionHelper.User_Image)), profilePic
@@ -93,6 +94,13 @@ CardView linkAccount;
             @Override
             public void onClick(View view) {
                 Intent intent=new Intent(getActivity(),LinkedAccounts.class);
+                startActivity(intent);
+            }
+        });
+        account.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), MyProfileActivity.class);
                 startActivity(intent);
             }
         });
