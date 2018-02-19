@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.load.DataSource;
@@ -55,8 +56,14 @@ public class AlbumActivity extends Activity {
         setFinishOnTouchOutside(false);
         Intent intent = getIntent();
         album_name = intent.getStringExtra("name");
-//        setTitle(album_name);
-
+        //setTitle(album_name);
+        ((TextView) findViewById(R.id.toolbar_text)).setText(album_name);
+        (findViewById(R.id.toolbar_back)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
         galleryGridView = findViewById(R.id.galleryGridView);
         galleryGridView.setLayoutManager(new GridLayoutManager(this, 3));

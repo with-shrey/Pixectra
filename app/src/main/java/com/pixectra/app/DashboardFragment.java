@@ -122,7 +122,8 @@ public class DashboardFragment extends Fragment {
         ref.keepSynced(true);
         i = images.size() / 2;
         timer = new Timer(); // At this line a new Thread will be created
-        timer.scheduleAtFixedRate(new RemindTask(), 4000, 4000); // delay
+        timer.scheduleAtFixedRate(new RemindTask(), 4000, 4000
+        ); // delay
         return  view;
     }
 

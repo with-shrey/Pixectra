@@ -105,6 +105,11 @@ TabLayout tabLayout;
                 if (getSupportActionBar() != null)
                     setToolbarText(CartHolder.getInstance().getSize(getIntent().getStringExtra("key")));
             }
+
+            @Override
+            public void alreadyPresent(Bitmap img) {
+                Toast.makeText(ImageSelectActivity.this, "Image Already Present In Cart", Toast.LENGTH_SHORT).show();
+            }
         });
 
     }

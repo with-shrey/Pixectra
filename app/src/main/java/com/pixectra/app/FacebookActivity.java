@@ -69,7 +69,7 @@ public class FacebookActivity extends AppCompatActivity {
 
             @Override
             public void onCancel() {
-                Toast.makeText(FacebookActivity.this, "Login cancelled", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Login cancelled", Toast.LENGTH_SHORT).show();
                 if (!auth) {
                     Intent intent = new Intent();
                     setResult(RESULT_CANCELED, intent);

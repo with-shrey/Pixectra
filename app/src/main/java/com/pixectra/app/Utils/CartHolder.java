@@ -10,6 +10,7 @@ public class CartHolder {
 
     private static CartHolder sSoleInstance;
     private static HashMap<String, HashSet<Bitmap>> data;
+    private static HashMap<String, HashSet<Bitmap>> cart;
     private static ImageChangedListner listner;
     private CartHolder(){
         data=new HashMap<>();
@@ -30,14 +31,19 @@ public class CartHolder {
 
     public void addImage(String key, Bitmap image) {
         if (data.containsKey(key)){
-                data.get(key).add(image);
+            boolean added = data.get(key).add(image);
+            if (added) {
+                int size = data.get(key).size();
+                listner.onImageAdded(image, size);
+
+            }
         }else{
             HashSet<Bitmap> set = new HashSet<Bitmap>();
                 set.add(image);
                 data.put(key,set);
+            int size = data.get(key).size();
+            listner.onImageAdded(image, size);
         }
-        int size = data.get(key).size();
-        listner.onImageAdded(image, size);
     }
 
     public boolean isImagePresent(String key, Bitmap image) {
@@ -74,5 +80,7 @@ public class CartHolder {
         void onImageAdded(Bitmap img, int size);
 
         void onImageDeleted(Bitmap img, int size);
+
+        void alreadyPresent(Bitmap img);
     }
 }
