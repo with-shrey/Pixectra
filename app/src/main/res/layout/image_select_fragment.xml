@@ -25,6 +25,11 @@
             android:layout_centerInParent="true"
             android:src="@drawable/loginwithfb"
             android:visibility="gone" />
+
+    <FrameLayout
+        android:id="@+id/show_more"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </RelativeLayout>
 
 
