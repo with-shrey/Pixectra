@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "306687968058",
+    "firebase_url": "https://pixectra-f740b.firebaseio.com",
+    "project_id": "pixectra-f740b",
+    "storage_bucket": "pixectra-f740b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:306687968058:android:6629341f015c8aba",
+        "android_client_info": {
+          "package_name": "com.pixectra.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "306687968058-1c4cpbe6pr41172msnsabjuc32rtm0og.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pixectra.app",
+            "certificate_hash": "66a5c11c0f8588cc99230728d0cd6d8f9ad607a2"
+          }
+        },
+        {
+          "client_id": "306687968058-070t0ne86rq2o27o1hvuvivtt88qcj76.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyfclVoXFyUcXFGdppbO8DF7U33WwQw7w"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "306687968058-070t0ne86rq2o27o1hvuvivtt88qcj76.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
