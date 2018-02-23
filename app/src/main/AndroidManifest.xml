@@ -20,21 +20,18 @@
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_id" />
-        <activity android:name=".MobileVerifyActivity"/>
 
+        <activity android:name=".MobileVerifyActivity" />
         <activity android:name=".MyProfileActivity" />
-        <activity android:name=".SplashScreenActivity">
+        <activity
+            android:name=".SplashScreenActivity"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name=".Utils.AlbumActivity"
-            android:label="Select Images.."
-            android:theme="@android:style/Theme.Holo.Light.Dialog" />
         <activity android:name=".ShippingAddressForm" />
         <activity android:name=".SelectAddressActivity" />
         <activity android:name=".PhotobookActivity" />
@@ -56,6 +53,8 @@
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="24d096531d852632ab1c7f98d4485791c5e5eaa1" />
+
+        <activity android:name=".CroppingActivity"></activity>
     </application>
 
 </manifest>

@@ -15,6 +15,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -608,11 +609,22 @@ public class ImageFragment extends Fragment {
                 convertView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(getActivity(), AlbumActivity.class);
-                        intent.putExtra("name", albumList.get(+getAdapterPosition()).get(Function.KEY_ALBUM));
-                        intent.putExtra("key", key);
-                        intent.putExtra("pics", pics);
-                        startActivity(intent);
+                        AlbumActivity fragment = new AlbumActivity();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("name", albumList.get(+getAdapterPosition()).get(Function.KEY_ALBUM));
+                        bundle.putString("key", key);
+                        bundle.putInt("pics", pics);
+                        fragment.setArguments(bundle);
+                        FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+                        fragmentTransaction.setCustomAnimations(R.anim.slide_in_left,
+                                R.anim.slide_out_left, R.anim.slide_in_left,
+                                R.anim.slide_out_left
+                        );
+                        fragmentTransaction.replace(R.id.show_more, fragment, "albumactivity");
+                        fragmentTransaction.addToBackStack("albumactivity");
+                        fragmentTransaction.commit();
+
+
                     }
                 });
                 convertView.getLayoutParams().height = w;

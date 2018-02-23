@@ -31,13 +31,13 @@ public class SplashScreenActivity extends AppCompatActivity {
         }catch(Exception e){
             e.printStackTrace();
         }
-        setContentView(R.layout.activity_splash_screen);
+        //setContentView(R.layout.activity_splash_screen);
         splashimage = findViewById(R.id.splash_image);
         new Thread() {
             @Override
             public void run() {
                 try {
-                    sleep(3000);
+                    sleep(2000);
                     Intent intent = new Intent(getApplicationContext(), WelcomeActivity.class);
                     startActivity(intent);
                     finish();

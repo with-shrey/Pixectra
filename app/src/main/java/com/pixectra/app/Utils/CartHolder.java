@@ -9,7 +9,7 @@ import java.util.Vector;
 public class CartHolder {
 
     private static CartHolder sSoleInstance;
-    private static HashMap<String, HashSet<Bitmap>> data;
+    private static HashMap<String, Vector<Bitmap>> data;
     private static HashMap<String, HashSet<Bitmap>> cart;
     private static ImageChangedListner listner;
     private CartHolder(){
@@ -31,14 +31,16 @@ public class CartHolder {
 
     public void addImage(String key, Bitmap image) {
         if (data.containsKey(key)){
-            boolean added = data.get(key).add(image);
+            boolean added = !data.get(key).contains(image);
             if (added) {
+                data.get(key).add(image);
                 int size = data.get(key).size();
                 listner.onImageAdded(image, size);
-
+            } else {
+                listner.alreadyPresent(image);
             }
-        }else{
-            HashSet<Bitmap> set = new HashSet<Bitmap>();
+        } else {
+            Vector<Bitmap> set = new Vector<>();
                 set.add(image);
                 data.put(key,set);
             int size = data.get(key).size();
@@ -59,6 +61,15 @@ public class CartHolder {
             listner.onImageDeleted(image, size);
         }
 
+    }
+
+    public Bitmap getImage(String key, int index) {
+        return data.get(key).get(index);
+    }
+
+    public void setImage(String key, int index, Bitmap img) {
+        data.get(key).set(index, img);
+        listner.alreadyPresent(img);
     }
 
     public int getSize(String key) {

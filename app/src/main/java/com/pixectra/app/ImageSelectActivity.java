@@ -1,5 +1,6 @@
 package com.pixectra.app;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -24,13 +25,10 @@ import com.bumptech.glide.Glide;
 import com.pixectra.app.Fragments.ImageFragment;
 import com.pixectra.app.Utils.CartHolder;
 
-import java.util.Vector;
-
 public class ImageSelectActivity extends AppCompatActivity {
 ViewPager viewPager;
 TabLayout tabLayout;
     RecyclerView selectedImages;
-    Vector<Bitmap> selectedItems;
     SelectedItemsAdapter selectedItemsAdapter;
     FloatingActionButton save;
     int w;
@@ -43,7 +41,6 @@ TabLayout tabLayout;
         w = dm.widthPixels / 3;
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar3));
         getSupportActionBar().setElevation(0);
-        selectedItems = CartHolder.getInstance().getAllImages(getIntent().getStringExtra("key"));
         save = findViewById(R.id.save_images);
         save.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,7 +63,7 @@ TabLayout tabLayout;
         selectedImages = findViewById(R.id.selected_images_recycler);
         selectedImages.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         selectedImages.setAdapter(selectedItemsAdapter);
-        if (selectedItems.size() > 0) {
+        if (CartHolder.getInstance().getSize(getIntent().getStringExtra("key")) > 0) {
             selectedImages.setVisibility(View.VISIBLE);
             save.setVisibility(View.VISIBLE);
             selectedItemsAdapter.notifyDataSetChanged();
@@ -82,7 +79,6 @@ TabLayout tabLayout;
                 if (size > 0) {
                     save.setVisibility(View.VISIBLE);
                     selectedImages.setVisibility(View.VISIBLE);
-                    selectedItems.add(img);
                     selectedItemsAdapter.notifyDataSetChanged();
                 }
                 if (getSupportActionBar() != null)
@@ -91,7 +87,6 @@ TabLayout tabLayout;
 
             @Override
             public void onImageDeleted(Bitmap img, int size) {
-                selectedItems.remove(img);
                 selectedItemsAdapter.notifyDataSetChanged();
                 if (size > 0) {
                     save.setVisibility(View.VISIBLE);
@@ -109,6 +104,7 @@ TabLayout tabLayout;
             @Override
             public void alreadyPresent(Bitmap img) {
                 Toast.makeText(ImageSelectActivity.this, "Image Already Present In Cart", Toast.LENGTH_SHORT).show();
+                selectedItemsAdapter.notifyDataSetChanged();
             }
         });
 
@@ -127,6 +123,15 @@ TabLayout tabLayout;
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (viewPager.getCurrentItem() == 0 && getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStack("albumactivity", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     class PagerAdapter extends FragmentStatePagerAdapter {
@@ -149,18 +154,18 @@ TabLayout tabLayout;
     class SelectedItemsAdapter extends RecyclerView.Adapter<SelectedItemsAdapter.ViewHolder> {
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.image_recycler_item, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.selected_image_item, parent, false);
             return new SelectedItemsAdapter.ViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            Glide.with(ImageSelectActivity.this).load(selectedItems.get(position)).into(holder.image);
+            Glide.with(ImageSelectActivity.this).load(CartHolder.getInstance().getImage(getIntent().getStringExtra("key"), position)).into(holder.image);
         }
 
         @Override
         public int getItemCount() {
-            return selectedItems.size();
+            return CartHolder.getInstance().getSize(getIntent().getStringExtra("key"));
         }
 
         class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -173,12 +178,23 @@ TabLayout tabLayout;
                 itemView.getLayoutParams().height = (int) ImageSelectActivity.this.getResources().getDimension(R.dimen.selected_images_dimen);
                 image = itemView.findViewById(R.id.ListIcon);
                 itemView.findViewById(R.id.image_loading_progress).setVisibility(View.GONE);
-                itemView.setOnClickListener(this);
+                image.setOnClickListener(this);
+                itemView.findViewById(R.id.remove).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        CartHolder.getInstance().removeImage(getIntent().getStringExtra("key")
+                                , CartHolder.getInstance().getImage(getIntent().getStringExtra("key"), getAdapterPosition()));
+                    }
+                });
             }
 
             @Override
             public void onClick(View view) {
-                CartHolder.getInstance().removeImage(getIntent().getStringExtra("key"), selectedItems.get(getAdapterPosition()));
+                Intent intent = new Intent(ImageSelectActivity.this, CroppingActivity.class);
+                intent.putExtra("key", getIntent().getStringExtra("key"));
+                intent.putExtra("index", getAdapterPosition());
+                ImageSelectActivity.this.startActivity(intent);
+
             }
         }
     }

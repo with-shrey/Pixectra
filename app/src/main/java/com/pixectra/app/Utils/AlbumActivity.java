@@ -6,7 +6,6 @@ package com.pixectra.app.Utils;
 
 
 import android.app.Activity;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.MergeCursor;
 import android.graphics.Bitmap;
@@ -14,14 +13,16 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -40,40 +41,45 @@ import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
 
-public class AlbumActivity extends Activity {
+public class AlbumActivity extends Fragment {
     RecyclerView galleryGridView;
     ArrayList<HashMap<String, String>> imageList = new ArrayList<HashMap<String, String>>();
     String album_name = "";
     LoadAlbumImages loadAlbumTask;
     SingleAlbumAdapter adapter;
 
+    public AlbumActivity() {
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.activity_album, container, false);
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_album);
-        setFinishOnTouchOutside(false);
-        Intent intent = getIntent();
-        album_name = intent.getStringExtra("name");
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        album_name = getArguments().getString("name");
         //setTitle(album_name);
-        ((TextView) findViewById(R.id.toolbar_text)).setText(album_name);
-        (findViewById(R.id.toolbar_back)).setOnClickListener(new View.OnClickListener() {
+        ((TextView) view.findViewById(R.id.toolbar_text)).setText(album_name);
+        (view.findViewById(R.id.toolbar_back)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
+                getActivity().getSupportFragmentManager().popBackStack("albumactivity", FragmentManager.POP_BACK_STACK_INCLUSIVE);
             }
         });
 
-        galleryGridView = findViewById(R.id.galleryGridView);
-        galleryGridView.setLayoutManager(new GridLayoutManager(this, 3));
-        adapter = new SingleAlbumAdapter(AlbumActivity.this, imageList);
+        galleryGridView = view.findViewById(R.id.galleryGridView);
+        galleryGridView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
+        adapter = new SingleAlbumAdapter(getActivity(), imageList);
         galleryGridView.setAdapter(adapter);
         loadAlbumTask = new LoadAlbumImages();
         loadAlbumTask.execute();
-
-
     }
+
+
 
 
     class LoadAlbumImages extends AsyncTask<String, Void, String> {
@@ -95,8 +101,8 @@ public class AlbumActivity extends Activity {
             String[] projection = {MediaStore.MediaColumns.DATA,
                     MediaStore.Images.Media.BUCKET_DISPLAY_NAME, MediaStore.MediaColumns.DATE_MODIFIED};
 
-            Cursor cursorExternal = getContentResolver().query(uriExternal, projection, "bucket_display_name = \"" + album_name + "\"", null, null);
-            Cursor cursorInternal = getContentResolver().query(uriInternal, projection, "bucket_display_name = \"" + album_name + "\"", null, null);
+            Cursor cursorExternal = getActivity().getContentResolver().query(uriExternal, projection, "bucket_display_name = \"" + album_name + "\"", null, null);
+            Cursor cursorInternal = getActivity().getContentResolver().query(uriInternal, projection, "bucket_display_name = \"" + album_name + "\"", null, null);
             Cursor cursor = new MergeCursor(new Cursor[]{cursorExternal, cursorInternal});
             while (cursor.moveToNext()) {
 
@@ -129,7 +135,7 @@ public class AlbumActivity extends Activity {
             activity = a;
             data = d;
             DisplayMetrics dm = new DisplayMetrics();
-            (AlbumActivity.this).getWindowManager().getDefaultDisplay().getMetrics(dm);
+            (getActivity()).getWindowManager().getDefaultDisplay().getMetrics(dm);
             w = (dm.widthPixels / 3) - (int) (AlbumActivity.this.getResources().getDimension(R.dimen.image_cell_padding) * 5);
         }
 
@@ -174,15 +180,15 @@ public class AlbumActivity extends Activity {
 
             @Override
             public void onClick(View view) {
-                if (CartHolder.getInstance().getSize(getIntent().getStringExtra("key")) < getIntent().getIntExtra("pics", 0)) {
+                if (CartHolder.getInstance().getSize(getActivity().getIntent().getStringExtra("key")) < getActivity().getIntent().getIntExtra("pics", 0)) {
                     if (overlay.getVisibility() == View.INVISIBLE) {
                         loader.setVisibility(View.VISIBLE);
                         try {
-                            GlideHelper.getBitmap(AlbumActivity.this, new File(data.get(getAdapterPosition()).get(Function.KEY_PATH)), new RequestListener() {
+                            GlideHelper.getBitmap(getActivity(), new File(data.get(getAdapterPosition()).get(Function.KEY_PATH)), new RequestListener() {
                                 @Override
                                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target target, boolean isFirstResource) {
                                     loader.setVisibility(View.GONE);
-                                    Toast.makeText(AlbumActivity.this, "Unable To Fetch Full Size Image", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getActivity(), "Unable To Fetch Full Size Image", Toast.LENGTH_SHORT).show();
                                     return false;
                                 }
 
@@ -190,7 +196,7 @@ public class AlbumActivity extends Activity {
                                 public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
                                     loader.setVisibility(View.GONE);
                                     overlay.setVisibility(View.VISIBLE);
-                                    CartHolder.getInstance().addImage(getIntent().getStringExtra("key"), (Bitmap) resource);
+                                    CartHolder.getInstance().addImage(getActivity().getIntent().getStringExtra("key"), (Bitmap) resource);
                                     return false;
                                 }
                             });
@@ -207,7 +213,7 @@ public class AlbumActivity extends Activity {
                 if (overlay.getVisibility() == View.VISIBLE) {
                     overlay.setVisibility(View.INVISIBLE);
                     try {
-                        GlideHelper.getBitmap(AlbumActivity.this, new File(data.get(getAdapterPosition()).get(Function.KEY_PATH)), new RequestListener() {
+                        GlideHelper.getBitmap(getActivity(), new File(data.get(getAdapterPosition()).get(Function.KEY_PATH)), new RequestListener() {
                             @Override
                             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target target, boolean isFirstResource) {
                                 return false;
@@ -215,7 +221,7 @@ public class AlbumActivity extends Activity {
 
                             @Override
                             public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
-                                CartHolder.getInstance().removeImage(getIntent().getStringExtra("key"), (Bitmap) resource);
+                                CartHolder.getInstance().removeImage(getActivity().getIntent().getStringExtra("key"), (Bitmap) resource);
                                 return false;
                             }
                         });
