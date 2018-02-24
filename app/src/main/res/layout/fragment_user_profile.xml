@@ -3,23 +3,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.user.pixectra_userprofile.UserProfileFragment">
+    tools:imageFragment="com.example.user.pixectra_userprofile.UserProfileFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
-        <ImageView
+<RelativeLayout
+    android:id="@+id/img_rec"
+    android:layout_width="100dp"
+    android:layout_height="100dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginStart="8dp"
+    android:layout_centerHorizontal="true"
+    android:layout_marginTop="8dp">
+    <ProgressBar
+        android:id="@+id/progress_user_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/user_image"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/circle"
-            android:layout_centerHorizontal="true" />
+             />
 
+</RelativeLayout>
         <TextView
             android:id="@+id/user_name"
             android:layout_width="wrap_content"
@@ -30,7 +39,7 @@
             android:text="Name of the User"
             android:textColor="#000000"
             android:textSize="24sp"
-            android:layout_below="@id/user_image"
+            android:layout_below="@id/img_rec"
             android:layout_centerHorizontal="true"/>
 
         <TextView
@@ -80,7 +89,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
-                        <ImageView
+                        <de.hdodenhof.circleimageview.CircleImageView
                             android:id="@+id/imageView11"
                             android:layout_width="50dp"
                             android:layout_height="50dp"
@@ -114,7 +123,7 @@
                             android:layout_marginLeft="32dp"
                             android:layout_marginStart="32dp"
                             android:layout_marginTop="8dp"
-                            android:text="small description"
+                            android:text="My Account Settings"
                             android:textColor="#ffffff"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/imageView11"
@@ -155,7 +164,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
-                        <ImageButton
+                        <de.hdodenhof.circleimageview.CircleImageView
                             android:id="@+id/imageView21"
                             android:layout_width="50dp"
                             android:layout_height="50dp"
@@ -188,7 +197,7 @@
                             android:layout_marginBottom="8dp"
                             android:layout_marginLeft="32dp"
                             android:layout_marginStart="32dp"
-                            android:text="small description"
+                            android:text="Address Where Product Will Be Shipped"
                             android:textColor="#ffffff"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/imageView21" />
@@ -228,7 +237,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
-                        <ImageButton
+                        <de.hdodenhof.circleimageview.CircleImageView
                             android:id="@+id/imageView31"
                             android:layout_width="50dp"
                             android:layout_height="50dp"
@@ -260,7 +269,7 @@
                             android:layout_marginBottom="8dp"
                             android:layout_marginLeft="32dp"
                             android:layout_marginStart="32dp"
-                            android:text="small description"
+                            android:text="Login/Logout Of Accounts"
                             android:textColor="#ffffff"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/imageView31" />
@@ -300,7 +309,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
-                        <ImageButton
+                        <de.hdodenhof.circleimageview.CircleImageView
                             android:id="@+id/imageView41"
                             android:layout_width="50dp"
                             android:layout_height="50dp"
@@ -323,7 +332,8 @@
                             android:textColor="#ffffff"
                             android:textSize="20sp"
                             app:layout_constraintStart_toEndOf="@+id/imageView41"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:layout_marginLeft="32dp" />
 
                         <TextView
                             android:id="@+id/textView42"
@@ -332,7 +342,7 @@
                             android:layout_marginBottom="8dp"
                             android:layout_marginLeft="32dp"
                             android:layout_marginStart="32dp"
-                            android:text="small description"
+                            android:text="Frequencly Asked Questions"
                             android:textColor="#ffffff"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/imageView41" />
@@ -372,7 +382,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
-                        <ImageButton
+                        <de.hdodenhof.circleimageview.CircleImageView
                             android:id="@+id/imageView51"
                             android:layout_width="50dp"
                             android:layout_height="50dp"
@@ -404,7 +414,7 @@
                             android:layout_marginBottom="8dp"
                             android:layout_marginLeft="32dp"
                             android:layout_marginStart="32dp"
-                            android:text="small description"
+                            android:text="Active Subscriptions"
                             android:textColor="#ffffff"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/imageView51" />

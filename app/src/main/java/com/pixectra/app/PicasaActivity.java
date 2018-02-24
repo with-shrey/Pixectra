@@ -182,7 +182,7 @@ public class PicasaActivity extends AppCompatActivity {
 
                     @Override
                     public void onResponse(JSONObject response) {
-                        mTextView.setText("Response is---     "+ response.toString());
+
                     }
                 }, new Response.ErrorListener() {
             @Override

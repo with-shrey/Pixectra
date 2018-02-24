@@ -2,22 +2,62 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.pixectra.app">
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+
     <application
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
         </activity>
-        <activity android:name=".PicasaActivity">
+        <activity android:name=".PicasaActivity"/>
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_id" />
+        <activity android:name=".MobileVerifyActivity"/>
+
+        <activity android:name=".MyProfileActivity" />
+        <activity android:name=".SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".Utils.AlbumActivity"
+            android:label="Select Images.."
+            android:theme="@android:style/Theme.Holo.Light.Dialog" />
+        <activity android:name=".ShippingAddressForm" />
+        <activity android:name=".SelectAddressActivity" />
+        <activity android:name=".PhotobookActivity" />
+        <activity android:name=".PosterActivity" />
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name" />
+        <activity android:name=".WelcomeActivity" />
+        <activity android:name=".LActivity" />
+        <activity android:name=".Utils.AddCommonData" />
+        <activity
+            android:name=".ImageSelectActivity"
+            android:label="Select Images.." />
+        <activity android:name=".LinkedAccounts" />
+        <activity android:name=".FacebookActivity" />
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="24d096531d852632ab1c7f98d4485791c5e5eaa1" />
     </application>
 
 </manifest>
