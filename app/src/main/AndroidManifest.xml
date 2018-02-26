@@ -22,7 +22,11 @@
             android:value="@string/facebook_id" />
 
         <activity android:name=".SplashScreenActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
 
         </activity>
         <activity android:name=".Utils.GalleryPreview"/>
@@ -35,6 +39,10 @@
         <activity android:name=".Instagram.InstaMain" />
         <activity android:name=".Instagram.AllMediaFiles" />
         <activity android:name=".Instagram.Relationship" />
+        <activity android:name=".PayUMoneyActivity" >
+
+
+        </activity>
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
@@ -46,11 +54,7 @@
         <activity
             android:name=".ImageSelectActivity"
             android:label="Select Images.." >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
 
         </activity>
     </application>

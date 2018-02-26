@@ -21,7 +21,6 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-
             android:fadeScrollbars="false"
             android:scrollbarSize="2dp"
             android:scrollbars="vertical">

@@ -10,6 +10,7 @@ import android.content.res.Resources;
 
 import android.database.Cursor;
 import android.database.MergeCursor;
+import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -120,8 +121,7 @@ public class ImageFragment extends Fragment {
         adapter = new ImageSelectAdapter(getActivity(), imageData);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-        // imagegrid = layout.findViewById(R.id.PhoneImageGrid);
-        //   selectBtn = layout.findViewById(R.id.selectBtn);
+
 
 
         //<--For first fragment
@@ -320,7 +320,7 @@ public class ImageFragment extends Fragment {
                     userLoggedIn(false);
                 else {
                     Profile profile = Profile.getCurrentProfile();
-                    getFacebookImages(profile);
+                   getFacebookImages(profile);
                     recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                         @Override
                         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {

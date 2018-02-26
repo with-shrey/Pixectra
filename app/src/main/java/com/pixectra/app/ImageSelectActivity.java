@@ -30,9 +30,10 @@ TabLayout tabLayout;
     }
 
     void setTabIcons(TabLayout tabs){
-        int[] icons={R.drawable.ic_letter,R.drawable.facebook,R.drawable.instagram,R.drawable.google_photos};
+        int[] icons={R.mipmap.ic_gallery_foreground,R.mipmap.ic_fb_foreground,R.drawable.instagram,R.drawable.google_photos};
         for (int i=0;i<4;i++)
             tabs.getTabAt(i).setIcon(icons[i]);
+
     }
     class PagerAdapter extends FragmentPagerAdapter{
 
