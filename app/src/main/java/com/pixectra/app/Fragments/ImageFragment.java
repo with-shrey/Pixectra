@@ -2,19 +2,16 @@ package com.pixectra.app.Fragments;
 
 
 import android.Manifest;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-
 import android.database.Cursor;
 import android.database.MergeCursor;
 import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -23,12 +20,10 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -45,11 +40,11 @@ import com.facebook.HttpMethod;
 import com.facebook.Profile;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.pixectra.app.Adapter.ImageSelectAdapter;
-import com.pixectra.app.MainActivity;
 import com.pixectra.app.Models.Images;
 import com.pixectra.app.R;
 import com.pixectra.app.Utils.AlbumActivity;
 import com.pixectra.app.Utils.Function;
+import com.pixectra.app.Utils.MapComparator;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -58,13 +53,12 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import com.pixectra.app.Utils.MapComparator;
-
 import static com.facebook.FacebookSdk.getApplicationContext;
+
+;
 
 public class ImageFragment extends Fragment {
 
@@ -214,18 +208,18 @@ public class ImageFragment extends Fragment {
     }
 
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        String[] PERMISSIONS = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-        if (!Function.hasPermissions(getActivity(), PERMISSIONS)) {
-            ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, REQUEST_PERMISSION_KEY);
-        } else {
-
-        }
-
-    }
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//
+//        String[] PERMISSIONS = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+//        if (!Function.hasPermissions(getActivity(), PERMISSIONS)) {
+//            ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, REQUEST_PERMISSION_KEY);
+//        } else {
+//
+//        }
+//
+//    }
 
 
     class AlbumAdapter extends BaseAdapter {
@@ -451,12 +445,20 @@ public class ImageFragment extends Fragment {
      */
     void userLoggedIn(boolean status) {
         if (status) {
+            if (category == 0){
+                galleryGridView.setVisibility(View.VISIBLE);
+            }else{
+                recyclerView.setVisibility(View.VISIBLE);
+            }
             noLoginView.setOnClickListener(null);
             noLoginView.setVisibility(View.GONE);
-            recyclerView.setVisibility(View.VISIBLE);
         } else {
+            if (category == 0){
+                galleryGridView.setVisibility(View.GONE);
+            }else {
+                recyclerView.setVisibility(View.GONE);
+            }
             noLoginView.setVisibility(View.VISIBLE);
-            recyclerView.setVisibility(View.INVISIBLE);
             setImage();
             if (category == 0) {
                 noLoginView.setOnClickListener(new View.OnClickListener() {
@@ -464,7 +466,7 @@ public class ImageFragment extends Fragment {
                     public void onClick(View view) {
                         requestPermissions(
                                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                                2);
+                                REQUEST_PERMISSION_KEY);
                     }
                 });
             }
@@ -509,18 +511,11 @@ public class ImageFragment extends Fragment {
         switch (requestCode) {
             case REQUEST_PERMISSION_KEY: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    userLoggedIn(true);
                     loadAlbumTask = new LoadAlbum();
                     loadAlbumTask.execute();
                 } else {
                     Toast.makeText(getActivity(), "You must accept permissions.", Toast.LENGTH_LONG).show();
-                }
-            }
-            break;
-            case 2: {
-                if (permissions[0].equals(Manifest.permission.READ_EXTERNAL_STORAGE)
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    userLoggedIn(true);
-                    checkAndLoadData();
                 }
                 break;
             }

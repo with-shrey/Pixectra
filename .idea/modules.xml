@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Pixecta.iml" filepath="$PROJECT_DIR$/Pixecta.iml" />
       <module fileurl="file://C:\Users\Suhail\AndroidStudioProjects\MAIN1\Pixectra\Pixecta.iml" filepath="C:\Users\Suhail\AndroidStudioProjects\MAIN1\Pixectra\Pixecta.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Pixectra.iml" filepath="$PROJECT_DIR$/Pixectra.iml" />
+      <module fileurl="file://D:\Pixecta\Pixectra.iml" filepath="D:\Pixecta\Pixectra.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://D:\Pixecta\pixectra intern.iml" filepath="D:\Pixecta\pixectra intern.iml" />
     </modules>
