@@ -59,16 +59,17 @@ public class PayUMoneyActivity extends AppCompatActivity {
     // Test Variables
 
 
-    private String mMerchantKey = "FCyqqZ";
+  /*  private String mMerchantKey = "FCyqqZ";
     private String mSalt = "sfBpGA8E";
     private String mBaseURL = "https://test.payu.in";
-
-
-   /* // Final Variables
-    private String mMerchantKey = "Your Merchant Key";
-    private String mSalt = "Salt";
-    private String mBaseURL = "https://secure.payu.in";
 */
+
+    // Final Variables
+    private String mMerchantID = " 6114969";
+    private String mMerchantKey = "SfGbwueK";
+    private String mSalt = "Qu0R2mu7mW";
+    private String mBaseURL = "https://secure.payu.in";
+
 
     private String mAction = ""; // For Final URL
     private String mTXNId; // This will create below randomly
@@ -143,7 +144,7 @@ public class PayUMoneyActivity extends AppCompatActivity {
 
         if (bundle != null) {
 
-            mProgress.show();
+           // mProgress.show();
             /*remove deummy params once ready
              */
 

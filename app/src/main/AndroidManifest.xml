@@ -22,11 +22,6 @@
             android:value="@string/facebook_id" />
 
         <activity android:name=".SplashScreenActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
 
         </activity>
         <activity android:name=".Utils.GalleryPreview"/>
@@ -41,6 +36,11 @@
         <activity android:name=".Instagram.Relationship" />
         <activity android:name=".PayUMoneyActivity" >
 
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
 
         </activity>
         <activity
