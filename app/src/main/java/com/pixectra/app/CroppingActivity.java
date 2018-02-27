@@ -14,8 +14,14 @@ public class CroppingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cropping);
         final CropImageView cropper = findViewById(R.id.cropImageView);
-        cropper.setImageBitmap(CartHolder.getInstance().getImage(getIntent().getStringExtra("key")
-                , getIntent().getIntExtra("index", -1)));
+        if (getIntent().getBooleanExtra("cart", false)) {
+            cropper.setImageBitmap(CartHolder.getInstance().getCart()
+                    .get(getIntent().getIntExtra("position", 0))
+                    .second.get(getIntent().getIntExtra("index", 0)));
+        } else {
+            cropper.setImageBitmap(CartHolder.getInstance().getImage(getIntent().getStringExtra("key")
+                    , getIntent().getIntExtra("index", -1)));
+        }
         findViewById(R.id.crop_cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -26,9 +32,17 @@ public class CroppingActivity extends AppCompatActivity {
         findViewById(R.id.crop_save).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CartHolder.getInstance().setImage(getIntent().getStringExtra("key")
-                        , getIntent().getIntExtra("index", -1)
-                        , cropper.getCroppedImage());
+                if (getIntent().getBooleanExtra("cart", false)) {
+                    CartHolder.getInstance().getCart()
+                            .get(getIntent().getIntExtra("position", 0))
+                            .second.set(getIntent().getIntExtra("index", 0)
+                            , cropper.getCroppedImage());
+                } else {
+                    CartHolder.getInstance().setImage(getIntent().getStringExtra("key")
+                            , getIntent().getIntExtra("index", -1)
+                            , cropper.getCroppedImage());
+
+                }
                 finish();
             }
         });

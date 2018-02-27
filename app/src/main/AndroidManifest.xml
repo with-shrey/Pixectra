@@ -55,6 +55,7 @@
             android:value="24d096531d852632ab1c7f98d4485791c5e5eaa1" />
 
         <activity android:name=".CroppingActivity"></activity>
+        <activity android:name=".Checkout" />
     </application>
 
 </manifest>

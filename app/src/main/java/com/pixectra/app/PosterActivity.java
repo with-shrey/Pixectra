@@ -61,6 +61,7 @@ ArrayList<Product> data;
                 for (DataSnapshot temp:dataSnapshot.getChildren()){
                     Product product = temp.getValue(Product.class);
                     product.setId(TextUtils.join("~", new String[]{activityTitles[type - 1], product.getTitle()}));
+                    product.setType(activityTitles[type - 1]);
                     data.add(product);
                 }
                 findViewById(R.id.poster_acivity_progress).setVisibility(View.GONE);

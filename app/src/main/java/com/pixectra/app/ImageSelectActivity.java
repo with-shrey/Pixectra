@@ -15,15 +15,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
+import com.pixectra.app.Adapter.SelectedItemsAdapter;
 import com.pixectra.app.Fragments.ImageFragment;
 import com.pixectra.app.Utils.CartHolder;
+
 
 public class ImageSelectActivity extends AppCompatActivity {
 ViewPager viewPager;
@@ -46,8 +44,10 @@ TabLayout tabLayout;
             @Override
             public void onClick(View view) {
                 if (CartHolder.getInstance().getSize(getIntent().getStringExtra("key")) == getIntent().getIntExtra("pics", 0)) {
-//                    Intent intent=new Intent(ImageSelectActivity.this,Cart.class);
-//                    startActivity(intent);
+                    CartHolder.getInstance().addToCart(getIntent().getStringExtra("key"));
+                    Intent intent = new Intent(ImageSelectActivity.this, Checkout.class);
+                    startActivity(intent);
+                    finish();
                 } else {
                     Toast.makeText(ImageSelectActivity.this, "Please Select "
                                     + (getIntent().getIntExtra("pics", 0)
@@ -57,7 +57,7 @@ TabLayout tabLayout;
                 }
             }
         });
-        selectedItemsAdapter = new SelectedItemsAdapter();
+        selectedItemsAdapter = new SelectedItemsAdapter(this, getIntent().getStringExtra("key"));
         viewPager=findViewById(R.id.image_select_pager);
         viewPager.setOffscreenPageLimit(3);
         selectedImages = findViewById(R.id.selected_images_recycler);
@@ -151,51 +151,5 @@ TabLayout tabLayout;
         }
     }
 
-    class SelectedItemsAdapter extends RecyclerView.Adapter<SelectedItemsAdapter.ViewHolder> {
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.selected_image_item, parent, false);
-            return new SelectedItemsAdapter.ViewHolder(view);
-        }
 
-        @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
-            Glide.with(ImageSelectActivity.this).load(CartHolder.getInstance().getImage(getIntent().getStringExtra("key"), position)).into(holder.image);
-        }
-
-        @Override
-        public int getItemCount() {
-            return CartHolder.getInstance().getSize(getIntent().getStringExtra("key"));
-        }
-
-        class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-            ImageView image;
-
-            public ViewHolder(View itemView) {
-                super(itemView);
-
-                itemView.getLayoutParams().width = (int) ImageSelectActivity.this.getResources().getDimension(R.dimen.selected_images_dimen);
-                itemView.getLayoutParams().height = (int) ImageSelectActivity.this.getResources().getDimension(R.dimen.selected_images_dimen);
-                image = itemView.findViewById(R.id.ListIcon);
-                itemView.findViewById(R.id.image_loading_progress).setVisibility(View.GONE);
-                image.setOnClickListener(this);
-                itemView.findViewById(R.id.remove).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        CartHolder.getInstance().removeImage(getIntent().getStringExtra("key")
-                                , CartHolder.getInstance().getImage(getIntent().getStringExtra("key"), getAdapterPosition()));
-                    }
-                });
-            }
-
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(ImageSelectActivity.this, CroppingActivity.class);
-                intent.putExtra("key", getIntent().getStringExtra("key"));
-                intent.putExtra("index", getAdapterPosition());
-                ImageSelectActivity.this.startActivity(intent);
-
-            }
-        }
-    }
 }

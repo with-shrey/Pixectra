@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.pixectra.app.ImageSelectActivity;
 import com.pixectra.app.Models.Product;
 import com.pixectra.app.R;
+import com.pixectra.app.Utils.CartHolder;
 import com.pixectra.app.Utils.GlideHelper;
 
 import java.util.ArrayList;
@@ -98,6 +99,7 @@ public class PhotobookRecyclerViewAdapter extends RecyclerView.Adapter<Photobook
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    CartHolder.getInstance().addDetails(list.get(getAdapterPosition()).getId(), list.get(getAdapterPosition()));
                     Intent intent = new Intent(mcontext, ImageSelectActivity.class);
                     intent.putExtra("pics", list.get(getAdapterPosition()).getPics());
                     intent.putExtra("key", list.get(getAdapterPosition()).getId());

@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -68,13 +69,16 @@ public class SubscribeFragment extends Fragment {
         } else {
             Log.d("onViewCreated", "null view");
         }
-        ref.keepSynced(true);
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 data.clear();
                 for (DataSnapshot temp:dataSnapshot.getChildren()){
                     data.add(temp.getValue(Product.class));
+                    Product product = temp.getValue(Product.class);
+                    product.setId(TextUtils.join("~", new String[]{"Photobook", product.getTitle()}));
+                    product.setType("PhotoBooks");
+                    data.add(product);
                 }
                 view.findViewById(R.id.subscribe_progress).setVisibility(View.GONE);
                 mposterRecyclerViewAdapter.notifyDataSetChanged();
@@ -85,7 +89,7 @@ public class SubscribeFragment extends Fragment {
                 view.findViewById(R.id.subscribe_progress).setVisibility(View.GONE);
             }
         });
-
+        ref.keepSynced(true);
     }
 
 

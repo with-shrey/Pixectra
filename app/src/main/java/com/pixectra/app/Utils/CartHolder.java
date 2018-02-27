@@ -1,19 +1,25 @@
 package com.pixectra.app.Utils;
 
 import android.graphics.Bitmap;
+import android.util.Pair;
 
+import com.pixectra.app.Models.Product;
+
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Vector;
 
 public class CartHolder {
 
     private static CartHolder sSoleInstance;
     private static HashMap<String, Vector<Bitmap>> data;
-    private static HashMap<String, HashSet<Bitmap>> cart;
+    private static HashMap<String, Product> details;
+    private static ArrayList<Pair<Product, Vector<Bitmap>>> cart;
     private static ImageChangedListner listner;
     private CartHolder(){
         data=new HashMap<>();
+        cart = new ArrayList<>();
+        details = new HashMap<>();
     }  //private constructor.
 
     public static CartHolder getInstance(){
@@ -27,6 +33,24 @@ public class CartHolder {
 
     public void setOnImageChangedListner(ImageChangedListner mlistner) {
         listner = mlistner;
+    }
+
+    public ArrayList<Pair<Product, Vector<Bitmap>>> getCart() {
+        return cart;
+    }
+
+    public void addToCart(String key) {
+        Pair<Product, Vector<Bitmap>> temp = new Pair<>(details.get(key), new Vector<>(data.get(key)));
+        cart.add(temp);
+        data.remove(key);
+    }
+
+    public Product getDetails(String key) {
+        return details.get(key);
+    }
+
+    public Product addDetails(String key, Product product) {
+        return details.put(key, product);
     }
 
     public void addImage(String key, Bitmap image) {
@@ -86,6 +110,7 @@ public class CartHolder {
             return new Vector<>();
         }
     }
+
 
     public interface ImageChangedListner {
         void onImageAdded(Bitmap img, int size);

@@ -54,6 +54,15 @@ public class DashboardFragment extends Fragment {
         CardView polaroid = view.findViewById(R.id.polaroid);
         CardView photos = view.findViewById(R.id.photos);
         CardView posters = view.findViewById(R.id.posters);
+        CardView cart = view.findViewById(R.id.shipping_cart);
+
+        cart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), Checkout.class);
+                startActivity(intent);
+            }
+        });
         images=new ArrayList<>();
         photobook.setOnClickListener(new View.OnClickListener() {
             @Override

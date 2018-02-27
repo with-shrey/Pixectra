@@ -18,9 +18,9 @@ public class AddCommonData extends AppCompatActivity {
         FirebaseDatabase database=FirebaseDatabase.getInstance();
         DatabaseReference ref=database.getReference("CommonData");
         ref.setValue(null);
-        ref.child("PhotoBooks").push().setValue(new Product("Lorem Ipsum", "https://nubuntu.org/wp-content/uploads/2015/06/flipbook-12.gif", 5, 50));
-        ref.child("PhotoBooks").push().setValue(new Product("Lorem Ipsum", "https://nubuntu.org/wp-content/uploads/2015/06/flipbook-12.gif", 10, 200));
-        ref.child("PhotoBooks").push().setValue(new Product("Lorem Ipsum", "https://nubuntu.org/wp-content/uploads/2015/06/flipbook-12.gif", 15, 400));
+        ref.child("PhotoBooks").push().setValue(new Product("Full Size", "https://nubuntu.org/wp-content/uploads/2015/06/flipbook-12.gif", 5, 50));
+        ref.child("PhotoBooks").push().setValue(new Product("Medium Size Ipsum", "https://nubuntu.org/wp-content/uploads/2015/06/flipbook-12.gif", 10, 200));
+        ref.child("PhotoBooks").push().setValue(new Product("Large Size", "https://nubuntu.org/wp-content/uploads/2015/06/flipbook-12.gif", 15, 400));
         ref.child("FlipBook").push().setValue(new Product("Size 1", "https://nubuntu.org/wp-content/uploads/2015/06/flipbook-12.gif", 1, 50));
         ref.child("FlipBook").push().setValue(new Product("Size 2", "https://nubuntu.org/wp-content/uploads/2015/06/flipbook-12.gif", 2, 100));
         ref.child("FlipBook").push().setValue(new Product("Size 3", "https://nubuntu.org/wp-content/uploads/2015/06/flipbook-12.gif", 3, 150));
