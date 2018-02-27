@@ -33,7 +33,6 @@ import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.RetryPolicy;
 import com.android.volley.ServerError;
@@ -50,15 +49,9 @@ import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.Scope;
-import com.pixectra.app.Adapter.ImageSelectAdapter;
-import com.pixectra.app.FacebookActivity;
-import com.pixectra.app.GetOAuthAccessTokenTask;
-import com.pixectra.app.Instagram.ApplicationData;
-import com.pixectra.app.Instagram.InstagramApp;
-import com.pixectra.app.Models.Images;
-import com.pixectra.app.PicasaActivity;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.pixectra.app.Adapter.ImageSelectAdapter;
 import com.pixectra.app.FacebookActivity;
 import com.pixectra.app.Instagram.ApplicationData;
@@ -78,6 +71,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -95,6 +89,7 @@ public class ImageFragment extends Fragment {
     public static final String TAG_URL = "url";
     static final int REQUEST_PERMISSION_KEY = 1;
     private static final int RC_AUTHORIZE_PICASA = 2;
+    private static final int RC_SIGN_IN = 1;
     ImageView noLoginView;
     int category;
     String key;
@@ -102,7 +97,6 @@ public class ImageFragment extends Fragment {
     List<Images> imageData;
     GraphResponse lastGraphResponse;
     LoadAlbum loadAlbumTask;
-    RequestQueue queue;
     /*
       <-- Images from device
     */
@@ -279,14 +273,14 @@ public class ImageFragment extends Fragment {
     private void fetchOauthAccessToken(final GoogleSignInAccount account)
     {
         GetOAuthAccessTokenTask getOAuthAccessTokenTask =
-                new GetOAuthAccessTokenTask(this, account);
+                new GetOAuthAccessTokenTask(account);
         getOAuthAccessTokenTask.execute();
 
     }
 
     public void getImagesData(final String accessToken)
     {
-        String url = "https://picasaweb.google.com/data/feed/api/user/default?kind=photo&max-results=100?alt=json";
+        String url = "https://picasaweb.google.com/data/feed/api/user/default?kind=photo&access=all&max-results=100&alt=json";
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null,
                 new Response.Listener<JSONObject>() {
 
@@ -301,7 +295,13 @@ public class ImageFragment extends Fragment {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                try {
+                    String errormsg = new String(error.networkResponse.data, "UTF-8");
+                    Log.v("Picassa Error", errormsg);
+                    Toast.makeText(getActivity(), errormsg, Toast.LENGTH_SHORT).show();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
             }
         }){
             @Override
@@ -315,10 +315,11 @@ public class ImageFragment extends Fragment {
             }
         };
 
-        queue.add(jsonObjectRequest);
+        VolleyQueue.getInstance(getActivity()).addToRequestQueue(jsonObjectRequest);
     }
 
     private void getPicasaImages(JSONObject response) throws JSONException {
+        Log.v("response", response.toString());
         JSONArray entries = response.getJSONArray("entry");
         int l = entries.length();
         for (int i = 0; i < l; i++) {
@@ -468,9 +469,29 @@ public class ImageFragment extends Fragment {
                     }
                 });
             }
+            if (category == 3) {
+                noLoginView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Scope SCOPE_PICASA = new Scope("https://picasaweb.google.com/data/");
+                        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                .requestScopes(SCOPE_PICASA)
+                                .requestIdToken(getString(R.string.google_token))
+                                .requestEmail()
+                                .build();
+
+                        googleSignIn(GoogleSignIn.getClient(getActivity(), gso));
+                    }
+                });
+
+            }
         }
     }
 
+    void googleSignIn(GoogleSignInClient mGoogleSignInClient) {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
     /**
      * Set Login Button Image As Per Fragment
      */
@@ -517,13 +538,23 @@ public class ImageFragment extends Fragment {
             if (requestCode == 3) {
                 checkAndLoadData();
             }
-        }
 
-        if (requestCode == RC_AUTHORIZE_PICASA) {
-            GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getActivity());
-            if(account == null)
-                return;
-            fetchOauthAccessToken(account);
+            if (requestCode == RC_SIGN_IN) {
+                GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getActivity());
+                if (account == null)
+                    return;
+                userLoggedIn(true);
+                if (checkForPicasaAuthPermission())
+                    fetchOauthAccessToken(account);
+            }
+            if (requestCode == RC_AUTHORIZE_PICASA) {
+                GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getActivity());
+                userLoggedIn(true);
+                if (account == null)
+                    return;
+                if (checkForPicasaAuthPermission())
+                    fetchOauthAccessToken(account);
+            }
         }
     }
 
@@ -606,7 +637,7 @@ public class ImageFragment extends Fragment {
     }
 
     //<---Methods and classes for first fragment------------------------------START-----------------
-    class LoadAlbum extends AsyncTask<String, Void, String> {
+    private class LoadAlbum extends AsyncTask<String, Void, String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -714,7 +745,8 @@ public class ImageFragment extends Fragment {
                         bundle.putString("key", key);
                         bundle.putInt("pics", pics);
                         fragment.setArguments(bundle);
-                        FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+                        FragmentTransaction fragmentTransaction;
+                        fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
                         fragmentTransaction.setCustomAnimations(R.anim.slide_in_left,
                                 R.anim.slide_out_left, R.anim.slide_in_left,
                                 R.anim.slide_out_left
@@ -729,6 +761,38 @@ public class ImageFragment extends Fragment {
                 convertView.getLayoutParams().height = w;
 
             }
+        }
+    }
+
+    public class GetOAuthAccessTokenTask extends AsyncTask<Void, Void, Void> {
+
+        private GoogleSignInAccount account;
+        private String accessToken;
+
+        public GetOAuthAccessTokenTask(GoogleSignInAccount account) {
+            this.account = account;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if (accessToken != null)
+                getImagesData(accessToken);
+            else
+                Log.e("Error Retrieving token", "Oauth token was not retrieved");
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                String scope = "oauth2:https://picasaweb.google.com/data/";
+                accessToken = GoogleAuthUtil.getToken(getApplicationContext(), account.getAccount(), scope, new Bundle());
+                Log.d("accessToken", accessToken);//accessToken:ya29.Gl...
+
+            } catch (IOException | GoogleAuthException e) {
+                e.printStackTrace();
+            }
+            return null;
         }
     }
 }

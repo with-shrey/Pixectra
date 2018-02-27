@@ -19,6 +19,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.pixectra.app.Instagram.ApplicationData;
@@ -58,7 +59,10 @@ CardView insta;
             google.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    Scope SCOPE_PICASA = new Scope("https://picasaweb.google.com/data/");
+
                     GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestScopes(SCOPE_PICASA)
                             .requestIdToken(getString(R.string.google_token))
                             .requestEmail()
                             .build();
@@ -76,7 +80,9 @@ CardView insta;
             google.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    Scope SCOPE_PICASA = new Scope("https://picasaweb.google.com/data/");
                     GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestScopes(SCOPE_PICASA)
                             .requestIdToken(getString(R.string.google_token))
                             .requestEmail()
                             .build();

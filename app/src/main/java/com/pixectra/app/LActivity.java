@@ -22,6 +22,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -63,7 +64,9 @@ DatabaseReference ref;
         imageView = findViewById(R.id.google_login_button);
         facebookimageview1 = findViewById(R.id.facebook_login_button);
         progressBar = findViewById(R.id.simpleProgressBar);
+        Scope SCOPE_PICASA = new Scope("https://picasaweb.google.com/data/");
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestScopes(SCOPE_PICASA)
                 .requestIdToken(getString(R.string.google_token))
                 .requestEmail()
                 .build();
