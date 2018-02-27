@@ -208,7 +208,7 @@ DatabaseReference ref;
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
-        if (resultCode == RESULT_OK && requestCode == RC_SIGN_IN) {
+        if (requestCode == RC_SIGN_IN) {
             // The Task returned from this call is always completed, no need to attach
             // a listener..
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
