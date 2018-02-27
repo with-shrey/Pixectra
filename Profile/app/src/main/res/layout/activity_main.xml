@@ -5,7 +5,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context="com.example.user.pixectra_userprofile.MainActivity">
+    tools:imageFragment="com.example.user.pixectra_userprofile.MainActivity">
 
     <FrameLayout
         android:id="@+id/fragment_user_profile"
