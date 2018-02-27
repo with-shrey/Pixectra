@@ -14,8 +14,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 
 @SuppressWarnings("deprecation")
 public class MainActivity extends AppCompatActivity implements UserProfileFragment.OnFragmentInteractionListener {
@@ -43,14 +46,32 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
 
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
-        if (mFirebaseUser == null) {
+        //rewards to refers
+        FirebaseDynamicLinks.getInstance()
+                .getDynamicLink(getIntent())
+                .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
+                    @Override
+                    public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
+                        // Get deep link from result (may be null if no link is found)
+                        Uri deepLink = null;
+                        if (pendingDynamicLinkData != null) {
+                            deepLink = pendingDynamicLinkData.getLink();
+                            String referrerUid = deepLink.getQueryParameter("invitedby");
+                            //rewarded gives to inviter
+                            Toast.makeText(MainActivity.this,referrerUid,Toast.LENGTH_SHORT);
+                        }
+                        else
+                            Toast.makeText(MainActivity.this,"null",Toast.LENGTH_SHORT);
+                    }
+                });
+         if (mFirebaseUser == null) {
             // Not signed in, launch the Sign In activity
             startActivity(new Intent(this, LActivity.class));
             finish();
             return;
         } else {
-            Toast.makeText(getApplicationContext(), "Signed in", Toast.LENGTH_SHORT).show();
-        }
+             Toast.makeText(getApplicationContext(), "Signed in", Toast.LENGTH_SHORT).show();
+         }
         viewPager = findViewById(R.id.main_viewpager);
         viewPager.setOffscreenPageLimit(3);
         viewPager.setAdapter(new ViewPagerAdapter(getSupportFragmentManager()));
@@ -146,5 +167,6 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
             return 3;
         }
     }
+
 
 }

@@ -59,6 +59,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "802114397478-0s7thkpnmh5tdmffpiqs62ch76s7f4h3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pixectra.app",
+            "certificate_hash": "5640f15d9dbf0e499ea21e0b57ef1c5660aa8052"
+          }
+        },
+        {
           "client_id": "802114397478-fcurched8mlvib0ustsa40ne93m7umi7.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
