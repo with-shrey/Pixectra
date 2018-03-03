@@ -12,35 +12,31 @@ public class Product {
     private String type;
     private String title;
     private String url;
-    private int pics;
+    private int maxPics;
+    private int minPics;
     private int price;
+    private String priceDesc;
 
     public Product() {
         id = type + "~" + title;
     }
 
-    public Product(String title, String url, int pics, int price) {
+    public Product(String type, String title, String url, int maxPics, int minPics, int price, String priceDesc) {
+        this.type = type;
         this.title = title;
         this.url = url;
-        this.pics = pics;
+        this.maxPics = maxPics;
+        this.minPics = minPics;
         this.price = price;
-
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
+        this.priceDesc = priceDesc;
     }
 
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public String getType() {
+        return type;
     }
 
     public String getTitle() {
@@ -51,11 +47,19 @@ public class Product {
         return url;
     }
 
-    public int getPics() {
-        return pics;
+    public int getMaxPics() {
+        return maxPics;
+    }
+
+    public int getMinPics() {
+        return minPics;
     }
 
     public int getPrice() {
         return price;
+    }
+
+    public String getPriceDesc() {
+        return priceDesc;
     }
 }

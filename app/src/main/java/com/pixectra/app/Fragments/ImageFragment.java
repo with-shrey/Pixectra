@@ -102,7 +102,7 @@ public class ImageFragment extends Fragment {
     */
     AlbumAdapter albumAdapter;
     ArrayList<HashMap<String, String>> albumList = new ArrayList<HashMap<String, String>>();
-    int pics;
+    int maxPics, minPics;
     private RecyclerView recyclerView;
     private ImageSelectAdapter adapter;
     public ImageFragment() {
@@ -126,14 +126,15 @@ public class ImageFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         key = getActivity().getIntent().getStringExtra("key");
-        pics = getActivity().getIntent().getIntExtra("pics", 0);
+        maxPics = getActivity().getIntent().getIntExtra("maxPics", 0);
+        minPics = getActivity().getIntent().getIntExtra("minPics", 0);
         View layout = inflater.inflate(R.layout.image_select_fragment, null);
         imageData = new ArrayList<>();
         recyclerView = layout.findViewById(R.id.Imagelist);
         noLoginView = layout.findViewById(R.id.no_login_view);
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
         albumAdapter = new AlbumAdapter(getActivity(), albumList);
-        adapter = new ImageSelectAdapter(getActivity(), key, getActivity().getIntent().getIntExtra("pics", 0), imageData);
+        adapter = new ImageSelectAdapter(getActivity(), key, getActivity().getIntent().getIntExtra("maxPics", 0), imageData);
         //imagegrid = layout.findViewById(R.id.PhoneImageGrid);
           // selectBtn = layout.findViewById(R.id.selectBtn);
 
@@ -743,7 +744,7 @@ public class ImageFragment extends Fragment {
                         Bundle bundle = new Bundle();
                         bundle.putString("name", albumList.get(+getAdapterPosition()).get(Function.KEY_ALBUM));
                         bundle.putString("key", key);
-                        bundle.putInt("pics", pics);
+                        bundle.putInt("pics", maxPics);
                         fragment.setArguments(bundle);
                         FragmentTransaction fragmentTransaction;
                         fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
