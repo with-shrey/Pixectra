@@ -74,8 +74,6 @@ public class SubscribeFragment extends Fragment {
                 data.clear();
                 for (DataSnapshot temp:dataSnapshot.getChildren()){
                     data.add(temp.getValue(Product.class));
-                    Product product = temp.getValue(Product.class);
-                    data.add(product);
                 }
                 view.findViewById(R.id.subscribe_progress).setVisibility(View.GONE);
                 mposterRecyclerViewAdapter.notifyDataSetChanged();

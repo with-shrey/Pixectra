@@ -744,7 +744,7 @@ public class ImageFragment extends Fragment {
                         Bundle bundle = new Bundle();
                         bundle.putString("name", albumList.get(+getAdapterPosition()).get(Function.KEY_ALBUM));
                         bundle.putString("key", key);
-                        bundle.putInt("pics", maxPics);
+                        bundle.putInt("maxPics", maxPics);
                         fragment.setArguments(bundle);
                         FragmentTransaction fragmentTransaction;
                         fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();

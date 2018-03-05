@@ -180,7 +180,7 @@ public class AlbumActivity extends Fragment {
 
             @Override
             public void onClick(View view) {
-                if (CartHolder.getInstance().getSize(getActivity().getIntent().getStringExtra("key")) < getActivity().getIntent().getIntExtra("pics", 0)) {
+                if (CartHolder.getInstance().getSize(getArguments().getString("key", "")) < getArguments().getInt("maxPics", 0)) {
                     if (overlay.getVisibility() == View.INVISIBLE) {
                         loader.setVisibility(View.VISIBLE);
                         try {

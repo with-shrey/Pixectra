@@ -16,6 +16,9 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.pixectra.app.Models.Product;
 
 @SuppressWarnings("deprecation")
 public class MainActivity extends AppCompatActivity implements UserProfileFragment.OnFragmentInteractionListener {
@@ -30,6 +33,29 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
 
     BottomNavigationView bottomNavigationView;
 
+    void add() {
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        DatabaseReference ref = db.getReference("CommonData");
+
+        ref.child("PhotoBooks").setValue(null);
+        ref.child("PhotoBooks").push().setValue(new Product("PhotoBooks", "Size1", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 5, 2, 100, "Book"));
+        ref.child("FlipBook").setValue(null);
+
+        ref.child("FlipBook").push().setValue(new Product("FlipBook", "Size1", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 5, 2, 100, "Book"));
+        ref.child("Photos").setValue(null);
+
+        ref.child("Photos").push().setValue(new Product("Photos", "Size1", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 5, 2, 100, "Book"));
+        ref.child("Polaroids").setValue(null);
+
+        ref.child("Polaroids").push().setValue(new Product("Polaroids", "Size1", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 5, 2, 100, "Book"));
+        ref.child("PostCard").setValue(null);
+
+        ref.child("PostCard").push().setValue(new Product("PostCard", "Size1", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 5, 2, 100, "Book"));
+        ref.child("Posters").setValue(null);
+
+        ref.child("Posters").push().setValue(new Product("Posters", "Size1", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 5, 2, 100, "Book"));
+
+    }
 
 
     @Override

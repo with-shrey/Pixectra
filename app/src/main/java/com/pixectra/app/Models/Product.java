@@ -1,13 +1,10 @@
 package com.pixectra.app.Models;
 
-import com.google.firebase.database.Exclude;
-
 /**
  * Created by XCODER on 2/10/2018.
  */
 
 public class Product {
-    @Exclude
     private String id;
     private String type;
     private String title;
@@ -18,7 +15,7 @@ public class Product {
     private String priceDesc;
 
     public Product() {
-        id = type + "~" + title;
+
     }
 
     public Product(String type, String title, String url, int maxPics, int minPics, int price, String priceDesc) {
@@ -29,6 +26,7 @@ public class Product {
         this.minPics = minPics;
         this.price = price;
         this.priceDesc = priceDesc;
+        id = type + "~" + title;
     }
 
     public String getId() {

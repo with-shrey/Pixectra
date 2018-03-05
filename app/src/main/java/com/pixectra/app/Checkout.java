@@ -1,20 +1,27 @@
 package com.pixectra.app;
 
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.pixectra.app.Adapter.CartImagesAdapter;
+import com.pixectra.app.Models.CheckoutData;
 import com.pixectra.app.Models.Product;
 import com.pixectra.app.Utils.CartHolder;
+import com.pixectra.app.Utils.ImageController;
 
 import java.util.Locale;
 
@@ -40,6 +47,12 @@ public class Checkout extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new CartAdapter();
         recyclerView.setAdapter(adapter);
+        findViewById(R.id.cart_proceed).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onplaceorder();
+            }
+        });
         toggleVisibility();
     }
 
@@ -51,6 +64,40 @@ public class Checkout extends AppCompatActivity {
             recyclerView.setVisibility(View.GONE);
             empty.setVisibility(View.VISIBLE);
         }
+    }
+
+    public void onplaceorder() {
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(Checkout.this);
+        View parentview = getLayoutInflater().inflate(R.layout.bottomsheet, null);
+        bottomSheetDialog.setContentView(parentview);
+        final BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from((View) parentview.getParent());
+        bottomSheetBehavior.setPeekHeight(
+                (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 400, getResources().getDisplayMetrics()));
+        bottomSheetDialog.show();
+        final EditText editText = parentview.findViewById(R.id.couponedittext);
+        final Button button = parentview.findViewById(R.id.applycoupn);
+        TextView carttotal = parentview.findViewById(R.id.carttotal);
+        TextView cartDiscount = parentview.findViewById(R.id.cartdiscount);
+        TextView stategst = parentview.findViewById(R.id.stategst);
+        TextView centralgst = parentview.findViewById(R.id.centralgst);
+        TextView subtotal = parentview.findViewById(R.id.subtotal);
+        TextView totalpayable = parentview.findViewById(R.id.totalpayable);
+        Button cancel = parentview.findViewById(R.id.bottomsheet_cancel);
+        Button pay = parentview.findViewById(R.id.bottomsheet_pay);
+
+        pay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ImageController.placeOrder(new CheckoutData());
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            }
+        });
     }
 
     class CartAdapter extends RecyclerView.Adapter<CartAdapter.VH> {
