@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -60,8 +59,6 @@ ArrayList<Product> data;
                 data.clear();
                 for (DataSnapshot temp:dataSnapshot.getChildren()){
                     Product product = temp.getValue(Product.class);
-                    product.setId(TextUtils.join("~", new String[]{activityTitles[type - 1], product.getTitle()}));
-                    product.setType(activityTitles[type - 1]);
                     data.add(product);
                 }
                 findViewById(R.id.poster_acivity_progress).setVisibility(View.GONE);

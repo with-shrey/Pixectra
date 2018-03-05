@@ -43,14 +43,14 @@ TabLayout tabLayout;
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (CartHolder.getInstance().getSize(getIntent().getStringExtra("key")) == getIntent().getIntExtra("pics", 0)) {
+                if (CartHolder.getInstance().getSize(getIntent().getStringExtra("key")) >= getIntent().getIntExtra("minPics", 0)) {
                     CartHolder.getInstance().addToCart(getIntent().getStringExtra("key"));
                     Intent intent = new Intent(ImageSelectActivity.this, Checkout.class);
                     startActivity(intent);
                     finish();
                 } else {
                     Toast.makeText(ImageSelectActivity.this, "Please Select "
-                                    + (getIntent().getIntExtra("pics", 0)
+                                    + (getIntent().getIntExtra("minPics", 0)
                                     - CartHolder.getInstance().getSize(getIntent().getStringExtra("key")))
                                     + " More Images"
                             , Toast.LENGTH_SHORT).show();
@@ -112,7 +112,7 @@ TabLayout tabLayout;
 
     void setToolbarText(int count) {
         if (getSupportActionBar() != null)
-            getSupportActionBar().setTitle("Select Images (" + count + "/" + getIntent().getIntExtra("pics", 0) + ")");
+            getSupportActionBar().setTitle("Select Images (" + count + "/" + getIntent().getIntExtra("minPics", 0) + "-" + getIntent().getIntExtra("maxPics", 0) + ")");
     }
     void setTabIcons(TabLayout tabs){
         int[] icons = {R.drawable.device, R.drawable.facebook, R.drawable.instagram, R.drawable.google_photos};
