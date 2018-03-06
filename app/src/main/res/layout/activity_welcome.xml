@@ -36,7 +36,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:background="@color/userProfileCardViewBlue"
+        android:background="@drawable/ripple_effect"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
         android:text="@string/next"
         android:textColor="@color/black" />
 
@@ -46,7 +48,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:background="@null"
+        android:background="@drawable/ripple_effect"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
         android:text="@string/skip"
         android:textColor="@color/black" />
 </RelativeLayout>
