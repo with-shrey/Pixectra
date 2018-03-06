@@ -26,7 +26,7 @@ import java.util.Vector;
 public class ImageController {
 
     public static void placeOrder(CheckoutData data) {
-        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy~HH-mm-ss~", Locale.getDefault());
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd~HH-mm-ss~", Locale.getDefault());
         String folder = "Present/" + format.format(new Date());
         Random random = new Random();
         folder = folder + random.nextInt(1000) + 1;
