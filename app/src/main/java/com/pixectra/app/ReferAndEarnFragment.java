@@ -35,7 +35,7 @@ public class ReferAndEarnFragment extends Fragment {
             public void onClick(View view) {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 String uid = user.getUid();
-                String link = "https://drive.google.com/open?id=1XUPfiBGCSydmgwEE7E-IRatAeGVuMb&invited=" + uid;
+                String link = "pixectra.com" + uid;
                 FirebaseDynamicLinks.getInstance().createDynamicLink()
                         .setLink(Uri.parse(link))
                         .setDynamicLinkDomain("v2xqe.app.goo.gl")
