@@ -92,6 +92,10 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
                             Toast.makeText(MainActivity.this, deepLink.toString(), Toast.LENGTH_SHORT).show();
 
                             String referrerUid = deepLink.getQueryParameter("user");
+                            if (referrerUid.equals("universal")) {
+                                String code = deepLink.getQueryParameter("coupon");
+                                Toast.makeText(MainActivity.this, code, Toast.LENGTH_SHORT).show();
+                            }
                             //rewarded gives to inviter
                             Toast.makeText(MainActivity.this, referrerUid, Toast.LENGTH_SHORT).show();
                         }

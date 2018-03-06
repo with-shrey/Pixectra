@@ -37,7 +37,7 @@ public class ReferAndEarnFragment extends Fragment {
                 Toast.makeText(getActivity(), "Clicked", Toast.LENGTH_SHORT).show();
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 String uid = user.getUid();
-                String link = "http://pixectra.com/referer?user=" + uid;
+                String link = "http://pixectra.com?user=" + "universal&coupon=DISC10";
                 FirebaseDynamicLinks.getInstance().createDynamicLink()
                         .setLink(Uri.parse(link))
                         .setDynamicLinkDomain("v2xqe.app.goo.gl")
