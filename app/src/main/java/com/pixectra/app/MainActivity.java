@@ -14,10 +14,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.pixectra.app.Models.Product;
 
 @SuppressWarnings("deprecation")
@@ -76,6 +79,24 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
         } else {
             Toast.makeText(getApplicationContext(), "Signed in", Toast.LENGTH_SHORT).show();
         }
+        //rewards to refers
+        FirebaseDynamicLinks.getInstance()
+                .getDynamicLink(getIntent())
+                .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
+                    @Override
+                    public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
+                        // Get deep link from result (may be null if no link is found)
+                        Uri deepLink = null;
+                        if (pendingDynamicLinkData != null) {
+                            deepLink = pendingDynamicLinkData.getLink();
+                            Toast.makeText(MainActivity.this, deepLink.toString(), Toast.LENGTH_SHORT).show();
+
+                            String referrerUid = deepLink.getQueryParameter("user");
+                            //rewarded gives to inviter
+                            Toast.makeText(MainActivity.this, referrerUid, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
         viewPager = findViewById(R.id.main_viewpager);
         viewPager.setOffscreenPageLimit(3);
         viewPager.setAdapter(new ViewPagerAdapter(getSupportFragmentManager()));
