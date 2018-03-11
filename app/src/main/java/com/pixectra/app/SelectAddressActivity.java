@@ -49,7 +49,7 @@ public class SelectAddressActivity extends AppCompatActivity {
             }
         });
         list = new ArrayList<>();
-        adap = new ShippingAddressAdapter(this,list);
+        adap = new ShippingAddressAdapter(this,list,getIntent());
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -102,12 +102,12 @@ public class SelectAddressActivity extends AppCompatActivity {
             ref.child(data.getStringExtra("key")).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    for (DataSnapshot data : dataSnapshot.getChildren()) {
-                        Address address = data.getValue(Address.class);
+
+                        Address address = dataSnapshot.getValue(Address.class);
                         assert address != null;
-                        address.setKey(data.getKey());
+                        address.setKey(dataSnapshot.getKey());
                         list.add(address);
-                    }
+
                     //findViewById(R.id.progress_shipping).setVisibility(View.GONE);
                     adap.notifyDataSetChanged();
                 }

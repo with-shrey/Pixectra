@@ -5,12 +5,13 @@ package com.pixectra.app.Models;
  */
 
 public class Price {
-    int base, cgst, sgst, discount, total;
+    double base, cgst, sgst,cess,discount, total;
 
-    public Price(int base, int cgst, int sgst, int discount, int total) {
+    public Price(double base, double cgst, double sgst, double cess, double discount, double total) {
         this.base = base;
         this.cgst = cgst;
         this.sgst = sgst;
+        this.cess = cess;
         this.discount = discount;
         this.total = total;
     }
@@ -19,34 +20,39 @@ public class Price {
 
     }
 
-    public int getBase() {
+    public double getCess() {
+        return cess;
+    }
+
+    public double getBase() {
         return base;
     }
 
-    public int getCgst() {
+    public double getCgst() {
         return cgst;
     }
 
-    public int getSgst() {
+    public double getSgst() {
         return sgst;
     }
 
-    public int getDiscount() {
+    public double getDiscount() {
         return discount;
     }
 
-    public int getTotal() {
+    public double getTotal() {
         return total;
     }
 
     @Override
     public String toString() {
-        return "Price{" +
-                "base=" + base +
-                ", cgst=" + cgst +
-                ", sgst=" + sgst +
-                ", discount=" + discount +
-                ", total=" + total +
+        return "\n"+"\n"+"Price{" +"\n"+
+                "base=" + base +"\n"+
+                ", cgst=" + cgst +"\n"+
+                ", sgst=" + sgst +"\n"+
+                ", cess=" + cess +"\n"+
+                ", discount=" + discount +"\n"+
+                ", total=" + total +"\n"+
                 '}';
     }
 }

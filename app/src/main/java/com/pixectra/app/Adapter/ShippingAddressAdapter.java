@@ -1,5 +1,6 @@
 package com.pixectra.app.Adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.pixectra.app.R;
 import com.pixectra.app.Models.Address;
+import com.pixectra.app.SelectAddressActivity;
 import com.pixectra.app.ShippingAddressForm;
 import com.pixectra.app.Utils.SessionHelper;
 
@@ -27,10 +29,11 @@ import java.util.ArrayList;
 public class ShippingAddressAdapter extends RecyclerView.Adapter<ShippingAddressAdapter.viewHolder> {
     ArrayList arrayList;
     Context c;
-
-    public ShippingAddressAdapter(Context context,ArrayList list) {
+Intent intent;
+    public ShippingAddressAdapter(Context context,ArrayList list,Intent intent) {
        this.arrayList=list;
        c=context;
+       this.intent=intent;
     }
 
     public static class viewHolder extends RecyclerView.ViewHolder{
@@ -98,7 +101,15 @@ public class ShippingAddressAdapter extends RecyclerView.Adapter<ShippingAddress
         cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //add code to set shipping address
+               if(intent.getBooleanExtra("select",false)){
+                   Intent intent1=new Intent();
+                   Bundle b=new Bundle();
+                   b.putSerializable("address",add);
+                   intent1.putExtras(b);
+                   ((SelectAddressActivity)c).setResult(Activity.RESULT_OK,intent1);
+                   ((SelectAddressActivity)c).finish();
+
+               }
                 Toast.makeText(holder.context,"click on card",Toast.LENGTH_SHORT).show();
             }
         });
