@@ -84,7 +84,7 @@ public class SubscribeFragment extends Fragment {
                 view.findViewById(R.id.subscribe_progress).setVisibility(View.GONE);
             }
         });
-
+        ref.keepSynced(true);
     }
 
 

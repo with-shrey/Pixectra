@@ -90,8 +90,32 @@ public class SelectAddressActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent=new Intent(SelectAddressActivity.this,ShippingAddressForm.class);
                 intent.putExtra("status",1);//1 indicates ShippingAddressForm calls from Add new Address
-                startActivity(intent);
+                startActivityForResult(intent,1);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode ==RESULT_OK && requestCode == 1){
+            ref.child(data.getStringExtra("key")).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot data : dataSnapshot.getChildren()) {
+                        Address address = data.getValue(Address.class);
+                        assert address != null;
+                        address.setKey(data.getKey());
+                        list.add(address);
+                    }
+                    //findViewById(R.id.progress_shipping).setVisibility(View.GONE);
+                    adap.notifyDataSetChanged();
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                   // findViewById(R.id.progress_shipping).setVisibility(View.GONE);
+                }
+            });
+        }
     }
 }

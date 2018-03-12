@@ -4,17 +4,18 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:text="Refer and Earn"
-        android:textStyle="normal"
-        android:textSize="32sp"
+        android:id="@+id/refer_earn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_margin="32dp"
         android:background="@color/colorPrimaryDark"
-        android:layout_gravity="center"
-        android:padding="32dp"
-        android:textColor="@android:color/white"
         android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:padding="32dp"
+        android:text="Refer and Earn"
+        android:textColor="@android:color/white"
+        android:textSize="32sp"
+        android:textStyle="normal" />
 
 
 </LinearLayout>

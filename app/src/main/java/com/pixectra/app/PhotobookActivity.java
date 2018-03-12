@@ -2,6 +2,7 @@ package com.pixectra.app;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -10,11 +11,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.widget.TextView;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.widget.TextView;
 
 import com.pixectra.app.Fragments.OnetimeFragment;
 import com.pixectra.app.Fragments.SubscribeFragment;
@@ -22,8 +21,8 @@ import com.pixectra.app.Fragments.SubscribeFragment;
 public class PhotobookActivity extends AppCompatActivity implements ActionBar.TabListener {
 
 
-    ViewPager viewPager = null;
     public String tabTitles[] = {"Subscribe", "One time"};
+    ViewPager viewPager = null;
     TextView title;
 
 
@@ -40,7 +39,6 @@ public class PhotobookActivity extends AppCompatActivity implements ActionBar.Ta
         viewPager = findViewById(R.id.poster_pager);
         FragmentManager fragmentManager = getSupportFragmentManager();
         viewPager.setAdapter(new MyAdpater(fragmentManager));
-
         //---------setup dummy title----
         title.setText("Photo Book");
 

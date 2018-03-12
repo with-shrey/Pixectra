@@ -9,26 +9,26 @@
         android:id="@+id/home_viewpager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:layout_weight="0.5">
+        android:layout_weight="0.5"
+        android:clipToPadding="false">
     </android.support.v4.view.ViewPager>
 
     <me.relex.circleindicator.CircleIndicator
         android:id="@+id/viewpager_indicator"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.03"
         android:layout_marginBottom="8dp"
+        android:layout_weight="0.03"
         app:ci_drawable="@drawable/indicator_selected"
         app:ci_drawable_unselected="@drawable/indicator_unselected"/>
 
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginStart="4dp"
         android:layout_weight="0.7"
         android:columnCount="3"
-        android:layout_marginStart="4dp"
-        android:layout_marginEnd="4dp"
         android:columnOrderPreserved="false"
         android:rowCount="2">
 
@@ -318,8 +318,9 @@
                     android:id="@+id/shipping_cart_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_above="@id/shipping_cart_desc"
-                    android:layout_centerVertical="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
                     android:text="Shipping cart"
                     android:textColor="@android:color/black"
                     android:textSize="18sp"
@@ -329,8 +330,10 @@
                     android:id="@+id/shipping_cart_desc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
-                    android:text="@string/lorem"
+                    android:text="Review The Order And Proceed To Payment"
                     android:textColor="@color/colorGray"
                     android:textSize="16sp"
                     android:textStyle="normal" />

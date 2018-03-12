@@ -72,7 +72,8 @@ public class OnetimeFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 data.clear();
                 for (DataSnapshot temp:dataSnapshot.getChildren()){
-                    data.add(temp.getValue(Product.class));
+                    Product product = temp.getValue(Product.class);
+                    data.add(product);
                 }
                 view.findViewById(R.id.onetime_progress).setVisibility(View.GONE);
                 mposterRecyclerViewAdapter.notifyDataSetChanged();
@@ -83,6 +84,7 @@ public class OnetimeFragment extends Fragment {
                 view.findViewById(R.id.onetime_progress).setVisibility(View.GONE);
             }
         });
+        ref.keepSynced(true);
     }
 
 

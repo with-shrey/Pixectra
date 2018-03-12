@@ -24,8 +24,8 @@ public class InstagramDialog extends Dialog {
 	static final float[] DIMENSIONS_LANDSCAPE = { 460, 260 };
 	static final float[] DIMENSIONS_PORTRAIT = { 280, 420 };
 	static final FrameLayout.LayoutParams FILL = new FrameLayout.LayoutParams(
-			ViewGroup.LayoutParams.FILL_PARENT,
-			ViewGroup.LayoutParams.FILL_PARENT);
+			ViewGroup.LayoutParams.MATCH_PARENT,
+			ViewGroup.LayoutParams.MATCH_PARENT);
 	static final int MARGIN = 4;
 	static final int PADDING = 2;
 
@@ -49,7 +49,6 @@ public class InstagramDialog extends Dialog {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		mSpinner = new ProgressDialog(getContext());
 		mSpinner.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		mSpinner.setMessage("Loading...");

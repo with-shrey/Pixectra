@@ -5,27 +5,36 @@ package com.pixectra.app.Models;
  */
 
 public class Product {
-    int id;
-    String title;
-    String url;
-    int pics;
-    int price;
-    String priceText;
+    private String id;
+    private String type;
+    private String title;
+    private String url;
+    private int maxPics;
+    private int minPics;
+    private int price;
+    private String priceDesc;
 
     public Product() {
+
     }
 
-    public Product(int id, String title, String url, int pics, int price, String priceText) {
-        this.id = id;
+    public Product(String type, String title, String url, int maxPics, int minPics, int price, String priceDesc) {
+        this.type = type;
         this.title = title;
         this.url = url;
-        this.pics = pics;
+        this.maxPics = maxPics;
+        this.minPics = minPics;
         this.price = price;
-        this.priceText = priceText;
+        this.priceDesc = priceDesc;
+        id = type + "~" + title;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public String getTitle() {
@@ -36,15 +45,19 @@ public class Product {
         return url;
     }
 
-    public int getPics() {
-        return pics;
+    public int getMaxPics() {
+        return maxPics;
+    }
+
+    public int getMinPics() {
+        return minPics;
     }
 
     public int getPrice() {
         return price;
     }
 
-    public String getPriceText() {
-        return priceText;
+    public String getPriceDesc() {
+        return priceDesc;
     }
 }

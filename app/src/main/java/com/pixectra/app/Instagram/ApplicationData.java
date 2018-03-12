@@ -1,7 +1,7 @@
 package com.pixectra.app.Instagram;
 
 public class ApplicationData {
-	public static final String CLIENT_ID = "3e9606d5d7924267a81ac8a760fb85fc";
-	public static final String CLIENT_SECRET = "b6649a0e82654faeaf9866f3d3c0de67";
+	public static final String CLIENT_ID = "c2367d6a9d814f1aa047136eaee3e5d9";
+	public static final String CLIENT_SECRET = "1b608dad8aeb4be599852d27dc3f5a40";
 	public static final String CALLBACK_URL = "http://www.pixectra.com";
 }

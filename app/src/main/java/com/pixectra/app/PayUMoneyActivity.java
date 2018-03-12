@@ -16,13 +16,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.webkit.SslErrorHandler;
-import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
-
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -53,6 +51,11 @@ public class PayUMoneyActivity extends AppCompatActivity {
      * To Request for Updating Payment Status if Payment Successfully Done
      */
     int mId; //Getting from Previous Activity
+    boolean isFromOrder;
+    /**
+     * Handler
+     */
+    Handler mHandler = new Handler();
     /**
      * Required Fields
      */
@@ -69,8 +72,6 @@ public class PayUMoneyActivity extends AppCompatActivity {
     private String mMerchantKey = "SfGbwueK";
     private String mSalt = "Qu0R2mu7mW";
     private String mBaseURL = "https://secure.payu.in";
-
-
     private String mAction = ""; // For Final URL
     private String mTXNId; // This will create below randomly
     private String mHash; // This will create below randomly
@@ -80,16 +81,9 @@ public class PayUMoneyActivity extends AppCompatActivity {
     private double mAmount; // From Previous Activity
     private String mPhone; // From Previous Activity
     private String mServiceProvider = "payu_paisa";
-
     private String mSuccessUrl = "www.google.com";
     private String mFailedUrl = "www.facebook.com";
-
     private ProgressDialog mProgress;
-    boolean isFromOrder;
-    /**
-     * Handler
-     */
-    Handler mHandler = new Handler();
 
     /**
      * @param savedInstanceState
@@ -118,7 +112,7 @@ public class PayUMoneyActivity extends AppCompatActivity {
         /**
          * Creating WebView
          */
-        webView = (WebView) findViewById(R.id.payumoney_webview);
+        webView = findViewById(R.id.payumoney_webview);
 
         /**
          * Context Variable
@@ -128,7 +122,7 @@ public class PayUMoneyActivity extends AppCompatActivity {
         /**
          * Actionbar Settings
          */
-        android.support.v7.widget.Toolbar toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.payumoney_toolbar);
+        android.support.v7.widget.Toolbar toolbar = findViewById(R.id.payumoney_toolbar);
         setSupportActionBar(toolbar);
 
         ActionBar ab = getSupportActionBar();
@@ -144,7 +138,7 @@ public class PayUMoneyActivity extends AppCompatActivity {
 
         if (bundle != null) {
 
-           // mProgress.show();
+            // mProgress.show();
             /*remove deummy params once ready
              */
 
@@ -205,7 +199,7 @@ public class PayUMoneyActivity extends AppCompatActivity {
                 @Override
                 public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                     super.onReceivedError(view, request, error);
-                   mProgress.dismiss();
+                    mProgress.dismiss();
                     Toast.makeText(activity, "Oh no! " + error, Toast.LENGTH_SHORT).show();
                 }
 
@@ -226,7 +220,6 @@ public class PayUMoneyActivity extends AppCompatActivity {
 
                 @Override
                 public void onPageFinished(WebView view, String url) {
-
 
 
                     if (url.equals(mSuccessUrl)) {

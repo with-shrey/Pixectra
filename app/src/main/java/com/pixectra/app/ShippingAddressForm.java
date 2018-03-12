@@ -54,7 +54,7 @@ public class ShippingAddressForm extends AppCompatActivity {
         Tcity=(EditText)findViewById(R.id.shipi_city);
         Toptional=(EditText)findViewById(R.id.shipi_optional);
 
-        Intent intent = this.getIntent();
+        final Intent intent = this.getIntent();
         int comefrom=intent.getIntExtra("status",1);
         if(comefrom==0)
         {
@@ -116,10 +116,16 @@ public class ShippingAddressForm extends AppCompatActivity {
                 Address add=new Address(name,ward,street,pincode,city,state,mobile,optional);//pojo class,have to save it on firebase
                 if (getIntent().getIntExtra("status",-1) == 0){
                     ref.child(adress.getKey()).setValue(add);
+                    finish();
                 }else {
-                    ref.push().setValue(add);
+                    String key=ref.push().getKey();
+                    ref.child(key).setValue(add);
+                    Intent intent1=new Intent();
+                    intent1.putExtra("key",key);
+                    setResult(RESULT_OK);
+                    finish();
                 }
-                finish();
+
             }
         });
         //cancel button

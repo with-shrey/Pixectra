@@ -5,22 +5,39 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 
+import com.crashlytics.android.Crashlytics;
+import com.google.firebase.database.FirebaseDatabase;
+
+import io.fabric.sdk.android.Fabric;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+
 @SuppressWarnings("deprecation")
 public class SplashScreenActivity extends AppCompatActivity {
 
-    private ImageView splashimage;
     Thread mythread;
+    private ImageView splashimage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash_screen);
-        splashimage = (ImageView) findViewById(R.id.splash_image);
+        Fabric.with(this, new Crashlytics());
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setDefaultFontPath(getString(R.string.default_font_path))
+                .setFontAttrId(R.attr.fontPath)
+                .build()
+        );
+        try {
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        //setContentView(R.layout.activity_splash_screen);
+        splashimage = findViewById(R.id.splash_image);
         new Thread() {
             @Override
             public void run() {
                 try {
-                    sleep(3000);
+                    sleep(2000);
                     Intent intent = new Intent(getApplicationContext(), WelcomeActivity.class);
                     startActivity(intent);
                     finish();
