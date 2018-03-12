@@ -75,6 +75,7 @@ public class Checkout extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_checkout);
+        couponApplied = CartHolder.getInstance().getDiscount() != null;
         recyclerView = findViewById(R.id.cart_recyclerview);
         empty = findViewById(R.id.empty_view_cart);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -180,7 +181,6 @@ public class Checkout extends AppCompatActivity {
                         cartDiscount.setText(String.valueOf(-1.0*tax.getDiscount()));
                     }
                 }
-
                 centralgst.setText(String.valueOf(tax.getCgst()*Double.parseDouble(carttotal.getText().toString())/100.0));
                 stategst.setText(String.valueOf(tax.getSgst()*Double.parseDouble(carttotal.getText().toString())/100.0));
                 cess.setText(String.valueOf(tax.getCess()*Double.parseDouble(carttotal.getText().toString())/100.0));
@@ -192,6 +192,17 @@ public class Checkout extends AppCompatActivity {
                         +Double.parseDouble(cartDiscount.getText().toString())
                 ));
                 db.removeEventListener(this);
+                if (CartHolder.getInstance().getDiscount() != null) {
+                    if (CartHolder.getInstance().getDiscount().first == 0 && CartHolder.getInstance().getDiscount().second.first <= Double.parseDouble(carttotal.getText().toString())) {
+                        discountType.setText("-" + CartHolder.getInstance().getDiscount().second.second + "%");
+                        cartDiscount.setText(String.valueOf(-1.0 * CartHolder.getInstance().getDiscount().second.second * Double.parseDouble(carttotal.getText().toString()) / 100.0));
+                    } else {
+                        if (CartHolder.getInstance().getDiscount().second.first <= Double.parseDouble(carttotal.getText().toString())) {
+                            discountType.setText("-Rs." + CartHolder.getInstance().getDiscount().second.second);
+                            cartDiscount.setText(String.valueOf(-1.0 * CartHolder.getInstance().getDiscount().second.second));
+                        }
+                    }
+                }
             }
 
             @Override
@@ -248,6 +259,9 @@ public class Checkout extends AppCompatActivity {
                                                                                 -(1.0 * coupon.getDiscount())));
                                                                     }
                                                                 }
+                                                                CartHolder.getInstance().setDiscount(
+                                                                        new Pair<>(coupon.getType()
+                                                                                , new Pair<>(coupon.getThreshold(), coupon.getDiscount())));
                                                                 totalpayable.setText(String.valueOf(
                                                                         Double.parseDouble(centralgst.getText().toString())
                                                                                 + Double.parseDouble(stategst.getText().toString())
@@ -278,6 +292,20 @@ public class Checkout extends AppCompatActivity {
                                             } else {
                                                 Toast.makeText(Checkout.this, "You Will get Discount On Your Next Order Using Same Code", Toast.LENGTH_SHORT).show();
                                                 earned.child(code).child("current").setValue(true);
+                                                couponApplied = true;
+                                                discountType.setText("-Rs." + 0);
+                                                cartDiscount.setText(String.valueOf(0));
+                                                CartHolder.getInstance().setDiscount(
+                                                        new Pair<>(1
+                                                                , new Pair<>(0, 0.0)));
+                                                totalpayable.setText(String.valueOf(
+                                                        Double.parseDouble(centralgst.getText().toString())
+                                                                + Double.parseDouble(stategst.getText().toString())
+                                                                + Double.parseDouble(cess.getText().toString())
+                                                                + Double.parseDouble(carttotal.getText().toString())
+                                                                + Double.parseDouble(cartDiscount.getText().toString())
+                                                ));
+
                                             }
                                         } else {
                                             Toast.makeText(Checkout.this, "Coupon Code Not Found", Toast.LENGTH_SHORT).show();

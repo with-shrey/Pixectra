@@ -48,9 +48,9 @@ ArrayList<Product> data;
         mrecyclerview = findViewById(R.id.poster_activity_recyclerview);
         mrecyclerview.setLayoutManager(new LinearLayoutManager(PosterActivity.this));
         setuprecyclerview();
-        LogManager.viewContent(activityTitles[type - 1], activityTitles[type - 1], "Product");
         //Type Of Activity
         type = getIntent().getIntExtra("type", 1);
+        LogManager.viewContent(activityTitles[type - 1], activityTitles[type - 1], "Product");
         title_page.setText(activityTitles[type-1]);
 
         dataref = ref.child(activityTitles[type - 1]);
