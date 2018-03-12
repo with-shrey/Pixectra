@@ -50,7 +50,7 @@ public class SelectAddressActivity extends AppCompatActivity {
         });
         list = new ArrayList<>();
         adap = new ShippingAddressAdapter(this,list,getIntent());
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 list.clear();
@@ -62,6 +62,7 @@ public class SelectAddressActivity extends AppCompatActivity {
                 }
                 findViewById(R.id.progress_shipping).setVisibility(View.GONE);
                 adap.notifyDataSetChanged();
+                ref.removeEventListener(this);
             }
 
             @Override
@@ -72,7 +73,7 @@ public class SelectAddressActivity extends AppCompatActivity {
   //extract list from firebase
         // below is sudo list
 
-        RecyclerView recycler = (RecyclerView)findViewById(R.id.multi_ship_recycler);
+        RecyclerView recycler = findViewById(R.id.multi_ship_recycler);
 
                 recycler.setAdapter(adap);
                 LinearLayoutManager layout = new LinearLayoutManager(getApplicationContext());
@@ -96,10 +97,10 @@ public class SelectAddressActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode ==RESULT_OK && requestCode == 1){
-            ref.child(data.getStringExtra("key")).addListenerForSingleValueEvent(new ValueEventListener() {
+            ref.child(data.getStringExtra("key")).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -110,6 +111,7 @@ public class SelectAddressActivity extends AppCompatActivity {
 
                     //findViewById(R.id.progress_shipping).setVisibility(View.GONE);
                     adap.notifyDataSetChanged();
+                    ref.child(data.getStringExtra("key")).removeEventListener(this);
                 }
                 @Override
                 public void onCancelled(DatabaseError databaseError) {

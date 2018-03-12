@@ -46,6 +46,7 @@ import com.pixectra.app.Utils.CartHolder;
 import com.pixectra.app.Utils.ImageController;
 import com.pixectra.app.Utils.QReader;
 
+import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Vector;
 
@@ -56,6 +57,10 @@ public class Checkout extends AppCompatActivity {
     Address address;
     Coupon coupon;
     boolean couponApplied=false;
+    SimpleDateFormat format;
+    EditText couponBottomSheet;
+    TextView addressText;
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -72,6 +77,7 @@ public class Checkout extends AppCompatActivity {
         empty = findViewById(R.id.empty_view_cart);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new CartAdapter();
+        format = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         recyclerView.setAdapter(adapter);
         findViewById(R.id.cart_proceed).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,19 +97,42 @@ public class Checkout extends AppCompatActivity {
     }
 
     void toggleVisibility() {
-        if (CartHolder.getInstance().getCart().size() > 0) {
-            recyclerView.setVisibility(View.VISIBLE);
-            empty.setVisibility(View.GONE);
-        } else {
-            recyclerView.setVisibility(View.GONE);
-            empty.setVisibility(View.VISIBLE);
-        }
+        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeRemoved(int positionStart, int itemCount) {
+                super.onItemRangeRemoved(positionStart, itemCount);
+                if (CartHolder.getInstance().getCart().size() > 0) {
+                    findViewById(R.id.cart_proceed).setVisibility(View.VISIBLE);
+                    recyclerView.setVisibility(View.VISIBLE);
+                    empty.setVisibility(View.GONE);
+                } else {
+                    findViewById(R.id.cart_proceed).setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.GONE);
+                    empty.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                if (CartHolder.getInstance().getCart().size() > 0) {
+                    findViewById(R.id.cart_proceed).setVisibility(View.VISIBLE);
+                    recyclerView.setVisibility(View.VISIBLE);
+                    empty.setVisibility(View.GONE);
+                } else {
+                    findViewById(R.id.cart_proceed).setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.GONE);
+                    empty.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
-    EditText couponBottomSheet;
-    TextView addressText;
+
     public void onplaceorder() {
 
-        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(Checkout.this);
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(Checkout.this
+                , R.style.CustomDialogTheme
+        );
         View parentview = getLayoutInflater().inflate(R.layout.bottomsheet, null);
         bottomSheetDialog.setContentView(parentview);
         final BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from((View) parentview.getParent());
@@ -130,9 +159,9 @@ public class Checkout extends AppCompatActivity {
         Button scan = parentview.findViewById(R.id.scanqr);
         Button selectShipping = parentview.findViewById(R.id.shipping_address_choose);
         carttotal.setText(String.valueOf(getBaseAmount()));
-        DatabaseReference db=FirebaseDatabase.getInstance().getReference("Tax");
+        final DatabaseReference db = FirebaseDatabase.getInstance().getReference("Tax");
         db.keepSynced(true);
-        db.addListenerForSingleValueEvent(new ValueEventListener() {
+        db.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Tax tax=dataSnapshot.getValue(Tax.class);
@@ -160,6 +189,7 @@ public class Checkout extends AppCompatActivity {
                         +Double.parseDouble(carttotal.getText().toString())
                         +Double.parseDouble(cartDiscount.getText().toString())
                 ));
+                db.removeEventListener(this);
             }
 
             @Override
@@ -186,14 +216,14 @@ public class Checkout extends AppCompatActivity {
                     final DatabaseReference earned = FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                             .child("Earned");
                     earned.keepSynced(true);
-                    used.addListenerForSingleValueEvent(new ValueEventListener() {
+                    used.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             final String code = couponBottomSheet.getText().toString();
                             if (dataSnapshot.hasChild(code)) {
                                 Toast.makeText(Checkout.this, "Offer Already Used", Toast.LENGTH_SHORT).show();
                             } else {
-                                earned.child(code).addListenerForSingleValueEvent(new ValueEventListener() {
+                                earned.child(code).addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         if (dataSnapshot.exists()) {
@@ -202,14 +232,13 @@ public class Checkout extends AppCompatActivity {
                                                 @Override
                                                 public void onSuccess(Void aVoid) {
                                                     if (coupon.getType() == 0 && coupon.getThreshold() <= Double.parseDouble(carttotal.getText().toString())) {
-                                                        discountType.setText(discountType.getText().toString() + "&" + "-" + coupon.getDiscount() + "%");
+                                                        discountType.setText(coupon.getDiscount() + "%");
                                                         cartDiscount.setText(String.valueOf(
-                                                                Double.parseDouble(cartDiscount.getText().toString())
                                                                         - (1.0 * coupon.getDiscount() / 100.0 * Double.parseDouble(carttotal.getText().toString()))));
                                                     } else {
                                                         if (coupon.getThreshold() <= Double.parseDouble(carttotal.getText().toString())) {
-                                                            discountType.setText(discountType.getText().toString() + "&" + "-Rs." + coupon.getDiscount());
-                                                            cartDiscount.setText(String.valueOf(Double.parseDouble(cartDiscount.getText().toString())
+                                                            discountType.setText("-Rs." + coupon.getDiscount());
+                                                            cartDiscount.setText(String.valueOf(
                                                                     - (1.0 * coupon.getDiscount())));
                                                         }
                                                     }
@@ -232,6 +261,7 @@ public class Checkout extends AppCompatActivity {
                                         } else {
                                             Toast.makeText(Checkout.this, "Coupon Code Not Found", Toast.LENGTH_SHORT).show();
                                         }
+                                        earned.child(code).removeEventListener(this);
                                     }
 
                                     @Override
@@ -241,7 +271,7 @@ public class Checkout extends AppCompatActivity {
                                 });
 
                             }
-
+                            used.removeEventListener(this);
                         }
 
                         @Override
@@ -279,8 +309,9 @@ public class Checkout extends AppCompatActivity {
             public void onClick(View view) {
                 final CheckoutData checkout=new CheckoutData();
 
-                FirebaseDatabase.getInstance().getReference("User").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                final DatabaseReference user = FirebaseDatabase.getInstance().getReference("User").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                user.keepSynced(true);
+                user.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 checkout.setUser(dataSnapshot.getValue(User.class));
@@ -294,6 +325,7 @@ public class Checkout extends AppCompatActivity {
                                 checkout.setPrice(price);
                                 checkout.setAddress(address);
                                 ImageController.placeOrder(checkout);
+                                user.removeEventListener(this);
                             }
 
                             @Override
@@ -379,18 +411,27 @@ public class Checkout extends AppCompatActivity {
             return CartHolder.getInstance().getCart().size();
         }
 
-        class VH extends RecyclerView.ViewHolder {
+        class VH extends RecyclerView.ViewHolder implements View.OnClickListener {
             TextView title, type;
             ImageView titleImage;
             RecyclerView images;
-
+            ImageView remove;
             public VH(View itemView) {
                 super(itemView);
                 title = itemView.findViewById(R.id.title);
                 type = itemView.findViewById(R.id.type_price);
                 titleImage = itemView.findViewById(R.id.title_image);
                 images = itemView.findViewById(R.id.images_cart);
+                remove = itemView.findViewById(R.id.remove);
+                remove.setOnClickListener(this);
                 images.setLayoutManager(new LinearLayoutManager(Checkout.this, LinearLayoutManager.HORIZONTAL, false));
+            }
+
+            @Override
+            public void onClick(View view) {
+                CartHolder.getInstance().getCart().remove(getAdapterPosition());
+                notifyItemRemoved(getAdapterPosition());
+
             }
         }
     }

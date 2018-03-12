@@ -24,13 +24,20 @@ import com.pixectra.app.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 
 public class QReader extends Activity implements QRCodeReaderView.OnQRCodeReadListener {
 
-    private QRCodeReaderView qrCodeReaderView;
     String couponCode=null;
     String location=null;
     Coupon details=null;
+    SimpleDateFormat format;
+    private QRCodeReaderView qrCodeReaderView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +48,8 @@ public class QReader extends Activity implements QRCodeReaderView.OnQRCodeReadLi
     }
 
     void init(){
+        format = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+
         qrCodeReaderView = findViewById(R.id.qrdecoderview);
         qrCodeReaderView.setOnQRCodeReadListener(this);
 
@@ -99,99 +108,130 @@ public class QReader extends Activity implements QRCodeReaderView.OnQRCodeReadLi
         FirebaseDatabase db=FirebaseDatabase.getInstance();
         final DatabaseReference earned=db.getReference("Users/"+ FirebaseAuth.getInstance().getCurrentUser().getUid()+"/Earned");
         final DatabaseReference used=db.getReference("Users/"+ FirebaseAuth.getInstance().getCurrentUser().getUid()+"/Used");
+        used.keepSynced(true);
+        earned.keepSynced(true);
         if (details !=null){ //If Details Available In QR
-            used.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (!dataSnapshot.hasChild(couponCode)){
-                        earned.child(details.getCouponCode()).setValue(details).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Toast.makeText(QReader.this, "Coupon Earned Successfully", Toast.LENGTH_SHORT).show();
-                                showADialog("Success", "Coupon Code Is " + details.getCouponCode()
-                                        , new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                                Intent intent=new Intent();
-                                                intent.putExtra("code",details.getCouponCode());
-                                                setResult(RESULT_OK,intent);
-                                                dialogInterface.dismiss();
-                                                finish();
-                                            }
-                                        });
+            try {
+                if (format.parse(details.getStartDate()).compareTo(new Date()) <= 0 && format.parse(details.getEndDate()).compareTo(new Date()) >= 0) {
+                    used.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (!dataSnapshot.hasChild(couponCode)) {
+                                earned.child(details.getCouponCode()).setValue(details).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Toast.makeText(QReader.this, "Coupon Earned Successfully", Toast.LENGTH_SHORT).show();
+                                        showADialog("Success", "Coupon Code Is " + details.getCouponCode()
+                                                , new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                                        Intent intent = new Intent();
+                                                        intent.putExtra("code", details.getCouponCode());
+                                                        setResult(RESULT_OK, intent);
+                                                        dialogInterface.dismiss();
+                                                        finish();
+                                                    }
+                                                });
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(QReader.this, "Request Failed . Please Try Again Later", Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent();
+                                        setResult(RESULT_CANCELED, intent);
+                                        finish();
+                                    }
+                                });
+                            } else {
+                                Toast.makeText(QReader.this, "Offer Already Used", Toast.LENGTH_SHORT).show();
                             }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(QReader.this, "Request Failed . Please Try Again Later", Toast.LENGTH_SHORT).show();
-                                Intent intent=new Intent();
-                                setResult(RESULT_CANCELED,intent);
-                                finish();
-                            }
-                        });
-                    }else{
-                        Toast.makeText(QReader.this, "Offer Already Used", Toast.LENGTH_SHORT).show();
+                            used.removeEventListener(this);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                } else {
+                    if (format.parse(details.getStartDate()).compareTo(new Date()) <= 0)
+                        Toast.makeText(this, "Offer Not Started Yet ", Toast.LENGTH_SHORT).show();
+                    else {
+                        Toast.makeText(this, "Coupon Expired", Toast.LENGTH_SHORT).show();
                     }
                 }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
 
         }else if (location != null){ //Location In QR
-            DatabaseReference ref=db.getReference(location).child(couponCode);
+
+            final DatabaseReference ref = db.getReference(location).child(couponCode);
             ref.keepSynced(true);
-            Toast.makeText(this, location+couponCode, Toast.LENGTH_SHORT).show();
-            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            Toast.makeText(this, location + couponCode, Toast.LENGTH_SHORT).show();
+            ref.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()){
+                    if (dataSnapshot.exists()) {
                         Toast.makeText(QReader.this, "Valid Coupon Code", Toast.LENGTH_SHORT).show();
-                        details=dataSnapshot.getValue(Coupon.class);
-                        used.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                if (!dataSnapshot.hasChild(couponCode)) {
-                                    earned.child(details.getCouponCode()).setValue(details).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            Toast.makeText(QReader.this, "Coupon Earned Successfully", Toast.LENGTH_SHORT).show();
-                                            showADialog("Success", "Coupon Code Is " + details.getCouponCode()
-                                                    , new DialogInterface.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                                            Intent intent=new Intent();
-                                                            intent.putExtra("code",details.getCouponCode());
-                                                            setResult(RESULT_OK,intent);
-                                                            dialogInterface.dismiss();
-                                                            finish();
-                                                        }
-                                                    });
+                        details = dataSnapshot.getValue(Coupon.class);
+                        try {
+                            if (format.parse(details.getStartDate()).compareTo(new Date()) <= 0 && format.parse(details.getEndDate()).compareTo(new Date()) >= 0) {
+
+                                used.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        if (!dataSnapshot.hasChild(couponCode)) {
+                                            earned.child(details.getCouponCode()).setValue(details).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    Toast.makeText(QReader.this, "Coupon Earned Successfully", Toast.LENGTH_SHORT).show();
+                                                    showADialog("Success", "Coupon Code Is " + details.getCouponCode()
+                                                            , new DialogInterface.OnClickListener() {
+                                                                @Override
+                                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                                    Intent intent = new Intent();
+                                                                    intent.putExtra("code", details.getCouponCode());
+                                                                    setResult(RESULT_OK, intent);
+                                                                    dialogInterface.dismiss();
+                                                                    finish();
+                                                                }
+                                                            });
+                                                }
+                                            }).addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Toast.makeText(QReader.this, "Request Failed . Please Try Again Later", Toast.LENGTH_SHORT).show();
+                                                    Intent intent = new Intent();
+                                                    setResult(RESULT_CANCELED, intent);
+                                                    finish();
+                                                }
+                                            });
+                                        } else {
+                                            Toast.makeText(QReader.this, "Offer Already Used", Toast.LENGTH_SHORT).show();
                                         }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Toast.makeText(QReader.this, "Request Failed . Please Try Again Later", Toast.LENGTH_SHORT).show();
-                                            Intent intent=new Intent();
-                                            setResult(RESULT_CANCELED,intent);
-                                            finish();
-                                        }
-                                    });
-                                }else{
-                                    Toast.makeText(QReader.this, "Offer Already Used", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
+                                        used.removeEventListener(this);
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
 
                             }
-                        });
-
-                    }else{
+                            if (format.parse(details.getStartDate()).compareTo(new Date()) <= 0)
+                                Toast.makeText(QReader.this, "Offer Not Started Yet ", Toast.LENGTH_SHORT).show();
+                            else {
+                                Toast.makeText(QReader.this, "Coupon Expired", Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
                         Toast.makeText(QReader.this, "No Coupon Details Found", Toast.LENGTH_SHORT).show();
                     }
+                    ref.removeEventListener(this);
                 }
 
                 @Override
@@ -199,6 +239,7 @@ public class QReader extends Activity implements QRCodeReaderView.OnQRCodeReadLi
 
                 }
             });
+
 
         }else{
             Toast.makeText(this, "QR not valid \n Kindly Contact Us", Toast.LENGTH_SHORT).show();

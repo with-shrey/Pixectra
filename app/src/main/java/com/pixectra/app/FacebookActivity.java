@@ -126,7 +126,7 @@ public class FacebookActivity extends AppCompatActivity {
 
                             }
                             else {
-                                ref.child(mAuth.getCurrentUser().getUid()).child("Info").addListenerForSingleValueEvent(new ValueEventListener() {
+                                ref.child(mAuth.getCurrentUser().getUid()).child("Info").addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         User user = dataSnapshot.getValue(User.class);
@@ -136,6 +136,7 @@ public class FacebookActivity extends AppCompatActivity {
                                                 , Uri.parse(user.getProfilePic()));
                                         FirebaseUser userfb = mAuth.getCurrentUser();
                                         updateUI(userfb);
+                                        ref.child(mAuth.getCurrentUser().getUid()).child("Info").removeEventListener(this);
                                     }
 
                                     @Override

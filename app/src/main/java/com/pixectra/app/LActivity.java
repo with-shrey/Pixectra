@@ -171,7 +171,7 @@ DatabaseReference ref;
                                     Toast.makeText(LActivity.this, gpersonName + "\n" + gpersonEmail, Toast.LENGTH_SHORT).show();
                                 }
                             } else {
-                                ref.child(mAuth.getCurrentUser().getUid()).child("Info").addListenerForSingleValueEvent(new ValueEventListener() {
+                                ref.child(mAuth.getCurrentUser().getUid()).child("Info").addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         User user = dataSnapshot.getValue(User.class);
@@ -181,6 +181,7 @@ DatabaseReference ref;
                                                 , Uri.parse(user.getProfilePic()));
                                         FirebaseUser userfire = mAuth.getCurrentUser();
                                         updateUI(userfire);
+                                        ref.child(mAuth.getCurrentUser().getUid()).child("Info").removeEventListener(this);
                                     }
 
                                     @Override

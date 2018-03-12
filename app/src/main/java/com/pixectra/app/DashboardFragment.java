@@ -107,9 +107,9 @@ public class DashboardFragment extends Fragment {
 
         circleIndicator = view.findViewById(R.id.viewpager_indicator);
         FirebaseDatabase database=FirebaseDatabase.getInstance();
-        DatabaseReference ref=database.getReference("CommonData").child("Banner");
+        final DatabaseReference ref = database.getReference("CommonData").child("Banner");
         //<--setting up recycler view
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 images.clear();
@@ -121,6 +121,7 @@ public class DashboardFragment extends Fragment {
                 viewPager.setCurrentItem(1, true);
                 circleIndicator.setViewPager(viewPager);
                 slideViewAdapter.registerDataSetObserver(circleIndicator.getDataSetObserver());
+                ref.removeEventListener(this);
             }
 
             @Override

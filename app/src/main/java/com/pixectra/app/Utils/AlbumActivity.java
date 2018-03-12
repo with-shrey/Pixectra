@@ -5,6 +5,7 @@ package com.pixectra.app.Utils;
  */
 
 
+import android.animation.Animator;
 import android.app.Activity;
 import android.database.Cursor;
 import android.database.MergeCursor;
@@ -181,7 +182,7 @@ public class AlbumActivity extends Fragment {
             @Override
             public void onClick(View view) {
                 if (CartHolder.getInstance().getSize(getArguments().getString("key", "")) < getArguments().getInt("maxPics", 0)) {
-                    if (overlay.getVisibility() == View.INVISIBLE) {
+                    if (overlay.getVisibility() == View.GONE) {
                         loader.setVisibility(View.VISIBLE);
                         try {
                             GlideHelper.getBitmap(getActivity(), new File(data.get(getAdapterPosition()).get(Function.KEY_PATH)), new RequestListener() {
@@ -196,6 +197,32 @@ public class AlbumActivity extends Fragment {
                                 public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
                                     loader.setVisibility(View.GONE);
                                     overlay.setVisibility(View.VISIBLE);
+                                    overlay.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            overlay.animate().alpha(0f).setDuration(1000).setListener(new Animator.AnimatorListener() {
+                                                @Override
+                                                public void onAnimationStart(Animator animator) {
+
+                                                }
+
+                                                @Override
+                                                public void onAnimationEnd(Animator animator) {
+                                                    overlay.setVisibility(View.GONE);
+                                                    overlay.setAlpha(1f);
+                                                }
+
+                                                @Override
+                                                public void onAnimationCancel(Animator animator) {
+
+                                                }
+
+                                                @Override
+                                                public void onAnimationRepeat(Animator animator) {
+                                                }
+                                            });
+                                        }
+                                    }, 500);
                                     CartHolder.getInstance().addImage(getActivity().getIntent().getStringExtra("key"), (Bitmap) resource);
                                     return false;
                                 }
@@ -211,7 +238,7 @@ public class AlbumActivity extends Fragment {
                     Toast.makeText(activity, "Images Already Selected", Toast.LENGTH_SHORT).show();
                 }
                 if (overlay.getVisibility() == View.VISIBLE) {
-                    overlay.setVisibility(View.INVISIBLE);
+                    overlay.setVisibility(View.GONE);
                     try {
                         GlideHelper.getBitmap(getActivity(), new File(data.get(getAdapterPosition()).get(Function.KEY_PATH)), new RequestListener() {
                             @Override

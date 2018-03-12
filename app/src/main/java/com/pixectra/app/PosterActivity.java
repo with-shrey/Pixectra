@@ -52,8 +52,8 @@ ArrayList<Product> data;
         title_page.setText(activityTitles[type-1]);
 
         dataref = ref.child(activityTitles[type - 1]);
-
-        dataref.addListenerForSingleValueEvent(new ValueEventListener() {
+        dataref.keepSynced(true);
+        dataref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 data.clear();
@@ -63,6 +63,7 @@ ArrayList<Product> data;
                 }
                 findViewById(R.id.poster_acivity_progress).setVisibility(View.GONE);
                 mposterRecyclerViewAdapter.notifyDataSetChanged();
+                dataref.removeEventListener(this);
             }
 
             @Override
@@ -70,7 +71,6 @@ ArrayList<Product> data;
                 findViewById(R.id.poster_acivity_progress).setVisibility(View.GONE);
             }
         });
-        dataref.keepSynced(true);
     }
 
 
