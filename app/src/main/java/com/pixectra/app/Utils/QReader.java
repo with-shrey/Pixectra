@@ -178,12 +178,12 @@ public class QReader extends Activity implements QRCodeReaderView.OnQRCodeReadLi
                                 used.addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
-                                        if (!dataSnapshot.hasChild(couponCode)) {
-                                            earned.child(details.getCouponCode()).setValue(details).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        if (dataSnapshot != null && !dataSnapshot.hasChild(couponCode)) {
+                                            earned.child(couponCode).setValue(details).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                 @Override
                                                 public void onSuccess(Void aVoid) {
                                                     Toast.makeText(QReader.this, "Coupon Earned Successfully", Toast.LENGTH_SHORT).show();
-                                                    showADialog("Success", "Coupon Code Is " + details.getCouponCode()
+                                                    showADialog("Success", "Coupon Code Is " + couponCode
                                                             , new DialogInterface.OnClickListener() {
                                                                 @Override
                                                                 public void onClick(DialogInterface dialogInterface, int i) {
