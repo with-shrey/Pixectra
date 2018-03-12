@@ -31,15 +31,15 @@ ArrayList<Product> data;
 
     private int getDrawableFromType() {
         switch (type) {
-            case 0:
-                return R.drawable.ic_pictures;
             case 1:
-                return R.drawable.ic_postcard;
-            case 2:
                 return R.drawable.ic_pictures;
+            case 2:
+                return R.drawable.ic_postcard;
             case 3:
                 return R.drawable.ic_picture;
             case 4:
+                return R.drawable.ic_pictures;
+            case 5:
                 return R.drawable.ic_poster;
             default:
                 return R.drawable.ic_pictures;

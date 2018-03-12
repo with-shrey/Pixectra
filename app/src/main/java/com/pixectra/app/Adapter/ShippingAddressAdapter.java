@@ -15,8 +15,8 @@ import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.pixectra.app.R;
 import com.pixectra.app.Models.Address;
+import com.pixectra.app.R;
 import com.pixectra.app.SelectAddressActivity;
 import com.pixectra.app.ShippingAddressForm;
 import com.pixectra.app.Utils.SessionHelper;
@@ -36,18 +36,6 @@ Intent intent;
        this.intent=intent;
     }
 
-    public static class viewHolder extends RecyclerView.ViewHolder{
-        private CardView cardView;
-        Button edit,remove;
-        Context context;
-        public viewHolder(CardView Views) {
-            super(Views);
-            cardView=Views;
-            this.edit=(Button)Views.findViewById(R.id.card_edit);
-            this.remove=(Button)Views.findViewById(R.id.card_remove);
-            this.context=Views.getContext();
-        }
-    }
     @Override
     public ShippingAddressAdapter.viewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         CardView itemView = (CardView) LayoutInflater.from(parent.getContext())
@@ -60,14 +48,14 @@ Intent intent;
     public void onBindViewHolder(final viewHolder holder, final int position) {
          final Address add=(Address)arrayList.get(position);
         CardView cardView=holder.cardView;
-        TextView name=(TextView)cardView.findViewById(R.id.card_name);
+        TextView name = cardView.findViewById(R.id.card_name);
         name.setText(add.getName());
-        TextView ward=(TextView)cardView.findViewById(R.id.card_ard);
+        TextView ward = cardView.findViewById(R.id.card_ard);
         ward.setText(add.getAddNo()+","+add.getStreet());
-        TextView fulladd=(TextView)cardView.findViewById(R.id.card_full_add);
+        TextView fulladd = cardView.findViewById(R.id.card_full_add);
         String fulladdress=add.getCity()+"-"+add.getPincode()+" , "+add.getState();
         fulladd.setText(fulladdress);
-        TextView mobile=(TextView)cardView.findViewById(R.id.card_mobile);
+        TextView mobile = cardView.findViewById(R.id.card_mobile);
         mobile.setText("Mobile:"+add.getMobile());
 
         holder.edit.setOnClickListener(new View.OnClickListener() {
@@ -91,7 +79,7 @@ Intent intent;
                 DatabaseReference ref=db.getReference("Users/"+new SessionHelper(c).getUid()+"/ShippingAddress");
                 ref.child(add.getKey()).setValue(null);
                 arrayList.remove(position);
-                notifyItemChanged(position);
+                notifyItemRemoved(position);
 
                 //remove
 
@@ -115,9 +103,22 @@ Intent intent;
         });
     }
 
-
     @Override
     public int getItemCount() {
         return arrayList.size();
+    }
+
+    public static class viewHolder extends RecyclerView.ViewHolder {
+        Button edit, remove;
+        Context context;
+        private CardView cardView;
+
+        public viewHolder(CardView Views) {
+            super(Views);
+            cardView = Views;
+            this.edit = Views.findViewById(R.id.card_edit);
+            this.remove = Views.findViewById(R.id.card_remove);
+            this.context = Views.getContext();
+        }
     }
 }
