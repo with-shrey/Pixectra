@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.pixectra.app.Fragments.OnetimeFragment;
 import com.pixectra.app.Fragments.SubscribeFragment;
+import com.pixectra.app.Utils.LogManager;
 
 public class PhotobookActivity extends AppCompatActivity implements ActionBar.TabListener {
 
@@ -34,6 +35,7 @@ public class PhotobookActivity extends AppCompatActivity implements ActionBar.Ta
 
         setContentView(R.layout.activity_photobook);
 
+        LogManager.viewContent("PhotoBooks", "PhotoBooks", "PhotoBook-Main");
 
         title = findViewById(R.id.title_poster);
         viewPager = findViewById(R.id.poster_pager);

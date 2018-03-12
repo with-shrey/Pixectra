@@ -29,6 +29,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pixectra.app.Models.User;
+import com.pixectra.app.Utils.LogManager;
 import com.pixectra.app.Utils.SessionHelper;
 
 import java.util.Arrays;
@@ -82,6 +83,7 @@ public class FacebookActivity extends AppCompatActivity {
             @Override
             public void onError(FacebookException error) {
                 Toast.makeText(getApplicationContext(), "" + error.getMessage(), Toast.LENGTH_LONG).show();
+                LogManager.userSignUp(false, "Facebook", "");
                 if (!auth) {
                     Intent intent = new Intent();
                     setResult(RESULT_CANCELED, intent);
@@ -108,12 +110,12 @@ public class FacebookActivity extends AppCompatActivity {
                            // Log.d("Facebook Sign In", "onComplete: " + (isNew ? "new user" : "old user"));
                             Toast.makeText(FacebookActivity.this, "onComplete: " + (isNew ? "new user" : "old user"), Toast.LENGTH_SHORT).show();
                             if (isNew) {
-
                                 Profile profile = Profile.getCurrentProfile();
                                 fFirstName = profile.getFirstName();
                                 fLastName = profile.getLastName();
                                 fEmail = mAuth.getCurrentUser().getEmail();
                                 fImageurl = profile.getProfilePictureUri(400, 400);
+                                LogManager.userSignUp(true, "Facebook", mAuth.getCurrentUser().getUid());
                                 ref.child(mAuth.getCurrentUser().getUid()).child("Info").setValue(new User(fFirstName + " " + fLastName, fEmail, fImageurl.toString(), ""));
                                 new SessionHelper(FacebookActivity.this).setUserDetails(mAuth.getCurrentUser().getUid()
                                         , fFirstName + " " + fLastName
@@ -126,6 +128,7 @@ public class FacebookActivity extends AppCompatActivity {
 
                             }
                             else {
+                                LogManager.userSignIn(true, "Facebook", mAuth.getCurrentUser().getUid());
                                 ref.child(mAuth.getCurrentUser().getUid()).child("Info").addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -141,7 +144,7 @@ public class FacebookActivity extends AppCompatActivity {
 
                                     @Override
                                     public void onCancelled(DatabaseError databaseError) {
-
+                                        Toast.makeText(FacebookActivity.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                                     }
                                 });
                             }

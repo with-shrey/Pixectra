@@ -14,6 +14,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pixectra.app.Adapter.PhotobookRecyclerViewAdapter;
 import com.pixectra.app.Models.Product;
+import com.pixectra.app.Utils.LogManager;
 
 import java.util.ArrayList;
 
@@ -47,6 +48,7 @@ ArrayList<Product> data;
         mrecyclerview = findViewById(R.id.poster_activity_recyclerview);
         mrecyclerview.setLayoutManager(new LinearLayoutManager(PosterActivity.this));
         setuprecyclerview();
+        LogManager.viewContent(activityTitles[type - 1], activityTitles[type - 1], "Product");
         //Type Of Activity
         type = getIntent().getIntExtra("type", 1);
         title_page.setText(activityTitles[type-1]);

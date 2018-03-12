@@ -36,6 +36,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pixectra.app.Models.User;
+import com.pixectra.app.Utils.LogManager;
 import com.pixectra.app.Utils.SessionHelper;
 
 public class LActivity extends AppCompatActivity {
@@ -161,6 +162,7 @@ DatabaseReference ref;
                                             , gpersonEmail
                                             , gImageUrl);
                                     FirebaseUser user = mAuth.getCurrentUser();
+                                    LogManager.userSignUp(true, "Google", mAuth.getCurrentUser().getUid());
                                     Intent intent = new Intent(LActivity.this, MobileVerifyActivity.class);
                                     intent.putExtra("uid", mAuth.getCurrentUser().getUid());
                                     startActivity(intent);
@@ -171,6 +173,7 @@ DatabaseReference ref;
                                     Toast.makeText(LActivity.this, gpersonName + "\n" + gpersonEmail, Toast.LENGTH_SHORT).show();
                                 }
                             } else {
+                                LogManager.userSignIn(true, "Google", mAuth.getCurrentUser().getUid());
                                 ref.child(mAuth.getCurrentUser().getUid()).child("Info").addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -220,6 +223,7 @@ DatabaseReference ref;
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account, result);
             } catch (ApiException e) {
+                LogManager.userSignUp(false, "Google", "");
                 Toast.makeText(this, "Failed SignIn Exception Key: Google Sign In ", Toast.LENGTH_SHORT).show();
                 // Google Sign In failed, update UI appropriately
                 Log.v("Google Sign In", "Google sign in failed", e);
