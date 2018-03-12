@@ -21,12 +21,24 @@ public class CheckoutData {
         this.price = price;
     }
 
+    public User getUser() {
+        return user;
+    }
+
     public void setUser(User user) {
         this.user = user;
     }
 
+    public Address getAddress() {
+        return address;
+    }
+
     public void setAddress(Address address) {
         this.address = address;
+    }
+
+    public Price getPrice() {
+        return price;
     }
 
     public void setPrice(Price price) {
