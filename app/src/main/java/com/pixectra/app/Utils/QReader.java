@@ -112,7 +112,7 @@ public class QReader extends Activity implements QRCodeReaderView.OnQRCodeReadLi
         earned.keepSynced(true);
         if (details !=null){ //If Details Available In QR
             try {
-                if (format.parse(details.getStartDate()).compareTo(new Date()) <= 0 && format.parse(details.getEndDate()).compareTo(new Date()) >= 0) {
+                if (format.parse(details.getEndDate()).compareTo(format.parse(format.format(new Date()))) >= 0) {
                     used.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -154,11 +154,8 @@ public class QReader extends Activity implements QRCodeReaderView.OnQRCodeReadLi
                         }
                     });
                 } else {
-                    if (format.parse(details.getStartDate()).compareTo(new Date()) <= 0)
-                        Toast.makeText(this, "Offer Not Started Yet ", Toast.LENGTH_SHORT).show();
-                    else {
                         Toast.makeText(this, "Coupon Expired", Toast.LENGTH_SHORT).show();
-                    }
+
                 }
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -176,7 +173,7 @@ public class QReader extends Activity implements QRCodeReaderView.OnQRCodeReadLi
                         Toast.makeText(QReader.this, "Valid Coupon Code", Toast.LENGTH_SHORT).show();
                         details = dataSnapshot.getValue(Coupon.class);
                         try {
-                            if (format.parse(details.getStartDate()).compareTo(new Date()) <= 0 && format.parse(details.getEndDate()).compareTo(new Date()) >= 0) {
+                            if (format.parse(details.getEndDate()).compareTo(format.parse(format.format(new Date()))) >= 0) {
 
                                 used.addValueEventListener(new ValueEventListener() {
                                     @Override
@@ -219,11 +216,8 @@ public class QReader extends Activity implements QRCodeReaderView.OnQRCodeReadLi
                                     }
                                 });
 
-                            }
-                            if (format.parse(details.getStartDate()).compareTo(new Date()) <= 0)
-                                Toast.makeText(QReader.this, "Offer Not Started Yet ", Toast.LENGTH_SHORT).show();
-                            else {
-                                Toast.makeText(QReader.this, "Coupon Expired", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(QReader.this, "Offer Expired ", Toast.LENGTH_SHORT).show();
                             }
                         } catch (ParseException e) {
                             e.printStackTrace();

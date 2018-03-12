@@ -46,7 +46,9 @@ import com.pixectra.app.Utils.CartHolder;
 import com.pixectra.app.Utils.ImageController;
 import com.pixectra.app.Utils.QReader;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Vector;
 
@@ -228,36 +230,55 @@ public class Checkout extends AppCompatActivity {
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         if (dataSnapshot.exists()) {
                                             coupon = dataSnapshot.getValue(Coupon.class);
-                                            used.child(code).setValue(coupon).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    if (coupon.getType() == 0 && coupon.getThreshold() <= Double.parseDouble(carttotal.getText().toString())) {
-                                                        discountType.setText(coupon.getDiscount() + "%");
-                                                        cartDiscount.setText(String.valueOf(
-                                                                        - (1.0 * coupon.getDiscount() / 100.0 * Double.parseDouble(carttotal.getText().toString()))));
+                                            if (coupon.isCurrent()) {
+                                                try {
+                                                    if (format.parse(coupon.getStartDate()).compareTo(format.parse(format.format(new Date()))) <= 0
+                                                            && format.parse(coupon.getEndDate()).compareTo(format.parse(format.format(new Date()))) >= 0) {
+                                                        used.child(code).setValue(coupon).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void aVoid) {
+                                                                if (coupon.getType() == 0 && coupon.getThreshold() <= Double.parseDouble(carttotal.getText().toString())) {
+                                                                    discountType.setText(coupon.getDiscount() + "%");
+                                                                    cartDiscount.setText(String.valueOf(
+                                                                            -(1.0 * coupon.getDiscount() / 100.0 * Double.parseDouble(carttotal.getText().toString()))));
+                                                                } else {
+                                                                    if (coupon.getThreshold() <= Double.parseDouble(carttotal.getText().toString())) {
+                                                                        discountType.setText("-Rs." + coupon.getDiscount());
+                                                                        cartDiscount.setText(String.valueOf(
+                                                                                -(1.0 * coupon.getDiscount())));
+                                                                    }
+                                                                }
+                                                                totalpayable.setText(String.valueOf(
+                                                                        Double.parseDouble(centralgst.getText().toString())
+                                                                                + Double.parseDouble(stategst.getText().toString())
+                                                                                + Double.parseDouble(cess.getText().toString())
+                                                                                + Double.parseDouble(carttotal.getText().toString())
+                                                                                + Double.parseDouble(cartDiscount.getText().toString())
+                                                                ));
+                                                                couponApplied = true;
+                                                                earned.child(code).setValue(null);
+                                                            }
+                                                        }).addOnFailureListener(new OnFailureListener() {
+                                                            @Override
+                                                            public void onFailure(@NonNull Exception e) {
+                                                                e.printStackTrace();
+                                                                Toast.makeText(Checkout.this, "Error Occured Try Again", Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        });
                                                     } else {
-                                                        if (coupon.getThreshold() <= Double.parseDouble(carttotal.getText().toString())) {
-                                                            discountType.setText("-Rs." + coupon.getDiscount());
-                                                            cartDiscount.setText(String.valueOf(
-                                                                    - (1.0 * coupon.getDiscount())));
+                                                        if (format.parse(coupon.getStartDate()).compareTo(format.parse(format.format(new Date()))) > 0) {
+                                                            Toast.makeText(Checkout.this, "Offer Not Started Yet \n" + format.parse(coupon.getStartDate()), Toast.LENGTH_SHORT).show();
+                                                        } else if (format.parse(coupon.getEndDate()).compareTo(format.parse(format.format(new Date()))) < 0) {
+                                                            Toast.makeText(Checkout.this, "Offer Has Ended", Toast.LENGTH_SHORT).show();
                                                         }
                                                     }
-                                                    totalpayable.setText(String.valueOf(
-                                                            Double.parseDouble(centralgst.getText().toString())
-                                                                    + Double.parseDouble(stategst.getText().toString())
-                                                                    + Double.parseDouble(cess.getText().toString())
-                                                                    + Double.parseDouble(carttotal.getText().toString())
-                                                                    + Double.parseDouble(cartDiscount.getText().toString())
-                                                    ));
-                                                    couponApplied = true;
-                                                }
-                                            }).addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
+                                                } catch (ParseException e) {
                                                     e.printStackTrace();
-                                                    Toast.makeText(Checkout.this, "Error Occured Try Again", Toast.LENGTH_SHORT).show();
                                                 }
-                                            });
+                                            } else {
+                                                Toast.makeText(Checkout.this, "You Will get Discount On Your Next Order Using Same Code", Toast.LENGTH_SHORT).show();
+                                                earned.child(code).child("current").setValue(true);
+                                            }
                                         } else {
                                             Toast.makeText(Checkout.this, "Coupon Code Not Found", Toast.LENGTH_SHORT).show();
                                         }
@@ -280,7 +301,7 @@ public class Checkout extends AppCompatActivity {
                         }
                     });
                 }else{
-                    Toast.makeText(Checkout.this, "Only One Coupon Allowwed For A Order", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Checkout.this, "Only One Coupon Allowed For A Order", Toast.LENGTH_SHORT).show();
                 }
             }
         });
