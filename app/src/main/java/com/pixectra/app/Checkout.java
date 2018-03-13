@@ -62,7 +62,7 @@ public class Checkout extends AppCompatActivity {
     SimpleDateFormat format;
     EditText couponBottomSheet;
     TextView addressText;
-
+    ImageController uploader;
     @Override
     protected void onResume() {
         super.onResume();
@@ -75,6 +75,7 @@ public class Checkout extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_checkout);
+        uploader = new ImageController(Checkout.this, getWindow());
         couponApplied = CartHolder.getInstance().getDiscount() != null;
         recyclerView = findViewById(R.id.cart_recyclerview);
         empty = findViewById(R.id.empty_view_cart);
@@ -373,7 +374,7 @@ public class Checkout extends AppCompatActivity {
                                 );
                                 checkout.setPrice(price);
                                 checkout.setAddress(address);
-                                ImageController.placeOrder(checkout);
+                                uploader.placeOrder(checkout);
                                 user.removeEventListener(this);
                             }
 

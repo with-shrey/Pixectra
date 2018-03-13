@@ -353,30 +353,34 @@ public class ImageFragment extends Fragment {
      */
     void parseFacebookJson(GraphResponse response) {
         JSONObject main = response.getJSONObject();
-        try {
-            JSONArray data = main.getJSONArray("data");
-            int n = data.length();
-            for (int i = 0; i < n; i++) {
-                JSONObject temp = data.getJSONObject(i);
-                JSONArray images = temp.getJSONArray("images");
-                int imgs = images.length();
-                for (int j = 0; j < imgs; j++) {
-                    JSONObject img = images.getJSONObject(j);
-                    Images image = null;
-                    if (j == 0) {
-                        image = new Images();
-                        image.setUrl(img.getString("source"));
-                        image.setThumbnail(images.getJSONObject(imgs - 1).getString("source"));
-                        imageData.add(image);
-                    }
+        if (main != null) {
+            try {
+                if (main.has("data")) {
+                    JSONArray data = main.getJSONArray("data");
+                    int n = data.length();
+                    for (int i = 0; i < n; i++) {
+                        JSONObject temp = data.getJSONObject(i);
+                        JSONArray images = temp.getJSONArray("images");
+                        int imgs = images.length();
+                        for (int j = 0; j < imgs; j++) {
+                            JSONObject img = images.getJSONObject(j);
+                            Images image = null;
+                            if (j == 0) {
+                                image = new Images();
+                                image.setUrl(img.getString("source"));
+                                image.setThumbnail(images.getJSONObject(imgs - 1).getString("source"));
+                                imageData.add(image);
+                            }
 
+                        }
+                    }
+                    lastGraphResponse = response;
                 }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-            lastGraphResponse = response;
-        } catch (JSONException e) {
-            e.printStackTrace();
+            adapter.notifyDataSetChanged();
         }
-        adapter.notifyDataSetChanged();
     }
 
 
@@ -398,7 +402,8 @@ public class ImageFragment extends Fragment {
                 HttpMethod.GET,
                 new GraphRequest.Callback() {
                     public void onCompleted(GraphResponse response) {
-                        parseFacebookJson(response);
+                        if (response != null)
+                            parseFacebookJson(response);
                     }
                 }
         ).executeAsync();
