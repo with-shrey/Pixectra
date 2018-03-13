@@ -88,7 +88,7 @@ public class Checkout extends AppCompatActivity {
         pay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ImageController.placeOrder(new CheckoutData());
+                ImageController.placeOrder(new CheckoutData(),0,0);
             }
         });
 
