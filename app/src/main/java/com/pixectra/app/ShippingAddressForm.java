@@ -122,7 +122,7 @@ public class ShippingAddressForm extends AppCompatActivity {
                     ref.child(key).setValue(add);
                     Intent intent1=new Intent();
                     intent1.putExtra("key",key);
-                    setResult(RESULT_OK);
+                    setResult(RESULT_OK,intent1);
                     finish();
                 }
 

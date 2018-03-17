@@ -16,10 +16,13 @@ public class CartHolder {
     private static HashMap<String, Product> details;
     private static ArrayList<Pair<Product, Vector<Bitmap>>> cart;
     private static ImageChangedListner listner;
+    private static Pair<Integer, Pair<Integer, Double>> discount;
+
     private CartHolder(){
         data=new HashMap<>();
         cart = new ArrayList<>();
         details = new HashMap<>();
+        discount = null;
     }  //private constructor.
 
     public static CartHolder getInstance(){
@@ -37,6 +40,14 @@ public class CartHolder {
 
     public ArrayList<Pair<Product, Vector<Bitmap>>> getCart() {
         return cart;
+    }
+
+    public Pair<Integer, Pair<Integer, Double>> getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(Pair<Integer, Pair<Integer, Double>> discount) {
+        CartHolder.discount = discount;
     }
 
     public void addToCart(String key) {

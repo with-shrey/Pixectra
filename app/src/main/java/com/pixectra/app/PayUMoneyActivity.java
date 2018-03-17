@@ -51,7 +51,7 @@ public class PayUMoneyActivity extends AppCompatActivity {
      * To Request for Updating Payment Status if Payment Successfully Done
      */
     int mId; //Getting from Previous Activity
-    boolean isFromOrder;
+    boolean isOneTime;
     /**
      * Handler
      */
@@ -75,14 +75,14 @@ public class PayUMoneyActivity extends AppCompatActivity {
     private String mAction = ""; // For Final URL
     private String mTXNId; // This will create below randomly
     private String mHash; // This will create below randomly
-    private String mProductInfo = "Food Items"; //Passing String only
+    private String mProductInfo = "Customised Images"; //Passing String only
     private String mFirstName; // From Previous Activity
     private String mEmailId; // From Previous Activity
     private double mAmount; // From Previous Activity
     private String mPhone; // From Previous Activity
     private String mServiceProvider = "payu_paisa";
-    private String mSuccessUrl = "www.google.com";
-    private String mFailedUrl = "www.facebook.com";
+    private String mSuccessUrl = "pixectra.com/success";
+    private String mFailedUrl = "pixectra.com/failed";
     private ProgressDialog mProgress;
 
     /**
@@ -153,7 +153,7 @@ public class PayUMoneyActivity extends AppCompatActivity {
             bundle.getString("phone");
             mId = 145;
             bundle.getInt("id");
-            isFromOrder = true;
+            isOneTime = true;
 
 
            /* mFirstName =bundle.getString("name");
@@ -161,7 +161,7 @@ public class PayUMoneyActivity extends AppCompatActivity {
             mAmount =bundle.getDouble("amount");
             mPhone =bundle.getString("phone");
             mId =bundle.getInt("id");
-            isFromOrder = bundle.getBoolean("isFromOrder");
+            isOneTime = bundle.getBoolean("isOneTime");
 */
             Log.i("Params", "" + mFirstName + " : " + mEmailId + " : " + mAmount + " : " + mPhone);
 
@@ -236,7 +236,7 @@ public class PayUMoneyActivity extends AppCompatActivity {
                         intent.putExtra("status", true);
                         intent.putExtra("transaction_id", mTXNId);
                         intent.putExtra("id", mId);
-                        intent.putExtra("isFromOrder", isFromOrder);
+                        intent.putExtra("isOneTime", isOneTime);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
 
@@ -253,7 +253,7 @@ public class PayUMoneyActivity extends AppCompatActivity {
                         intent.putExtra("status", false);
                         intent.putExtra("transaction_id", mTXNId);
                         intent.putExtra("id", mId);
-                        intent.putExtra("isFromOrder", isFromOrder);
+                        intent.putExtra("isOneTime", isOneTime);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
 
@@ -372,7 +372,7 @@ public class PayUMoneyActivity extends AppCompatActivity {
 
         final Intent intent;
 
-        if (isFromOrder) {
+        if (isOneTime) {
             Toast.makeText(activity, "back to previos", Toast.LENGTH_SHORT).show();
             intent = new Intent(PayUMoneyActivity.this, MainActivity.class);
         } else

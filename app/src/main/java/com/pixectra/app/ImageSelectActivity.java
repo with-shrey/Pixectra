@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.pixectra.app.Adapter.SelectedItemsAdapter;
 import com.pixectra.app.Fragments.ImageFragment;
 import com.pixectra.app.Utils.CartHolder;
+import com.pixectra.app.Utils.LogManager;
 
 
 public class ImageSelectActivity extends AppCompatActivity {
@@ -44,6 +45,7 @@ TabLayout tabLayout;
             @Override
             public void onClick(View view) {
                 if (CartHolder.getInstance().getSize(getIntent().getStringExtra("key")) >= getIntent().getIntExtra("minPics", 0)) {
+                    LogManager.addToCart(CartHolder.getInstance().getDetails(getIntent().getStringExtra("key")));
                     CartHolder.getInstance().addToCart(getIntent().getStringExtra("key"));
                     Intent intent = new Intent(ImageSelectActivity.this, Checkout.class);
                     startActivity(intent);

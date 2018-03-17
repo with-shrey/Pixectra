@@ -59,7 +59,8 @@ public class SubscribeFragment extends Fragment {
 
         data=new ArrayList<>();
         FirebaseDatabase database=FirebaseDatabase.getInstance();
-        DatabaseReference ref=database.getReference("CommonData").child("PhotoBooks");
+        final DatabaseReference ref = database.getReference("CommonData").child("PhotoBooks");
+        ref.keepSynced(true);
         //<--setting up recycler view
         if (getActivity().findViewById(R.id.recyclerview_poster_subscribe) != null) {
             mrecyclerview = getActivity().findViewById(R.id.recyclerview_poster_subscribe);
@@ -68,7 +69,7 @@ public class SubscribeFragment extends Fragment {
         } else {
             Log.d("onViewCreated", "null view");
         }
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 data.clear();
@@ -77,6 +78,7 @@ public class SubscribeFragment extends Fragment {
                 }
                 view.findViewById(R.id.subscribe_progress).setVisibility(View.GONE);
                 mposterRecyclerViewAdapter.notifyDataSetChanged();
+                ref.removeEventListener(this);
             }
 
             @Override
@@ -84,7 +86,6 @@ public class SubscribeFragment extends Fragment {
                 view.findViewById(R.id.subscribe_progress).setVisibility(View.GONE);
             }
         });
-        ref.keepSynced(true);
     }
 
 

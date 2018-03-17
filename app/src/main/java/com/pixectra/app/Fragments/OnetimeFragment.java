@@ -62,12 +62,13 @@ public class OnetimeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         data=new ArrayList<>();
         FirebaseDatabase database=FirebaseDatabase.getInstance();
-        DatabaseReference ref=database.getReference("CommonData").child("PhotoBooks");
-       //<--setting up recycler view
+        final DatabaseReference ref = database.getReference("CommonData").child("PhotoBooks");
+        ref.keepSynced(true);
+        //<--setting up recycler view
         mrecyclerview = getActivity().findViewById(R.id.recyclerview_poster_onetime);
         mrecyclerview.setLayoutManager(new LinearLayoutManager(getActivity()));
         SetupRecyclerview();
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 data.clear();
@@ -77,6 +78,7 @@ public class OnetimeFragment extends Fragment {
                 }
                 view.findViewById(R.id.onetime_progress).setVisibility(View.GONE);
                 mposterRecyclerViewAdapter.notifyDataSetChanged();
+                ref.removeEventListener(this);
             }
 
             @Override
@@ -84,7 +86,6 @@ public class OnetimeFragment extends Fragment {
                 view.findViewById(R.id.onetime_progress).setVisibility(View.GONE);
             }
         });
-        ref.keepSynced(true);
     }
 
 

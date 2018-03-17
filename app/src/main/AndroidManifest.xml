@@ -7,9 +7,11 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -35,7 +37,8 @@
                     android:scheme="http" />
             </intent-filter>
         </activity>
-        <activity android:name=".PicasaActivity"/>
+        <activity android:name=".PicasaActivity" />
+
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_id" />
@@ -69,13 +72,15 @@
             android:name="io.fabric.ApiKey"
             android:value="24d096531d852632ab1c7f98d4485791c5e5eaa1" />
 
-        <activity android:name=".CroppingActivity"></activity>
+        <activity android:name=".CroppingActivity" />
         <activity android:name=".Checkout" />
         <activity android:name=".PayUMoneyActivity" />
 
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="24d096531d852632ab1c7f98d4485791c5e5eaa1" />
+
+        <activity android:name=".Utils.QReader"></activity>
     </application>
 
 </manifest>

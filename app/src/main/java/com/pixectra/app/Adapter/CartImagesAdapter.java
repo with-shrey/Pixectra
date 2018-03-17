@@ -8,10 +8,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.pixectra.app.CroppingActivity;
 import com.pixectra.app.R;
+import com.pixectra.app.Utils.CartHolder;
 
 import java.util.Vector;
 
@@ -61,8 +63,17 @@ public class CartImagesAdapter extends RecyclerView.Adapter<CartImagesAdapter.Vi
             itemView.findViewById(R.id.remove).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    data.remove(getAdapterPosition());
-                    CartImagesAdapter.this.notifyDataSetChanged();
+                    if (CartHolder.getInstance().getCart().get(position).first.getMinPics() < data.size()) {
+                        data.remove(getAdapterPosition());
+                        CartImagesAdapter.this.notifyDataSetChanged();
+                    } else {
+                        Toast.makeText(context
+                                , "Minimum "
+                                        + CartHolder.getInstance().getCart().get(position).first.getMinPics()
+                                        + " Images are require" +
+                                        "d"
+                                , Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         }

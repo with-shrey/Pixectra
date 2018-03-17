@@ -108,16 +108,16 @@ public class Address implements Serializable {
 
     @Override
     public String toString() {
-        return "Address{" +
-                "key='" + key + '\'' +
-                ", name='" + name + '\'' +
-                ", addNo='" + addNo + '\'' +
-                ", street='" + street + '\'' +
-                ", pincode='" + pincode + '\'' +
-                ", city='" + city + '\'' +
-                ", state='" + state + '\'' +
-                ", mobile='" + mobile + '\'' +
-                ", optional='" + optional + '\'' +
+        return "\n"+"\n"+"Address{" +"\n"+
+                "key='" + key + '\'' +"\n"+
+                ", name='" + name + '\'' +"\n"+
+                ", addNo='" + addNo + '\'' +"\n"+
+                ", street='" + street + '\'' +"\n"+
+                ", pincode='" + pincode + '\'' +"\n"+
+                ", city='" + city + '\'' +"\n"+
+                ", state='" + state + '\'' +"\n"+
+                ", mobile='" + mobile + '\'' +"\n"+
+                ", optional='" + optional + '\'' +"\n"+
                 '}';
     }
 }

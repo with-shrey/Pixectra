@@ -16,6 +16,7 @@ import com.pixectra.app.Models.Product;
 import com.pixectra.app.R;
 import com.pixectra.app.Utils.CartHolder;
 import com.pixectra.app.Utils.GlideHelper;
+import com.pixectra.app.Utils.LogManager;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -99,6 +100,8 @@ public class PhotobookRecyclerViewAdapter extends RecyclerView.Adapter<Photobook
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    LogManager.viewContent(list.get(getAdapterPosition()).getId(), list.get(getAdapterPosition()).getTitle()
+                            , list.get(getAdapterPosition()).getType());
                     CartHolder.getInstance().addDetails(list.get(getAdapterPosition()).getId(), list.get(getAdapterPosition()));
                     Intent intent = new Intent(mcontext, ImageSelectActivity.class);
                     intent.putExtra("minPics", list.get(getAdapterPosition()).getMinPics());

@@ -38,11 +38,11 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
-                "name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", profilePic='" + profilePic + '\'' +
-                ", phoneNo='" + phoneNo + '\'' +
+        return "\n"+"\n"+"User{" +"\n"+
+                "name='" + name + '\'' +"\n"+
+                ", email='" + email + '\'' +"\n"+
+                ", profilePic='" + profilePic + '\'' +"\n"+
+                ", phoneNo='" + phoneNo + '\'' +"\n"+
                 '}';
     }
 }

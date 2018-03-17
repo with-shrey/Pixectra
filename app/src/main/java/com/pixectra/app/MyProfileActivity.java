@@ -45,8 +45,8 @@ public class MyProfileActivity extends AppCompatActivity {
         db = FirebaseDatabase.getInstance();
         ref = db.getReference("Users");
         final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        String uid = mAuth.getCurrentUser().getUid();
-        ref.child(uid).child("Info").addListenerForSingleValueEvent(new ValueEventListener() {
+        final String uid = mAuth.getCurrentUser().getUid();
+        ref.child(uid).child("Info").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
@@ -67,6 +67,7 @@ public class MyProfileActivity extends AppCompatActivity {
                     GlideHelper.load(MyProfileActivity.this, user.getProfilePic(), imageView, progress);
                 else
                     progress.setVisibility(View.GONE);
+                ref.child(uid).child("Info").removeEventListener(this);
             }
 
             @Override
