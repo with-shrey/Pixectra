@@ -101,9 +101,8 @@ public class ReferAndEarnFragment extends Fragment {
                 .setCanonicalIdentifier(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .setTitle("Get The App Now")
                 .setContentDescription("Download The App ")
-                .setContentImageUrl("http://pixectra.com/img/logo.png")
-                .addContentMetadata("item_id", "12345")
-                .addContentMetadata("user_id", "678910");
+                .setContentImageUrl("http://pixectra.com/img/logo.png");
+
 
         // Trigger a view on the content for analytics tracking
         branchUniversalObject.registerView();
