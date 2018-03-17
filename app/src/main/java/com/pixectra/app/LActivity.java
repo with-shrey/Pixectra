@@ -39,6 +39,8 @@ import com.pixectra.app.Models.User;
 import com.pixectra.app.Utils.LogManager;
 import com.pixectra.app.Utils.SessionHelper;
 
+import io.branch.referral.Branch;
+
 public class LActivity extends AppCompatActivity {
     private static final String TAG = "HANDLESIGNINRESULT";
     String fFirstName,fLastName, fEmail;
@@ -141,12 +143,15 @@ DatabaseReference ref;
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            Branch.getInstance().setIdentity(mAuth.getCurrentUser().getUid());
+
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("Google Sign In", "signInWithCredential:success");
                             boolean isNew = task.getResult().getAdditionalUserInfo().isNewUser();
                             Log.d("Google Sign In", "onComplete: " + (isNew ? "new user" : "old user"));
                             Toast.makeText(LActivity.this, "onComplete: " + (isNew ? "new user" : "old user"), Toast.LENGTH_SHORT).show();
                             if (isNew) {
+                                Branch.getInstance().userCompletedAction("signup");
                                 // mAuth.getCurrentUser().getUid();
                                 Log.d("TAG", "handleSignInResult:" + result.isSuccess());
                                 if (result.isSuccess()) {

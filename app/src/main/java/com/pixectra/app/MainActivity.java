@@ -1,5 +1,6 @@
 package com.pixectra.app;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,19 +10,20 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
-import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.pixectra.app.Models.Product;
+
+import io.branch.referral.Branch;
+import io.branch.referral.BranchError;
 
 @SuppressWarnings("deprecation")
 public class MainActivity extends AppCompatActivity implements UserProfileFragment.OnFragmentInteractionListener {
@@ -79,28 +81,24 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
         } else {
             Toast.makeText(getApplicationContext(), "Signed in", Toast.LENGTH_SHORT).show();
         }
-        //rewards to refers
-        FirebaseDynamicLinks.getInstance()
-                .getDynamicLink(getIntent())
-                .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
-                    @Override
-                    public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
-                        // Get deep link from result (may be null if no link is found)
-                        Uri deepLink = null;
-                        if (pendingDynamicLinkData != null) {
-                            deepLink = pendingDynamicLinkData.getLink();
-                            Toast.makeText(MainActivity.this, deepLink.toString(), Toast.LENGTH_SHORT).show();
-
-                            String referrerUid = deepLink.getQueryParameter("user");
-                            if (referrerUid.equals("universal")) {
-                                String code = deepLink.getQueryParameter("coupon");
-                                Toast.makeText(MainActivity.this, code, Toast.LENGTH_SHORT).show();
-                            }
-                            //rewarded gives to inviter
-                            Toast.makeText(MainActivity.this, referrerUid, Toast.LENGTH_SHORT).show();
+        Branch.getInstance(getApplicationContext()).loadRewards(new Branch.BranchReferralStateChangedListener() {
+            @Override
+            public void onStateChanged(boolean changed, BranchError error) {
+                if (changed) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setMessage("You  Have Earned Credits\nUpdated Credits Are " + Branch.getInstance().getCredits());
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
                         }
-                    }
-                });
+                    });
+                    builder.show();
+                }
+            }
+        });
+        //rewards to refers
+
         viewPager = findViewById(R.id.main_viewpager);
         viewPager.setOffscreenPageLimit(3);
         viewPager.setAdapter(new ViewPagerAdapter(getSupportFragmentManager()));

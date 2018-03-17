@@ -12,6 +12,7 @@ import org.json.JSONObject;
 
 import io.branch.referral.Branch;
 import io.branch.referral.BranchError;
+import io.branch.referral.InstallListener;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 @SuppressWarnings("deprecation")
@@ -23,6 +24,8 @@ public class SplashScreenActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        InstallListener listener = new InstallListener();
+        listener.onReceive(getApplicationContext(), getIntent());
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
                 .setDefaultFontPath(getString(R.string.default_font_path))
                 .setFontAttrId(R.attr.fontPath)

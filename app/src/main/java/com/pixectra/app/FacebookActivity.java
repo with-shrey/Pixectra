@@ -34,6 +34,8 @@ import com.pixectra.app.Utils.SessionHelper;
 
 import java.util.Arrays;
 
+import io.branch.referral.Branch;
+
 public class FacebookActivity extends AppCompatActivity {
     FirebaseDatabase db;
     DatabaseReference ref;
@@ -106,10 +108,12 @@ public class FacebookActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d("TAG", "signInWithCredential:onComplete:" + task.isSuccessful());
                         if (task.isSuccessful()) {
+                            Branch.getInstance().setIdentity(mAuth.getCurrentUser().getUid());
                             boolean isNew = task.getResult().getAdditionalUserInfo().isNewUser();
                            // Log.d("Facebook Sign In", "onComplete: " + (isNew ? "new user" : "old user"));
                             Toast.makeText(FacebookActivity.this, "onComplete: " + (isNew ? "new user" : "old user"), Toast.LENGTH_SHORT).show();
                             if (isNew) {
+                                Branch.getInstance().userCompletedAction("signup");
                                 Profile profile = Profile.getCurrentProfile();
                                 fFirstName = profile.getFirstName();
                                 fLastName = profile.getLastName();

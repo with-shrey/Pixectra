@@ -21,6 +21,8 @@ import com.pixectra.app.R;
 
 import java.util.HashMap;
 
+import io.branch.referral.Branch;
+
 /**
  * Created by Suhail on 2/6/2018.
  */
@@ -189,6 +191,7 @@ public class SessionHelper extends MainActivity {
     public void logOutUser() {
 
         //Clearing all data from the shared preferences
+        Branch.getInstance().logout();
         editor.clear();
         editor.commit();
         FirebaseAuth.getInstance().signOut();
