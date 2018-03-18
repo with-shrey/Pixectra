@@ -1,10 +1,12 @@
 package com.pixectra.app.Models;
 
+import java.io.Serializable;
+
 /**
  * Created by XCODER on 3/6/2018.
  */
 
-public class CheckoutData {
+public class CheckoutData implements Serializable {
     User user;
     Address address;
     Price price;

@@ -44,8 +44,8 @@ import com.pixectra.app.Models.Tax;
 import com.pixectra.app.Models.User;
 import com.pixectra.app.Utils.CartHolder;
 import com.pixectra.app.Utils.ImageController;
-import com.pixectra.app.Utils.QReader;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -58,11 +58,12 @@ public class Checkout extends AppCompatActivity {
     CartAdapter adapter;
     Address address;
     Coupon coupon;
-    boolean couponApplied=false;
+    boolean couponApplied = false;
     SimpleDateFormat format;
     EditText couponBottomSheet;
     TextView addressText;
     ImageController uploader;
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -74,6 +75,9 @@ public class Checkout extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
         setContentView(R.layout.activity_checkout);
         uploader = new ImageController(Checkout.this, getWindow());
         couponApplied = CartHolder.getInstance().getDiscount() != null;
@@ -92,10 +96,10 @@ public class Checkout extends AppCompatActivity {
         toggleVisibility();
     }
 
-    int getBaseAmount(){
-        int total=0;
-        for (Pair<Product,Vector<Bitmap>> product:CartHolder.getInstance().getCart()){
-            total+=product.first.getPrice();
+    int getBaseAmount() {
+        int total = 0;
+        for (Pair<Product, Vector<Bitmap>> product : CartHolder.getInstance().getCart()) {
+            total += product.first.getPrice();
         }
         return total;
     }
@@ -151,14 +155,14 @@ public class Checkout extends AppCompatActivity {
         final TextView centralgst = parentview.findViewById(R.id.centralgst);
         final TextView cess = parentview.findViewById(R.id.cess);
         final TextView totalpayable = parentview.findViewById(R.id.totalpayable);
-         addressText = parentview.findViewById(R.id.bottom_sheet_address);
+        addressText = parentview.findViewById(R.id.bottom_sheet_address);
 
         final TextView discountType = parentview.findViewById(R.id.discount_type);
         final TextView cgstType = parentview.findViewById(R.id.cgst_type);
         final TextView sgstType = parentview.findViewById(R.id.sgst_type);
         final TextView cessType = parentview.findViewById(R.id.cess_type);
 
-        Button cancel = parentview.findViewById(R.id.bottomsheet_cancel);
+        final Button cancel = parentview.findViewById(R.id.bottomsheet_cancel);
         Button pay = parentview.findViewById(R.id.bottomsheet_pay);
         Button scan = parentview.findViewById(R.id.scanqr);
         Button selectShipping = parentview.findViewById(R.id.shipping_address_choose);
@@ -168,29 +172,29 @@ public class Checkout extends AppCompatActivity {
         db.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Tax tax=dataSnapshot.getValue(Tax.class);
-                cgstType.setText(tax.getCgst()+"%");
-                sgstType.setText(tax.getSgst()+"%");
-                cessType.setText(tax.getCess()+"%");
+                Tax tax = dataSnapshot.getValue(Tax.class);
+                cgstType.setText(tax.getCgst() + "%");
+                sgstType.setText(tax.getSgst() + "%");
+                cessType.setText(tax.getCess() + "%");
 
-                if (tax.getType() == 0 && tax.getThreshold() <= Double.parseDouble(carttotal.getText().toString()) ){
-                    discountType.setText("-"+tax.getDiscount()+"%");
-                    cartDiscount.setText(String.valueOf(-1.0*tax.getDiscount()*Double.parseDouble(carttotal.getText().toString())/100.0));
-                }else{
-                    if (tax.getThreshold() <= Double.parseDouble(carttotal.getText().toString())){
-                        discountType.setText("-Rs."+tax.getDiscount());
-                        cartDiscount.setText(String.valueOf(-1.0*tax.getDiscount()));
+                if (tax.getType() == 0 && tax.getThreshold() <= Double.parseDouble(carttotal.getText().toString())) {
+                    discountType.setText("-" + tax.getDiscount() + "%");
+                    cartDiscount.setText(String.valueOf(-1.0 * tax.getDiscount() * Double.parseDouble(carttotal.getText().toString()) / 100.0));
+                } else {
+                    if (tax.getThreshold() <= Double.parseDouble(carttotal.getText().toString())) {
+                        discountType.setText("-Rs." + tax.getDiscount());
+                        cartDiscount.setText(String.valueOf(-1.0 * tax.getDiscount()));
                     }
                 }
-                centralgst.setText(String.valueOf(tax.getCgst()*Double.parseDouble(carttotal.getText().toString())/100.0));
-                stategst.setText(String.valueOf(tax.getSgst()*Double.parseDouble(carttotal.getText().toString())/100.0));
-                cess.setText(String.valueOf(tax.getCess()*Double.parseDouble(carttotal.getText().toString())/100.0));
+                centralgst.setText(String.valueOf(tax.getCgst() * Double.parseDouble(carttotal.getText().toString()) / 100.0));
+                stategst.setText(String.valueOf(tax.getSgst() * Double.parseDouble(carttotal.getText().toString()) / 100.0));
+                cess.setText(String.valueOf(tax.getCess() * Double.parseDouble(carttotal.getText().toString()) / 100.0));
                 totalpayable.setText(String.valueOf(
                         Double.parseDouble(centralgst.getText().toString())
-                        +Double.parseDouble(stategst.getText().toString())
-                        +Double.parseDouble(cess.getText().toString())
-                        +Double.parseDouble(carttotal.getText().toString())
-                        +Double.parseDouble(cartDiscount.getText().toString())
+                                + Double.parseDouble(stategst.getText().toString())
+                                + Double.parseDouble(cess.getText().toString())
+                                + Double.parseDouble(carttotal.getText().toString())
+                                + Double.parseDouble(cartDiscount.getText().toString())
                 ));
                 db.removeEventListener(this);
                 if (CartHolder.getInstance().getDiscount() != null) {
@@ -215,9 +219,9 @@ public class Checkout extends AppCompatActivity {
         selectShipping.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(Checkout.this, SelectAddressActivity.class);
-                intent.putExtra("select",true);
-                startActivityForResult(intent,2);
+                Intent intent = new Intent(Checkout.this, SelectAddressActivity.class);
+                intent.putExtra("select", true);
+                startActivityForResult(intent, 2);
             }
         });
         apply.setOnClickListener(new View.OnClickListener() {
@@ -329,7 +333,7 @@ public class Checkout extends AppCompatActivity {
                             databaseError.toException().printStackTrace();
                         }
                     });
-                }else{
+                } else {
                     Toast.makeText(Checkout.this, "Only One Coupon Allowed For A Order", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -337,19 +341,19 @@ public class Checkout extends AppCompatActivity {
         scan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (android.os.Build.VERSION.SDK_INT >=  Build.VERSION_CODES.LOLLIPOP &&
+                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
                         ContextCompat.checkSelfPermission(Checkout.this,
                                 android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
 
 
-                        ActivityCompat.requestPermissions(Checkout.this,
-                                new String[]{android.Manifest.permission.CAMERA},
-                                1);
+                    ActivityCompat.requestPermissions(Checkout.this,
+                            new String[]{android.Manifest.permission.CAMERA},
+                            1);
 
 
-                }else {
-                    Intent intent = new Intent(Checkout.this, QReader.class);
-                    startActivityForResult(intent, 1);
+                } else {
+                    //   Intent intent = new Intent(Checkout.this, QReader.class);
+                    // startActivityForResult(intent, 1);
                 }
             }
         });
@@ -357,32 +361,45 @@ public class Checkout extends AppCompatActivity {
         pay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final CheckoutData checkout=new CheckoutData();
+                final CheckoutData checkout = new CheckoutData();
 
                 final DatabaseReference user = FirebaseDatabase.getInstance().getReference("User").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
                 user.keepSynced(true);
                 user.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                checkout.setUser(dataSnapshot.getValue(User.class));
-                                Price price=new Price(Double.parseDouble(carttotal.getText().toString())
-                                        ,Double.parseDouble(centralgst.getText().toString())
-                                        ,Double.parseDouble(stategst.getText().toString())
-                                        ,Double.parseDouble(cess.getText().toString())
-                                        ,Double.parseDouble(cartDiscount.getText().toString())
-                                        ,Double.parseDouble(totalpayable.getText().toString())
-                                );
-                                checkout.setPrice(price);
-                                checkout.setAddress(address);
-                                uploader.placeOrder(checkout);
-                                user.removeEventListener(this);
-                            }
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        checkout.setUser(dataSnapshot.getValue(User.class));
+                        Price price = new Price(Double.parseDouble(carttotal.getText().toString())
+                                , Double.parseDouble(centralgst.getText().toString())
+                                , Double.parseDouble(stategst.getText().toString())
+                                , Double.parseDouble(cess.getText().toString())
+                                , Double.parseDouble(cartDiscount.getText().toString())
+                                , Double.parseDouble(totalpayable.getText().toString())
+                        );
+                        checkout.setPrice(price);
+                        checkout.setAddress(address);
 
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
 
-                            }
-                        });
+
+
+                        Intent intent = new Intent(Checkout.this, PayUMoneyActivity.class);
+                        intent.putExtra("name", checkout.getUser().getName());
+                        intent.putExtra("email", checkout.getUser().getEmail());
+                        intent.putExtra("amount", checkout.getPrice().getTotal());
+                        intent.putExtra("phone", checkout.getUser().getPhoneNo());
+                        intent.putExtra("id", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                        intent.putExtra("isOneTime", true);
+                        intent.putExtra("Obj", checkout);
+                        startActivity(intent);
+
+                        user.removeEventListener(this);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
 
             }
         });
@@ -394,24 +411,25 @@ public class Checkout extends AppCompatActivity {
             }
         });
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK){
-            if (requestCode == 1){
-                if (couponBottomSheet != null){
+        if (resultCode == RESULT_OK) {
+            if (requestCode == 1) {
+                if (couponBottomSheet != null) {
                     couponBottomSheet.setText(data.getStringExtra("code"));
                 }
-            }else if (requestCode == 2){
+            } else if (requestCode == 2) {
                 Bundle bundle = data.getExtras();
                 if (bundle != null) {
-                    address=(Address)bundle.getSerializable("address");
-                    if (addressText!=null)
-                        addressText.setText(address.getName()+"\n"+address.getStreet()+"\n"+address.getMobile());
+                    address = (Address) bundle.getSerializable("address");
+                    if (addressText != null)
+                        addressText.setText(address.getName() + "\n" + address.getStreet() + "\n" + address.getMobile());
                 }
             }
-        }else{
-            if (requestCode == 1){
+        } else {
+            if (requestCode == 1) {
 
             }
         }
@@ -420,18 +438,17 @@ public class Checkout extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 1){
+        if (requestCode == 1) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Intent intent = new Intent(Checkout.this, QReader.class);
-                startActivityForResult(intent, 1);
+                //   Intent intent = new Intent(Checkout.this, QReader.class);
+                // startActivityForResult(intent, 1);
                 // permission was granted, yay! Do the
                 // contacts-related task you need to do.
 
             }
         }
     }
-
 
 
     class CartAdapter extends RecyclerView.Adapter<CartAdapter.VH> {
@@ -466,6 +483,7 @@ public class Checkout extends AppCompatActivity {
             ImageView titleImage;
             RecyclerView images;
             ImageView remove;
+
             public VH(View itemView) {
                 super(itemView);
                 title = itemView.findViewById(R.id.title);
