@@ -31,7 +31,7 @@ public class UserProfileFragment extends Fragment{
 ImageView profilePic;
 TextView userName;
 CardView address;
-    CardView linkAccount, account;
+    CardView linkAccount, account, order,subscription;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -78,6 +78,9 @@ CardView address;
         address=view.findViewById(R.id.address_card_view);
         linkAccount=view.findViewById(R.id.link_account_card_view);
         account = view.findViewById(R.id.account_card_view);
+        order=view.findViewById(R.id.order_card_view);
+        subscription=view.findViewById(R.id.subscription_card_view);
+
 
         if (data.get(SessionHelper.User_Image) != null)
             GlideHelper.load(getActivity(), Uri.parse(data.get(SessionHelper.User_Image)), profilePic
@@ -97,6 +100,7 @@ CardView address;
                 startActivity(intent);
             }
         });
+
         account.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -104,6 +108,19 @@ CardView address;
                 startActivity(intent);
             }
         });
+        order.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), orders_placed.class);
+                startActivity(intent);
+            }
+        });
+        subscription.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), subscription_list.class);
+                startActivity(intent);
+            }});
         super.onViewCreated(view, savedInstanceState);
     }
 

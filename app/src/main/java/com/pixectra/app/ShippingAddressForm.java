@@ -102,7 +102,7 @@ public class ShippingAddressForm extends AppCompatActivity {
                 mobile=Tmobile.getText().toString();
                 pincode=Tpincode.getText().toString();
                 ward=Tward.getText().toString();
-                street=Tstate.getText().toString();
+                street=Tstreet.getText().toString();
                 state=Tstate.getText().toString();
                 optional=Toptional.getText().toString();
                 city=Tcity.getText().toString();

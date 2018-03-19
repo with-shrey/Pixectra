@@ -46,7 +46,7 @@ public class ReferAndEarnFragment extends Fragment {
                                         .setMinimumVersion(1)
                                         .build())
 //                        .setIosParameters(
-//                                new DynamicLink.IosParameters.Builder("com.example.ios")
+//                                new DynamicLinkq  .IosParameters.Builder("com.example.ios")
 //                                        .setAppStoreId("123456789")
 //                                        .setMinimumVersion("1.0.1")
 //                                        .build())
