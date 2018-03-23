@@ -93,6 +93,8 @@
         <activity android:name=".CroppingActivity" />
         <activity android:name=".Checkout" />
         <activity android:name=".PayUMoneyActivity" />
+        <activity android:name=".orders_placed"/>
+        <activity android:name=".subscription_list"/>
 
         <meta-data
             android:name="io.fabric.ApiKey"
