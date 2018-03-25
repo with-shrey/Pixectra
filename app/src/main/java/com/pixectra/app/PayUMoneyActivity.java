@@ -22,6 +22,9 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import com.pixectra.app.Models.CheckoutData;
+import com.pixectra.app.Utils.ImageController;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.security.MessageDigest;
@@ -84,6 +87,7 @@ public class PayUMoneyActivity extends AppCompatActivity {
     private String mSuccessUrl = "pixectra.com/success";
     private String mFailedUrl = "pixectra.com/failed";
     private ProgressDialog mProgress;
+    CheckoutData checkout;
 
     /**
      * @param savedInstanceState
@@ -143,7 +147,7 @@ public class PayUMoneyActivity extends AppCompatActivity {
              */
 
             //dummy
-            mFirstName = "Name";
+           /* mFirstName = "Name";
 
             mEmailId = "email@gmail.com";
 
@@ -154,15 +158,15 @@ public class PayUMoneyActivity extends AppCompatActivity {
             mId = 145;
             bundle.getInt("id");
             isOneTime = true;
-
-
-           /* mFirstName =bundle.getString("name");
-            mEmailId = bundle.getString("email");
-            mAmount =bundle.getDouble("amount");
-            mPhone =bundle.getString("phone");
-            mId =bundle.getInt("id");
-            isOneTime = bundle.getBoolean("isOneTime");
 */
+
+            mFirstName = bundle.getString("name");
+            mEmailId = bundle.getString("email");
+            mAmount = bundle.getDouble("amount");
+            mPhone = bundle.getString("phone");
+            mId = bundle.getInt("id");
+            isOneTime = bundle.getBoolean("isOneTime");
+            checkout = (CheckoutData) bundle.getSerializable("Obj");
             Log.i("Params", "" + mFirstName + " : " + mEmailId + " : " + mAmount + " : " + mPhone);
 
             /**
@@ -230,9 +234,11 @@ public class PayUMoneyActivity extends AppCompatActivity {
                        /*
                        replace MainActivity with Cart Activity
                         */
+                        new ImageController(PayUMoneyActivity.this, getWindow()).placeOrder(checkout);
 
                         Intent intent = new Intent(PayUMoneyActivity.this, MainActivity.class);
 
+                        intent.putExtra("fromPayU", true);
                         intent.putExtra("status", true);
                         intent.putExtra("transaction_id", mTXNId);
                         intent.putExtra("id", mId);
