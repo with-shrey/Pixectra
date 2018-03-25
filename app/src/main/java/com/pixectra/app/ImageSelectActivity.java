@@ -1,5 +1,6 @@
 package com.pixectra.app;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -21,19 +22,25 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.pixectra.app.Fragments.ImageFragment;
 import com.pixectra.app.Utils.CartHolder;
 
 import java.util.Vector;
 
 public class ImageSelectActivity extends AppCompatActivity {
-ViewPager viewPager;
+    private static final int RC_SIGN_IN = 4;
+    ViewPager viewPager;
 TabLayout tabLayout;
     RecyclerView selectedImages;
     Vector<Bitmap> selectedItems;
     SelectedItemsAdapter selectedItemsAdapter;
     FloatingActionButton save;
     int w;
+    private GoogleSignInClient mGoogleSignInClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,6 +119,19 @@ TabLayout tabLayout;
             }
         });
 
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        signIn();
+
+    }
+
+    private void signIn() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
     void setToolbarText(int count) {

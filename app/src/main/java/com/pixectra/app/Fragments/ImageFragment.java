@@ -40,23 +40,23 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.Profile;
-import com.google.android.gms.auth.GoogleAuthException;
-import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.api.Scope;
 import com.pixectra.app.Adapter.ImageSelectAdapter;
+import com.pixectra.app.Adapter.PicasaImageSelectAdapter;
 import com.pixectra.app.FacebookActivity;
-import com.pixectra.app.GetOAuthAccessTokenTask;
+import com.pixectra.app.Models.PicasaAlbumExtra;
+import com.pixectra.app.Utils.GetOAuthAccessTokenTask;
 import com.pixectra.app.Instagram.ApplicationData;
 import com.pixectra.app.Instagram.InstagramApp;
 import com.pixectra.app.Models.Images;
-import com.pixectra.app.PicasaActivity;
 import com.pixectra.app.R;
 import com.pixectra.app.Utils.AlbumActivity;
 import com.pixectra.app.Utils.Function;
@@ -70,7 +70,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -104,6 +103,8 @@ public class ImageFragment extends Fragment {
     int pics;
     private RecyclerView recyclerView;
     private ImageSelectAdapter adapter;
+    private PicasaImageSelectAdapter picasaAdapter;
+    List<PicasaAlbumExtra> albumExtras;
     public ImageFragment() {
     }
 
@@ -120,7 +121,7 @@ public class ImageFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         category = getArguments().getInt("type", -1);
-
+        queue = Volley.newRequestQueue(getActivity());
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -128,11 +129,14 @@ public class ImageFragment extends Fragment {
         pics = getActivity().getIntent().getIntExtra("pics", 0);
         View layout = inflater.inflate(R.layout.image_select_fragment, null);
         imageData = new ArrayList<>();
+        albumExtras = new ArrayList<>();
         recyclerView = layout.findViewById(R.id.Imagelist);
         noLoginView = layout.findViewById(R.id.no_login_view);
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
         albumAdapter = new AlbumAdapter(getActivity(), albumList);
         adapter = new ImageSelectAdapter(getActivity(), key, getActivity().getIntent().getIntExtra("pics", 0), imageData);
+        picasaAdapter = new PicasaImageSelectAdapter(getActivity(), key, getActivity().getIntent().getIntExtra("pics", 0), imageData, albumExtras);
+
         //imagegrid = layout.findViewById(R.id.PhoneImageGrid);
           // selectBtn = layout.findViewById(R.id.selectBtn);
 
@@ -140,9 +144,11 @@ public class ImageFragment extends Fragment {
         //<--For first fragment
         if (category == 0) {
             recyclerView.setAdapter(albumAdapter);
-        }else{
+        }else//For Picasa Fragment
+            if(category == 3)
+                recyclerView.setAdapter(picasaAdapter);
+        else
             recyclerView.setAdapter(adapter);
-        }
         checkAndLoadData();
 
         return layout;
@@ -277,9 +283,10 @@ public class ImageFragment extends Fragment {
 
     }
 
-    public void getImagesData(final String accessToken)
+    public void getPicasaImagesJSON(final String accessToken)
     {
-        String url = "https://picasaweb.google.com/data/feed/api/user/default?kind=photo&max-results=100?alt=json";
+        picasaAdapter.setAccessToken(accessToken);
+        String url = "https://picasaweb.google.com/data/feed/api/user/default?alt=json";
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null,
                 new Response.Listener<JSONObject>() {
 
@@ -294,7 +301,7 @@ public class ImageFragment extends Fragment {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                error.printStackTrace();
             }
         }){
             @Override
@@ -312,15 +319,21 @@ public class ImageFragment extends Fragment {
     }
 
     private void getPicasaImages(JSONObject response) throws JSONException {
-        JSONArray entries = response.getJSONArray("entry");
+        JSONArray entries = response.getJSONObject("feed").getJSONArray("entry");
         int l = entries.length();
         for (int i = 0; i < l; i++) {
-            String imageUrl = entries.getJSONObject(i).getJSONObject("content").getString("src");
-            String thumbnailUrl = entries.getJSONObject(i).getJSONArray("media:thumbnail")
-                    .getJSONObject(0).getString("url");
+           JSONObject entry = entries.getJSONObject(i);
+           String imageUrl = entry.getJSONObject("media$group").getJSONArray("media$content").getJSONObject(0)
+                   .getString("url");
+            String thumbnailUrl = entry.getJSONObject("media$group").getJSONArray("media$thumbnail").getJSONObject(0)
+                    .getString("url");
+
+            String albumName = entry.getJSONObject("title").getString("$t");
+            String albumId = entry.getJSONObject("gphoto$id").getString("$t");
+            albumExtras.add(new PicasaAlbumExtra(albumId, albumName));
             imageData.add(new Images(imageUrl, thumbnailUrl));
         }
-        adapter.notifyDataSetChanged();
+        picasaAdapter.notifyDataSetChanged();
     }
 
 

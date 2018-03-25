@@ -19,7 +19,9 @@
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
         </activity>
-        <activity android:name=".PicasaActivity"/>
+        <activity android:name=".PicasaActivity">
+
+        </activity>
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_id" />
@@ -27,11 +29,6 @@
 
         <activity android:name=".MyProfileActivity" />
         <activity android:name=".SplashScreenActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <activity
@@ -51,9 +48,16 @@
         <activity android:name=".Utils.AddCommonData" />
         <activity
             android:name=".ImageSelectActivity"
-            android:label="Select Images.." />
+            android:label="Select Images.." >
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+        </activity>
         <activity android:name=".LinkedAccounts" />
         <activity android:name=".FacebookActivity" />
+        <activity android:name=".Utils.PicasaAlbumActivity" />
 
         <meta-data
             android:name="io.fabric.ApiKey"

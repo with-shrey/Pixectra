@@ -1,6 +1,5 @@
-package com.pixectra.app;
+package com.pixectra.app.Utils;
 
-import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,7 +33,7 @@ public class GetOAuthAccessTokenTask extends AsyncTask<Void,Void,Void> {
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
         if(accessToken!= null)
-        imageFragment.getImagesData(accessToken);
+        imageFragment.getPicasaImagesJSON(accessToken);
         else
             Log.e("Error Retrieving token", "Oauth token was not retrieved");
     }

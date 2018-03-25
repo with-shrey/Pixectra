@@ -175,19 +175,45 @@ public class PicasaActivity extends AppCompatActivity {
 
     void getData()
     {
+        showToast(accessToken);
         final TextView mTextView = findViewById(R.id.string_response);
-        String url = "https://picasaweb.google.com/data/feed/api/user/default?kind=photo&max-results=100?alt=json";
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null,
+        String url = "https://picasaweb.google.com/data/feed/api/user/default?alt=json";
+       /* JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null,
                 new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
-
+                        mTextView.setText(response.toString());
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 showToast(error.getMessage());
+                mTextView.setText("That didn't work!");
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> params ;//=  super.getHeaders();
+                //if(params==null)
+                params = new HashMap<>();
+                params.put("Authorization","Bearer " + accessToken);
+                params.put("GData-Version", "3");
+                return params;
+            }
+        };*/
+
+        StringRequest jsonObjectRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+
+                    @Override
+                    public void onResponse(String response) {
+                        mTextView.setText(response);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                showToast(error.getLocalizedMessage());
                 mTextView.setText("That didn't work!");
             }
         }){
@@ -206,8 +232,8 @@ public class PicasaActivity extends AppCompatActivity {
     }
 
     private boolean checkForPicasaAuthPermission() {
-        Scope SCOPE_PICASA = new Scope("https://picasaweb.google.com/data/");
         String scope = "oauth2:https://picasaweb.google.com/data/";
+        Scope SCOPE_PICASA = new Scope("https://photos.googleapis.com/data/");
         if (!GoogleSignIn.hasPermissions(
                 GoogleSignIn.getLastSignedInAccount(this),
                 SCOPE_PICASA)) {

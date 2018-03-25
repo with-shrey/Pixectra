@@ -71,8 +71,6 @@ public class AlbumActivity extends Activity {
         galleryGridView.setAdapter(adapter);
         loadAlbumTask = new LoadAlbumImages();
         loadAlbumTask.execute();
-
-
     }
 
 
@@ -120,7 +118,7 @@ public class AlbumActivity extends Activity {
     }
 
 
-    class SingleAlbumAdapter extends RecyclerView.Adapter<SingleAlbumAdapter.SingleAlbumViewHolder> {
+    public class SingleAlbumAdapter extends RecyclerView.Adapter<SingleAlbumAdapter.SingleAlbumViewHolder> {
         int w;
         private Activity activity;
         private ArrayList<HashMap<String, String>> data;
@@ -159,7 +157,7 @@ public class AlbumActivity extends Activity {
             return data.size();
         }
 
-        class SingleAlbumViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        public class SingleAlbumViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
             ImageView galleryImage, overlay;
             ProgressBar loader;
 

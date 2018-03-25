@@ -155,8 +155,6 @@ public class ImageSelectAdapter extends RecyclerView.Adapter<ImageSelectAdapter.
                     e.printStackTrace();
                 }
             }
-
         }
-
     }
 }
