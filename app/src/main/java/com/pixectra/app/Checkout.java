@@ -20,6 +20,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -44,13 +46,15 @@ import com.pixectra.app.Models.Tax;
 import com.pixectra.app.Models.User;
 import com.pixectra.app.Utils.CartHolder;
 import com.pixectra.app.Utils.ImageController;
+import com.pixectra.app.Utils.QReader;
 
-import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Vector;
+
+import io.branch.referral.Branch;
 
 public class Checkout extends AppCompatActivity {
     CardView empty;
@@ -75,9 +79,7 @@ public class Checkout extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
-
+        Branch.getInstance().loadRewards();
         setContentView(R.layout.activity_checkout);
         uploader = new ImageController(Checkout.this, getWindow());
         couponApplied = CartHolder.getInstance().getDiscount() != null;
@@ -155,14 +157,22 @@ public class Checkout extends AppCompatActivity {
         final TextView centralgst = parentview.findViewById(R.id.centralgst);
         final TextView cess = parentview.findViewById(R.id.cess);
         final TextView totalpayable = parentview.findViewById(R.id.totalpayable);
+        final CheckBox credits = parentview.findViewById(R.id.credits);
         addressText = parentview.findViewById(R.id.bottom_sheet_address);
 
         final TextView discountType = parentview.findViewById(R.id.discount_type);
         final TextView cgstType = parentview.findViewById(R.id.cgst_type);
         final TextView sgstType = parentview.findViewById(R.id.sgst_type);
         final TextView cessType = parentview.findViewById(R.id.cess_type);
+        credits.setText("Use Credit Balance( Available : " + Branch.getInstance().getCredits() + ")");
+        int creditBalance = Branch.getInstance().getCredits();
+        credits.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
 
-        final Button cancel = parentview.findViewById(R.id.bottomsheet_cancel);
+            }
+        });
+        Button cancel = parentview.findViewById(R.id.bottomsheet_cancel);
         Button pay = parentview.findViewById(R.id.bottomsheet_pay);
         Button scan = parentview.findViewById(R.id.scanqr);
         Button selectShipping = parentview.findViewById(R.id.shipping_address_choose);
@@ -352,8 +362,8 @@ public class Checkout extends AppCompatActivity {
 
 
                 } else {
-                    //   Intent intent = new Intent(Checkout.this, QReader.class);
-                    // startActivityForResult(intent, 1);
+                    Intent intent = new Intent(Checkout.this, QReader.class);
+                    startActivityForResult(intent, 1);
                 }
             }
         });
@@ -412,6 +422,14 @@ public class Checkout extends AppCompatActivity {
         });
     }
 
+    int calculateCreditDiscount(int credits, int total) {
+        if (credits > total) {
+            return total;
+        } else {
+            return credits;
+        }
+
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -441,8 +459,8 @@ public class Checkout extends AppCompatActivity {
         if (requestCode == 1) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //   Intent intent = new Intent(Checkout.this, QReader.class);
-                // startActivityForResult(intent, 1);
+                Intent intent = new Intent(Checkout.this, QReader.class);
+                startActivityForResult(intent, 1);
                 // permission was granted, yay! Do the
                 // contacts-related task you need to do.
 

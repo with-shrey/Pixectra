@@ -9,19 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.pixectra.app.Models.SubscriptionDetails;
 import com.pixectra.app.R;
-import com.pixectra.app.Utils.ChangeIndicator;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by Suhail on 3/14/2018.
@@ -59,8 +52,8 @@ public class SubscriptionAdaptor extends RecyclerView.Adapter<SubscriptionAdapto
 
     @Override
     public int getItemViewType(int position) {
-        ChangeIndicator changeIndicator = new ChangeIndicator(colorsActive, colorsInactive, context, activity, data.size());
-        changeIndicator.setdots(position);
+//        ChangeIndicator changeIndicator = new ChangeIndicator(colorsActive, colorsInactive, context, activity, data.size());
+//        changeIndicator.setdots(position);
         return super.getItemViewType(position);
     }
 

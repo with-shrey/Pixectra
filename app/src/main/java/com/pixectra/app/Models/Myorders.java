@@ -23,8 +23,10 @@ public class Myorders implements Serializable {
         this.uploaded = uploaded;
         this.amount = amount;
     }
+
     public Myorders() {
     }
+
     public String getid() {
         return id;
     }

@@ -13,26 +13,34 @@
         android:layout_height="match_parent"
         android:layout_marginTop="8dp"
         android:orientation="vertical">
+
+        <CheckBox
+            android:id="@+id/credits"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Use Credits" />
+
         <Button
             android:id="@+id/shipping_address_choose"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
+            android:layout_marginBottom="5dp"
             android:layout_marginEnd="10dp"
             android:layout_marginRight="10dp"
-            android:layout_marginBottom="5dp"
+            android:layout_marginStart="10dp"
             android:layout_weight="1"
             android:background="@drawable/button_curve"
             android:text="Select Shipping Address"
             android:textSize="20sp" />
         <TextView
             android:id="@+id/bottom_sheet_address"
-            android:textColor="@color/black"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center"
             android:textAlignment="center"
-            android:textSize="15sp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:textColor="@color/black"
+            android:textSize="15sp" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -62,9 +70,9 @@
                 android:textSize="18sp" />
             <TextView
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="0.4"
                 android:gravity="center"
-                android:layout_height="wrap_content"
                 android:text="OR"/>
             <Button
                 android:id="@+id/scanqr"
@@ -92,9 +100,9 @@
 
             <TextView
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
+                android:layout_weight="1"
                 android:text="Base Amount"
                 android:textColor="@color/black"
                 android:textSize="15sp" />
@@ -102,13 +110,13 @@
             <TextView
                 android:id="@+id/carttotal"
                 android:layout_width="0dp"
-                android:layout_weight="1"
-                android:gravity="end"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="45dp"
-                android:textColor="@color/black"
+                android:layout_weight="1"
+                android:gravity="end"
                 android:text="5"
+                android:textColor="@color/black"
                 android:textSize="15sp" />
         </LinearLayout>
 
@@ -125,30 +133,30 @@
 
             <TextView
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
+                android:layout_weight="1"
                 android:text="Discount"
                 android:textColor="@color/black"
                 android:textSize="15sp" />
             <TextView
                 android:id="@+id/discount_type"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:layout_height="wrap_content"
                 android:textColor="@color/black"
                 android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/cartdiscount"
                 android:layout_width="0dp"
-                android:layout_weight="1"
-                android:gravity="end"
                 android:layout_height="wrap_content"
-                android:text="0"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="45dp"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="0"
                 android:textColor="@color/black"
                 android:textSize="15sp" />
         </LinearLayout>
@@ -166,28 +174,28 @@
 
             <TextView
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
+                android:layout_weight="1"
                 android:text="SGST"
                 android:textColor="@color/black"
                 android:textSize="15sp" />
             <TextView
                 android:id="@+id/sgst_type"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:layout_height="wrap_content"
                 android:textColor="@color/black"
                 android:textSize="15sp" />
             <TextView
                 android:id="@+id/stategst"
                 android:layout_width="0dp"
-                android:layout_weight="1"
-                android:gravity="end"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="45dp"
+                android:layout_weight="1"
+                android:gravity="end"
                 android:textColor="@color/black"
                 android:textSize="15sp" />
         </LinearLayout>
@@ -205,28 +213,28 @@
 
             <TextView
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
+                android:layout_weight="1"
                 android:text="CGST"
                 android:textColor="@color/black"
                 android:textSize="15sp" />
             <TextView
                 android:id="@+id/cgst_type"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:layout_height="wrap_content"
                 android:textColor="@color/black"
                 android:textSize="15sp" />
             <TextView
                 android:id="@+id/centralgst"
                 android:layout_width="0dp"
-                android:layout_weight="1"
-                android:gravity="end"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="45dp"
+                android:layout_weight="1"
+                android:gravity="end"
                 android:textColor="@color/black"
                 android:textSize="15sp" />
         </LinearLayout>
@@ -245,28 +253,28 @@
             android:paddingRight="8dp">
             <TextView
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
+                android:layout_weight="1"
                 android:text="CESS"
                 android:textColor="@color/black"
                 android:textSize="15sp" />
             <TextView
                 android:id="@+id/cess_type"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:layout_height="wrap_content"
                 android:textColor="@color/black"
                 android:textSize="15sp" />
             <TextView
                 android:id="@+id/cess"
                 android:layout_width="0dp"
-                android:layout_weight="1"
-                android:gravity="end"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="45dp"
+                android:layout_weight="1"
+                android:gravity="end"
                 android:text="0"
                 android:textColor="@color/black"
                 android:textSize="15sp" />

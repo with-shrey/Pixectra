@@ -58,7 +58,7 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_gravity="center_horizontal"
-                    android:src="@drawable/ic_pictures" />
+                    android:src="@drawable/album" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -97,7 +97,7 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_gravity="center_horizontal"
-                    android:src="@drawable/ic_pictures" />
+                    android:src="@drawable/flipbook" />
 
                 <TextView
                     android:layout_width="wrap_content"

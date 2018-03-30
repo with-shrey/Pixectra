@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Created by user on 3/19/2018..
  */
 
-public class subscription implements Serializable{
+public class subscription implements Serializable {
     String key;
     String id;
     String number;
@@ -15,8 +15,8 @@ public class subscription implements Serializable{
     String starting_date;
     Long amount;
 
-    public subscription()
-    {}
+    public subscription() {
+    }
 
     public subscription(String id, String number, String title, String type, String starting_date, Long amount) {
         this.id = id;

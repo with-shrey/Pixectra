@@ -119,14 +119,25 @@ public class ReferAndEarnFragment extends Fragment {
                 .setFeature("sharing");
 
         // Customize the appearance of your share sheet
-        ShareSheetStyle shareSheetStyle = new ShareSheetStyle(getActivity(), "Check this out!", "Hey friend - I know you'll love this: ")
+        ShareSheetStyle shareSheetStyle = new ShareSheetStyle(getActivity()
+                , "Download The App Now And Get Exciting Offers On Sign Up"
+                , "Who doesn't love to share memories, bring your memories to life with pixectra's affordable photo printing service")
                 .setCopyUrlStyle(getResources().getDrawable(android.R.drawable.ic_menu_send), "Copy link", "Link added to clipboard!")
                 .setMoreOptionStyle(getResources().getDrawable(android.R.drawable.ic_menu_search), "Show more")
                 .addPreferredSharingOption(SharingHelper.SHARE_WITH.FACEBOOK)
                 .addPreferredSharingOption(SharingHelper.SHARE_WITH.EMAIL)
                 .addPreferredSharingOption(SharingHelper.SHARE_WITH.WHATS_APP)
                 .addPreferredSharingOption(SharingHelper.SHARE_WITH.MESSAGE)
-                .addPreferredSharingOption(SharingHelper.SHARE_WITH.TWITTER);
+                .addPreferredSharingOption(SharingHelper.SHARE_WITH.TWITTER)
+                .addPreferredSharingOption(SharingHelper.SHARE_WITH.WECHAT)
+                .addPreferredSharingOption(SharingHelper.SHARE_WITH.FLICKR)
+                .addPreferredSharingOption(SharingHelper.SHARE_WITH.GMAIL)
+                .addPreferredSharingOption(SharingHelper.SHARE_WITH.GOOGLE_DOC)
+                .addPreferredSharingOption(SharingHelper.SHARE_WITH.HANGOUT)
+                .addPreferredSharingOption(SharingHelper.SHARE_WITH.INSTAGRAM)
+                .addPreferredSharingOption(SharingHelper.SHARE_WITH.SNAPCHAT)
+                .addPreferredSharingOption(SharingHelper.SHARE_WITH.PINTEREST)
+                .addPreferredSharingOption(SharingHelper.SHARE_WITH.FACEBOOK_MESSENGER);
 
         // Show the share sheet for the content you want the user to share. A link will be automatically created and put in the message.
         branchUniversalObject.showShareSheet(getActivity(), linkProperties, shareSheetStyle, new Branch.BranchLinkShareListener() {

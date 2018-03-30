@@ -32,7 +32,7 @@ ArrayList<Product> data;
     private int getDrawableFromType() {
         switch (type) {
             case 1:
-                return R.drawable.ic_pictures;
+                return R.drawable.flipbook;
             case 2:
                 return R.drawable.ic_postcard;
             case 3:

@@ -1,6 +1,5 @@
 package com.pixectra.app;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,11 +29,12 @@ public class subscription_list extends AppCompatActivity {
     subscriptionAdapter adap;
     ArrayList<subscription> list;
     DatabaseReference ref;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.subscription_list);
         db = FirebaseDatabase.getInstance();
-        ref=db.getReference("Users/"+new SessionHelper(this).getUid()+"/subscriptions");
+        ref = db.getReference("CommonData/" + new SessionHelper(this).getUid() + "/Subscriptions");
         Toolbar toolbar = findViewById(R.id.toolbar_subs);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Subscriptions");
@@ -47,13 +47,13 @@ public class subscription_list extends AppCompatActivity {
             }
         });
         list = new ArrayList<>();
-        adap = new subscriptionAdapter(this,list);
+        adap = new subscriptionAdapter(this, list);
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 list.clear();
-                for (DataSnapshot data:dataSnapshot.getChildren()){
-                    subscription subscriptions=data.getValue(subscription.class);
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    subscription subscriptions = data.getValue(subscription.class);
                     assert subscriptions != null;
                     subscriptions.setKey(data.getKey());
                     list.add(subscriptions);
@@ -67,7 +67,7 @@ public class subscription_list extends AppCompatActivity {
                 findViewById(R.id.progress_subs).setVisibility(View.GONE);
             }
         });
-        RecyclerView recycler = (RecyclerView)findViewById(R.id.subs_recycler);
+        RecyclerView recycler = findViewById(R.id.subs_recycler);
         recycler.setAdapter(adap);
         LinearLayoutManager layout = new LinearLayoutManager(getApplicationContext());
         recycler.setLayoutManager(layout);

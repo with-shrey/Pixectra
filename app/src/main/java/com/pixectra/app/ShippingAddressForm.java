@@ -45,14 +45,14 @@ public class ShippingAddressForm extends AppCompatActivity {
             }
         });
 
-        Tname=(EditText)findViewById(R.id.shipi_name);
-        Tmobile=(EditText)findViewById(R.id.shipi_mobile);
-        Tward=(EditText)findViewById(R.id.shipi_ward);
-        Tstreet=(EditText)findViewById(R.id.shipi_street);
-        Tpincode=(EditText)findViewById(R.id.shipi_pin);
-        Tstate=(EditText)findViewById(R.id.shipi_state);
-        Tcity=(EditText)findViewById(R.id.shipi_city);
-        Toptional=(EditText)findViewById(R.id.shipi_optional);
+        Tname = findViewById(R.id.shipi_name);
+        Tmobile = findViewById(R.id.shipi_mobile);
+        Tward = findViewById(R.id.shipi_ward);
+        Tstreet = findViewById(R.id.shipi_street);
+        Tpincode = findViewById(R.id.shipi_pin);
+        Tstate = findViewById(R.id.shipi_state);
+        Tcity = findViewById(R.id.shipi_city);
+        Toptional = findViewById(R.id.shipi_optional);
 
         final Intent intent = this.getIntent();
         int comefrom=intent.getIntExtra("status",1);
@@ -102,7 +102,7 @@ public class ShippingAddressForm extends AppCompatActivity {
                 mobile=Tmobile.getText().toString();
                 pincode=Tpincode.getText().toString();
                 ward=Tward.getText().toString();
-                street=Tstreet.getText().toString();
+                street = Tstreet.getText().toString();
                 state=Tstate.getText().toString();
                 optional=Toptional.getText().toString();
                 city=Tcity.getText().toString();

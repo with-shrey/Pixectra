@@ -1,50 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_order"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="6dp"
     app:cardBackgroundColor="@color/userProfileCardViewBlue"
     app:cardCornerRadius="10dp"
-    app:cardElevation="5dp"
-    android:id="@+id/card_order"
-    android:layout_margin="6dp">
+    app:cardElevation="5dp">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-      <android.support.constraint.ConstraintLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginBottom="10dp"
-          android:layout_marginTop="5dp">
 
-          <TextView
-              android:id="@+id/Order_number"
-              android:layout_width="210dp"
-              android:layout_height="wrap_content"
-              android:layout_marginStart="8dp"
-              android:text="Order No "
-              android:textColor="#ffffff"
-              android:textSize="20dp"
-              app:layout_constraintStart_toStartOf="parent" />
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="5dp">
 
-          <TextView
-              android:id="@+id/Order_time"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_marginEnd="8dp"
-              android:text="17 mar 2018  01:40 PM"
-              android:textColor="#ffffff"
-              android:textSize="14dp"
-              app:layout_constraintEnd_toEndOf="parent"
-              tools:layout_editor_absoluteY="4dp" />
-      </android.support.constraint.ConstraintLayout>
+            <TextView
+                android:id="@+id/Order_number"
+                android:layout_width="210dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Order No "
+                android:textColor="#ffffff"
+                android:textSize="20dp"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/Order_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="17 mar 2018  01:40 PM"
+                android:textColor="#ffffff"
+                android:textSize="14dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:layout_editor_absoluteY="4dp" />
+        </android.support.constraint.ConstraintLayout>
+
         <View
             android:layout_width="350dp"
             android:layout_height="1dp"
             android:layout_gravity="center"
-            android:background="@color/black"/>
+            android:background="@color/black" />
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -103,6 +106,6 @@
 
         </android.support.constraint.ConstraintLayout>
 
-        </LinearLayout>
+    </LinearLayout>
 
 </android.support.v7.widget.CardView>
