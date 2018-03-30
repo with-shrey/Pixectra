@@ -22,6 +22,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -35,7 +36,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pixectra.app.Models.User;
+import com.pixectra.app.Utils.LogManager;
 import com.pixectra.app.Utils.SessionHelper;
+
+import io.branch.referral.Branch;
 
 public class LActivity extends AppCompatActivity {
     private static final String TAG = "HANDLESIGNINRESULT";
@@ -63,7 +67,9 @@ DatabaseReference ref;
         imageView = findViewById(R.id.google_login_button);
         facebookimageview1 = findViewById(R.id.facebook_login_button);
         progressBar = findViewById(R.id.simpleProgressBar);
+        Scope SCOPE_PICASA = new Scope("https://picasaweb.google.com/data/");
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestScopes(SCOPE_PICASA)
                 .requestIdToken(getString(R.string.google_token))
                 .requestEmail()
                 .build();
@@ -137,12 +143,15 @@ DatabaseReference ref;
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            Branch.getInstance().setIdentity(mAuth.getCurrentUser().getUid());
+
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("Google Sign In", "signInWithCredential:success");
                             boolean isNew = task.getResult().getAdditionalUserInfo().isNewUser();
                             Log.d("Google Sign In", "onComplete: " + (isNew ? "new user" : "old user"));
                             Toast.makeText(LActivity.this, "onComplete: " + (isNew ? "new user" : "old user"), Toast.LENGTH_SHORT).show();
                             if (isNew) {
+                                Branch.getInstance().userCompletedAction("signup");
                                 // mAuth.getCurrentUser().getUid();
                                 Log.d("TAG", "handleSignInResult:" + result.isSuccess());
                                 if (result.isSuccess()) {
@@ -158,6 +167,7 @@ DatabaseReference ref;
                                             , gpersonEmail
                                             , gImageUrl);
                                     FirebaseUser user = mAuth.getCurrentUser();
+                                    LogManager.userSignUp(true, "Google", mAuth.getCurrentUser().getUid());
                                     Intent intent = new Intent(LActivity.this, MobileVerifyActivity.class);
                                     intent.putExtra("uid", mAuth.getCurrentUser().getUid());
                                     startActivity(intent);
@@ -168,7 +178,8 @@ DatabaseReference ref;
                                     Toast.makeText(LActivity.this, gpersonName + "\n" + gpersonEmail, Toast.LENGTH_SHORT).show();
                                 }
                             } else {
-                                ref.child(mAuth.getCurrentUser().getUid()).child("Info").addListenerForSingleValueEvent(new ValueEventListener() {
+                                LogManager.userSignIn(true, "Google", mAuth.getCurrentUser().getUid());
+                                ref.child(mAuth.getCurrentUser().getUid()).child("Info").addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         User user = dataSnapshot.getValue(User.class);
@@ -178,6 +189,7 @@ DatabaseReference ref;
                                                 , Uri.parse(user.getProfilePic()));
                                         FirebaseUser userfire = mAuth.getCurrentUser();
                                         updateUI(userfire);
+                                        ref.child(mAuth.getCurrentUser().getUid()).child("Info").removeEventListener(this);
                                     }
 
                                     @Override
@@ -205,7 +217,7 @@ DatabaseReference ref;
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
-        if (resultCode == RESULT_OK && requestCode == RC_SIGN_IN) {
+        if (requestCode == RC_SIGN_IN) {
             // The Task returned from this call is always completed, no need to attach
             // a listener..
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
@@ -216,6 +228,7 @@ DatabaseReference ref;
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account, result);
             } catch (ApiException e) {
+                LogManager.userSignUp(false, "Google", "");
                 Toast.makeText(this, "Failed SignIn Exception Key: Google Sign In ", Toast.LENGTH_SHORT).show();
                 // Google Sign In failed, update UI appropriately
                 Log.v("Google Sign In", "Google sign in failed", e);

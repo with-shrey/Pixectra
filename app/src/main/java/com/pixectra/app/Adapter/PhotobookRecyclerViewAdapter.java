@@ -14,7 +14,9 @@ import android.widget.TextView;
 import com.pixectra.app.ImageSelectActivity;
 import com.pixectra.app.Models.Product;
 import com.pixectra.app.R;
+import com.pixectra.app.Utils.CartHolder;
 import com.pixectra.app.Utils.GlideHelper;
+import com.pixectra.app.Utils.LogManager;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -54,10 +56,10 @@ public class PhotobookRecyclerViewAdapter extends RecyclerView.Adapter<Photobook
     public void onBindViewHolder(final MyViewHolder holder, int position) {
         Product product = list.get(position);
         if (product.getTitle() != null) {
-            setPrice(holder.price, product.getPrice());
+            setPrice(holder.price, product.getPrice(), product.getPriceDesc());
             //<<-- setting image title
             holder.image_title.setText(product.getTitle());
-            setPicsCount(holder.count, product.getPics());
+            setPicsCount(holder.count, product.getMinPics() + "-" + product.getMaxPics());
         } else {
             Log.d("Recycler View ", "Empty Image title at : " + position);
         }
@@ -70,12 +72,12 @@ public class PhotobookRecyclerViewAdapter extends RecyclerView.Adapter<Photobook
 
     }
 
-    void setPrice(TextView textView, int price) {
-        textView.setText(String.format(Locale.getDefault(), "%s %d/UNIT", mcontext.getResources().getString(R.string.Rs), price));
+    void setPrice(TextView textView, int price, String text) {
+        textView.setText(String.format(Locale.getDefault(), "%s %d/%s", mcontext.getResources().getString(R.string.Rs), price, text));
     }
 
-    void setPicsCount(TextView textView, int count) {
-        textView.setText(String.format(Locale.getDefault(), "%d PHOTOS", count));
+    void setPicsCount(TextView textView, String count) {
+        textView.setText(String.format(Locale.getDefault(), "%s PHOTOS", count));
     }
     @Override
     public int getItemCount() {
@@ -98,8 +100,12 @@ public class PhotobookRecyclerViewAdapter extends RecyclerView.Adapter<Photobook
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    LogManager.viewContent(list.get(getAdapterPosition()).getId(), list.get(getAdapterPosition()).getTitle()
+                            , list.get(getAdapterPosition()).getType());
+                    CartHolder.getInstance().addDetails(list.get(getAdapterPosition()).getId(), list.get(getAdapterPosition()));
                     Intent intent = new Intent(mcontext, ImageSelectActivity.class);
-                    intent.putExtra("pics", list.get(getAdapterPosition()).getPics());
+                    intent.putExtra("minPics", list.get(getAdapterPosition()).getMinPics());
+                    intent.putExtra("maxPics", list.get(getAdapterPosition()).getMaxPics());
                     intent.putExtra("key", list.get(getAdapterPosition()).getId());
                     mcontext.startActivity(intent);
                 }

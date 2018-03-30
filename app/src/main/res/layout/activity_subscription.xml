@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/layoutOne"
+    android:background="@color/colorPrimary"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+   android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.pixectra.app.SubscriptionActivity">
+<android.support.v7.widget.RecyclerView
+
+    android:layout_width="match_parent"
+    android:id="@+id/SubscriptionRecyclerView"
+    android:layout_height="0dp"
+    android:layout_weight="1"
+
+    >
+
+</android.support.v7.widget.RecyclerView>
+
+    <LinearLayout
+        android:background="@color/colorPrimary"
+        android:id="@+id/layoutDots2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+
+
+        android:layout_marginBottom="@dimen/dots_margin_bottom"
+        android:gravity="center"
+        android:orientation="horizontal" />
+</LinearLayout>

@@ -3,12 +3,16 @@ package com.pixectra.app;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.ImageView;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.firebase.database.FirebaseDatabase;
 
-import io.fabric.sdk.android.Fabric;
+import org.json.JSONObject;
+
+import io.branch.referral.Branch;
+import io.branch.referral.BranchError;
+import io.branch.referral.InstallListener;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 @SuppressWarnings("deprecation")
@@ -20,7 +24,8 @@ public class SplashScreenActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics());
+        InstallListener listener = new InstallListener();
+        listener.onReceive(getApplicationContext(), getIntent());
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
                 .setDefaultFontPath(getString(R.string.default_font_path))
                 .setFontAttrId(R.attr.fontPath)
@@ -31,13 +36,13 @@ public class SplashScreenActivity extends AppCompatActivity {
         }catch(Exception e){
             e.printStackTrace();
         }
-        setContentView(R.layout.activity_splash_screen);
+        //setContentView(R.layout.activity_splash_screen);
         splashimage = findViewById(R.id.splash_image);
         new Thread() {
             @Override
             public void run() {
                 try {
-                    sleep(3000);
+                    sleep(2000);
                     Intent intent = new Intent(getApplicationContext(), WelcomeActivity.class);
                     startActivity(intent);
                     finish();
@@ -51,6 +56,27 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // Branch init
+        Branch.getInstance().initSession(new Branch.BranchReferralInitListener() {
+            @Override
+            public void onInitFinished(JSONObject referringParams, BranchError error) {
+                if (error == null) {
+                    Log.i("BRANCH SDK", referringParams.toString());
+                } else {
+                    Log.i("BRANCH SDK", error.getMessage());
+                }
+            }
+        }, this.getIntent().getData(), this);
+    }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+        this.setIntent(intent);
+    }
 // called after oncreate method is created.
     @Override
     protected void onResume() {

@@ -7,9 +7,12 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
-        android:allowBackup="true"
+        android:name=".PixectraApp"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -17,24 +20,56 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
-        </activity>
-        <activity android:name=".PicasaActivity">
-
-        </activity>
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_id" />
-        <activity android:name=".MobileVerifyActivity"/>
 
+        <activity android:name=".MobileVerifyActivity" />
         <activity android:name=".MyProfileActivity" />
-        <activity android:name=".SplashScreenActivity">
-        </activity>
+        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".PicasaActivity" />
+        <!-- Branch install referrer tracking (optional) -->
+        <receiver
+            android:name="io.branch.referral.InstallListener"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
+            </intent-filter>
+        </receiver>
+
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_id" />
 
         <activity
-            android:name=".Utils.AlbumActivity"
-            android:label="Select Images.."
-            android:theme="@android:style/Theme.Holo.Light.Dialog" />
+            android:name=".SplashScreenActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <data
+                    android:host="open"
+                    android:scheme="pixectra" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="refer.pixectra.com"
+                    android:scheme="https" />
+            </intent-filter>
+        </activity>
         <activity android:name=".ShippingAddressForm" />
         <activity android:name=".SelectAddressActivity" />
         <activity android:name=".PhotobookActivity" />
@@ -45,23 +80,27 @@
             android:label="@string/app_name" />
         <activity android:name=".WelcomeActivity" />
         <activity android:name=".LActivity" />
-        <activity android:name=".Utils.AddCommonData" />
         <activity
             android:name=".ImageSelectActivity"
-            android:label="Select Images.." >
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-        </activity>
+            android:label="Select Images.." />
         <activity android:name=".LinkedAccounts" />
         <activity android:name=".FacebookActivity" />
-        <activity android:name=".Utils.PicasaAlbumActivity" />
 
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="24d096531d852632ab1c7f98d4485791c5e5eaa1" />
+
+        <activity android:name=".CroppingActivity" />
+        <activity android:name=".Checkout" />
+        <activity android:name=".PayUMoneyActivity" />
+        <activity android:name=".orders_placed" />
+        <activity android:name=".subscription_list" />
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="24d096531d852632ab1c7f98d4485791c5e5eaa1" />
+
+        <activity android:name=".Utils.QReader" />
     </application>
 
 </manifest>

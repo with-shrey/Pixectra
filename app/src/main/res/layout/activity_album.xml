@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/white"
     android:orientation="vertical">
 
     <LinearLayout
@@ -35,9 +36,8 @@
         android:id="@+id/galleryGridView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="5dp"
         android:fadeScrollbars="false"
-        android:paddingLeft="@dimen/image_cell_padding"
         android:paddingRight="@dimen/image_cell_padding"
         android:scrollbarSize="4dp"
         android:scrollbars="vertical"

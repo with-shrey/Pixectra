@@ -62,21 +62,23 @@ public class OnetimeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         data=new ArrayList<>();
         FirebaseDatabase database=FirebaseDatabase.getInstance();
-        DatabaseReference ref=database.getReference("CommonData").child("PhotoBooks");
-       //<--setting up recycler view
+        final DatabaseReference ref = database.getReference("CommonData").child("PhotoBooks");
+        ref.keepSynced(true);
+        //<--setting up recycler view
         mrecyclerview = getActivity().findViewById(R.id.recyclerview_poster_onetime);
         mrecyclerview.setLayoutManager(new LinearLayoutManager(getActivity()));
         SetupRecyclerview();
-        ref.keepSynced(true);
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 data.clear();
                 for (DataSnapshot temp:dataSnapshot.getChildren()){
-                    data.add(temp.getValue(Product.class));
+                    Product product = temp.getValue(Product.class);
+                    data.add(product);
                 }
                 view.findViewById(R.id.onetime_progress).setVisibility(View.GONE);
                 mposterRecyclerViewAdapter.notifyDataSetChanged();
+                ref.removeEventListener(this);
             }
 
             @Override

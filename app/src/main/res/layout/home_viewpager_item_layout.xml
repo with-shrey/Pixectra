@@ -24,7 +24,8 @@
                 android:id="@+id/sliding_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="centerCrop"/>
+                android:scaleType="centerCrop"
+                android:src="@mipmap/ic_launcher" />
 
                 <ProgressBar
                     android:id="@+id/banner_loader"

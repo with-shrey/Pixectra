@@ -35,4 +35,14 @@ public class User {
     public String getPhoneNo() {
         return phoneNo;
     }
+
+    @Override
+    public String toString() {
+        return "\n"+"\n"+"User{" +"\n"+
+                "name='" + name + '\'' +"\n"+
+                ", email='" + email + '\'' +"\n"+
+                ", profilePic='" + profilePic + '\'' +"\n"+
+                ", phoneNo='" + phoneNo + '\'' +"\n"+
+                '}';
+    }
 }

@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:imageFragment="com.pixectra.app.Fragments.OnetimeFragment">
+    tools:context="com.pixectra.app.Fragments.OnetimeFragment">
 
     <!-- TODO: Update blank fragment layout -->
 

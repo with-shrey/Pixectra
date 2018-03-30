@@ -54,6 +54,15 @@ public class DashboardFragment extends Fragment {
         CardView polaroid = view.findViewById(R.id.polaroid);
         CardView photos = view.findViewById(R.id.photos);
         CardView posters = view.findViewById(R.id.posters);
+        CardView cart = view.findViewById(R.id.shipping_cart);
+
+        cart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), Checkout.class);
+                startActivity(intent);
+            }
+        });
         images=new ArrayList<>();
         photobook.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,9 +107,9 @@ public class DashboardFragment extends Fragment {
 
         circleIndicator = view.findViewById(R.id.viewpager_indicator);
         FirebaseDatabase database=FirebaseDatabase.getInstance();
-        DatabaseReference ref=database.getReference("CommonData").child("Banner");
+        final DatabaseReference ref = database.getReference("CommonData").child("Banner");
         //<--setting up recycler view
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 images.clear();
@@ -112,6 +121,7 @@ public class DashboardFragment extends Fragment {
                 viewPager.setCurrentItem(1, true);
                 circleIndicator.setViewPager(viewPager);
                 slideViewAdapter.registerDataSetObserver(circleIndicator.getDataSetObserver());
+                ref.removeEventListener(this);
             }
 
             @Override

@@ -1,19 +1,28 @@
 package com.pixectra.app.Utils;
 
 import android.graphics.Bitmap;
+import android.util.Pair;
 
+import com.pixectra.app.Models.Product;
+
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Vector;
 
 public class CartHolder {
 
     private static CartHolder sSoleInstance;
-    private static HashMap<String, HashSet<Bitmap>> data;
-    private static HashMap<String, HashSet<Bitmap>> cart;
+    private static HashMap<String, Vector<Bitmap>> data;
+    private static HashMap<String, Product> details;
+    private static ArrayList<Pair<Product, Vector<Bitmap>>> cart;
     private static ImageChangedListner listner;
+    private static Pair<Integer, Pair<Integer, Double>> discount;
+
     private CartHolder(){
         data=new HashMap<>();
+        cart = new ArrayList<>();
+        details = new HashMap<>();
+        discount = null;
     }  //private constructor.
 
     public static CartHolder getInstance(){
@@ -29,16 +38,44 @@ public class CartHolder {
         listner = mlistner;
     }
 
+    public ArrayList<Pair<Product, Vector<Bitmap>>> getCart() {
+        return cart;
+    }
+
+    public Pair<Integer, Pair<Integer, Double>> getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(Pair<Integer, Pair<Integer, Double>> discount) {
+        CartHolder.discount = discount;
+    }
+
+    public void addToCart(String key) {
+        Pair<Product, Vector<Bitmap>> temp = new Pair<>(details.get(key), new Vector<>(data.get(key)));
+        cart.add(temp);
+        data.remove(key);
+    }
+
+    public Product getDetails(String key) {
+        return details.get(key);
+    }
+
+    public Product addDetails(String key, Product product) {
+        return details.put(key, product);
+    }
+
     public void addImage(String key, Bitmap image) {
         if (data.containsKey(key)){
-            boolean added = data.get(key).add(image);
+            boolean added = !data.get(key).contains(image);
             if (added) {
+                data.get(key).add(image);
                 int size = data.get(key).size();
                 listner.onImageAdded(image, size);
-
+            } else {
+                listner.alreadyPresent(image);
             }
-        }else{
-            HashSet<Bitmap> set = new HashSet<Bitmap>();
+        } else {
+            Vector<Bitmap> set = new Vector<>();
                 set.add(image);
                 data.put(key,set);
             int size = data.get(key).size();
@@ -61,6 +98,15 @@ public class CartHolder {
 
     }
 
+    public Bitmap getImage(String key, int index) {
+        return data.get(key).get(index);
+    }
+
+    public void setImage(String key, int index, Bitmap img) {
+        data.get(key).set(index, img);
+        listner.alreadyPresent(img);
+    }
+
     public int getSize(String key) {
         if (data.containsKey(key))
             return data.get(key).size();
@@ -75,6 +121,7 @@ public class CartHolder {
             return new Vector<>();
         }
     }
+
 
     public interface ImageChangedListner {
         void onImageAdded(Bitmap img, int size);

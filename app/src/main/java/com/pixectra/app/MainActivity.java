@@ -1,5 +1,6 @@
 package com.pixectra.app;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -16,6 +18,12 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.pixectra.app.Models.Product;
+
+import io.branch.referral.Branch;
+import io.branch.referral.BranchError;
 
 @SuppressWarnings("deprecation")
 public class MainActivity extends AppCompatActivity implements UserProfileFragment.OnFragmentInteractionListener {
@@ -30,6 +38,29 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
 
     BottomNavigationView bottomNavigationView;
 
+    void add() {
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        DatabaseReference ref = db.getReference("CommonData");
+
+        ref.child("PhotoBooks").setValue(null);
+        ref.child("PhotoBooks").push().setValue(new Product("PhotoBooks", "Size1", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 5, 2, 100, "Book"));
+        ref.child("FlipBook").setValue(null);
+
+        ref.child("FlipBook").push().setValue(new Product("FlipBook", "Size1", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 5, 2, 100, "Book"));
+        ref.child("Photos").setValue(null);
+
+        ref.child("Photos").push().setValue(new Product("Photos", "Size1", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 5, 2, 100, "Book"));
+        ref.child("Polaroids").setValue(null);
+
+        ref.child("Polaroids").push().setValue(new Product("Polaroids", "Size1", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 5, 2, 100, "Book"));
+        ref.child("PostCard").setValue(null);
+
+        ref.child("PostCard").push().setValue(new Product("PostCard", "Size1", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 5, 2, 100, "Book"));
+        ref.child("Posters").setValue(null);
+
+        ref.child("Posters").push().setValue(new Product("Posters", "Size1", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 5, 2, 100, "Book"));
+
+    }
 
 
     @Override
@@ -50,6 +81,24 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
         } else {
             Toast.makeText(getApplicationContext(), "Signed in", Toast.LENGTH_SHORT).show();
         }
+        Branch.getInstance(getApplicationContext()).loadRewards(new Branch.BranchReferralStateChangedListener() {
+            @Override
+            public void onStateChanged(boolean changed, BranchError error) {
+                if (changed) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setMessage("You  Have Earned Credits\nUpdated Credits Are " + Branch.getInstance().getCredits());
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+                    builder.show();
+                }
+            }
+        });
+        //rewards to refers
+
         viewPager = findViewById(R.id.main_viewpager);
         viewPager.setOffscreenPageLimit(3);
         viewPager.setAdapter(new ViewPagerAdapter(getSupportFragmentManager()));

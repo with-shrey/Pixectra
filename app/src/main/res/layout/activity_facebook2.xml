@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:imageFragment="com.pixectra.app.FacebookActivity">
+    tools:context="com.pixectra.app.FacebookActivity">
 
     <ProgressBar
         android:id="@+id/fb_progress"

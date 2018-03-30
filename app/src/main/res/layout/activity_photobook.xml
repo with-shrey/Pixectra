@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:imageFragment="com.pixectra.app.PhotobookActivity">
+    tools:context="com.pixectra.app.PhotobookActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,13 +27,12 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <de.hdodenhof.circleimageview.CircleImageView
+                    <ImageView
                         android:layout_width="1200dp"
                         android:layout_height="120dp"
                         android:layout_gravity="center"
                         android:padding="10dp"
-
-                        android:src="@drawable/ic_launcher_background" />
+                        android:src="@drawable/album" />
 
                     <TextView
                         android:id="@+id/title_poster"

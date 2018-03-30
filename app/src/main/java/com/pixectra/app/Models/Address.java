@@ -46,52 +46,52 @@ public class Address implements Serializable {
         return name;
     }
 
-    public String getAddNo() {
-        return addNo;
-    }
-
-    public String getStreet() {
-        return street;
-    }
-
-    public String getPincode() {
-        return pincode;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public String getMobile() {
-        return mobile;
-    }
-
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getAddNo() {
+        return addNo;
     }
 
     public void setAddNo(String addNo) {
         this.addNo = addNo;
     }
 
+    public String getStreet() {
+        return street;
+    }
+
     public void setStreet(String street) {
         this.street = street;
+    }
+
+    public String getPincode() {
+        return pincode;
     }
 
     public void setPincode(String pincode) {
         this.pincode = pincode;
     }
 
+    public String getCity() {
+        return city;
+    }
+
     public void setCity(String city) {
         this.city = city;
     }
 
+    public String getState() {
+        return state;
+    }
+
     public void setState(String state) {
         this.state = state;
+    }
+
+    public String getMobile() {
+        return mobile;
     }
 
     public void setMobile(String mobile) {
@@ -106,4 +106,18 @@ public class Address implements Serializable {
         this.optional = optional;
     }
 
+    @Override
+    public String toString() {
+        return "\n"+"\n"+"Address{" +"\n"+
+                "key='" + key + '\'' +"\n"+
+                ", name='" + name + '\'' +"\n"+
+                ", addNo='" + addNo + '\'' +"\n"+
+                ", street='" + street + '\'' +"\n"+
+                ", pincode='" + pincode + '\'' +"\n"+
+                ", city='" + city + '\'' +"\n"+
+                ", state='" + state + '\'' +"\n"+
+                ", mobile='" + mobile + '\'' +"\n"+
+                ", optional='" + optional + '\'' +"\n"+
+                '}';
+    }
 }

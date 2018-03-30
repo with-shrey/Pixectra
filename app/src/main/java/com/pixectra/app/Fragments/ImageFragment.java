@@ -16,6 +16,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -48,8 +49,11 @@ import com.facebook.HttpMethod;
 import com.facebook.Profile;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.Scope;
 import com.pixectra.app.Adapter.ImageSelectAdapter;
+import com.pixectra.app.Adapter.PicasaImageSelectAdapter;
 import com.pixectra.app.Adapter.PicasaImageSelectAdapter;
 import com.pixectra.app.FacebookActivity;
 import com.pixectra.app.Models.PicasaAlbumExtra;
@@ -70,6 +74,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -87,6 +93,7 @@ public class ImageFragment extends Fragment {
     public static final String TAG_URL = "url";
     static final int REQUEST_PERMISSION_KEY = 1;
     private static final int RC_AUTHORIZE_PICASA = 2;
+    private static final int RC_SIGN_IN = 1;
     ImageView noLoginView;
     int category;
     String key;
@@ -100,7 +107,7 @@ public class ImageFragment extends Fragment {
     */
     AlbumAdapter albumAdapter;
     ArrayList<HashMap<String, String>> albumList = new ArrayList<HashMap<String, String>>();
-    int pics;
+    int maxPics, minPics;
     private RecyclerView recyclerView;
     private ImageSelectAdapter adapter;
     private PicasaImageSelectAdapter picasaAdapter;
@@ -126,7 +133,8 @@ public class ImageFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         key = getActivity().getIntent().getStringExtra("key");
-        pics = getActivity().getIntent().getIntExtra("pics", 0);
+        maxPics = getActivity().getIntent().getIntExtra("maxPics", 0);
+        minPics = getActivity().getIntent().getIntExtra("minPics", 0);
         View layout = inflater.inflate(R.layout.image_select_fragment, null);
         imageData = new ArrayList<>();
         albumExtras = new ArrayList<>();
@@ -134,7 +142,7 @@ public class ImageFragment extends Fragment {
         noLoginView = layout.findViewById(R.id.no_login_view);
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
         albumAdapter = new AlbumAdapter(getActivity(), albumList);
-        adapter = new ImageSelectAdapter(getActivity(), key, getActivity().getIntent().getIntExtra("pics", 0), imageData);
+        adapter = new ImageSelectAdapter(getActivity(), key, getActivity().getIntent().getIntExtra("maxPics", 0), imageData);
         picasaAdapter = new PicasaImageSelectAdapter(getActivity(), key, getActivity().getIntent().getIntExtra("pics", 0), imageData, albumExtras);
 
         //imagegrid = layout.findViewById(R.id.PhoneImageGrid);
@@ -357,30 +365,34 @@ public class ImageFragment extends Fragment {
      */
     void parseFacebookJson(GraphResponse response) {
         JSONObject main = response.getJSONObject();
-        try {
-            JSONArray data = main.getJSONArray("data");
-            int n = data.length();
-            for (int i = 0; i < n; i++) {
-                JSONObject temp = data.getJSONObject(i);
-                JSONArray images = temp.getJSONArray("images");
-                int imgs = images.length();
-                for (int j = 0; j < imgs; j++) {
-                    JSONObject img = images.getJSONObject(j);
-                    Images image = null;
-                    if (j == 0) {
-                        image = new Images();
-                        image.setUrl(img.getString("source"));
-                        image.setThumbnail(images.getJSONObject(imgs - 1).getString("source"));
-                        imageData.add(image);
-                    }
+        if (main != null) {
+            try {
+                if (main.has("data")) {
+                    JSONArray data = main.getJSONArray("data");
+                    int n = data.length();
+                    for (int i = 0; i < n; i++) {
+                        JSONObject temp = data.getJSONObject(i);
+                        JSONArray images = temp.getJSONArray("images");
+                        int imgs = images.length();
+                        for (int j = 0; j < imgs; j++) {
+                            JSONObject img = images.getJSONObject(j);
+                            Images image = null;
+                            if (j == 0) {
+                                image = new Images();
+                                image.setUrl(img.getString("source"));
+                                image.setThumbnail(images.getJSONObject(imgs - 1).getString("source"));
+                                imageData.add(image);
+                            }
 
+                        }
+                    }
+                    lastGraphResponse = response;
                 }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-            lastGraphResponse = response;
-        } catch (JSONException e) {
-            e.printStackTrace();
+            adapter.notifyDataSetChanged();
         }
-        adapter.notifyDataSetChanged();
     }
 
 
@@ -402,7 +414,8 @@ public class ImageFragment extends Fragment {
                 HttpMethod.GET,
                 new GraphRequest.Callback() {
                     public void onCompleted(GraphResponse response) {
-                        parseFacebookJson(response);
+                        if (response != null)
+                            parseFacebookJson(response);
                     }
                 }
         ).executeAsync();
@@ -474,9 +487,29 @@ public class ImageFragment extends Fragment {
                     }
                 });
             }
+            if (category == 3) {
+                noLoginView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Scope SCOPE_PICASA = new Scope("https://picasaweb.google.com/data/");
+                        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                .requestScopes(SCOPE_PICASA)
+                                .requestIdToken(getString(R.string.google_token))
+                                .requestEmail()
+                                .build();
+
+                        googleSignIn(GoogleSignIn.getClient(getActivity(), gso));
+                    }
+                });
+
+            }
         }
     }
 
+    void googleSignIn(GoogleSignInClient mGoogleSignInClient) {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
     /**
      * Set Login Button Image As Per Fragment
      */
@@ -523,13 +556,23 @@ public class ImageFragment extends Fragment {
             if (requestCode == 3) {
                 checkAndLoadData();
             }
-        }
 
-        if (requestCode == RC_AUTHORIZE_PICASA) {
-            GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getActivity());
-            if(account == null)
-                return;
-            fetchOauthAccessToken(account);
+            if (requestCode == RC_SIGN_IN) {
+                GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getActivity());
+                if (account == null)
+                    return;
+                userLoggedIn(true);
+                if (checkForPicasaAuthPermission())
+                    fetchOauthAccessToken(account);
+            }
+            if (requestCode == RC_AUTHORIZE_PICASA) {
+                GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getActivity());
+                userLoggedIn(true);
+                if (account == null)
+                    return;
+                if (checkForPicasaAuthPermission())
+                    fetchOauthAccessToken(account);
+            }
         }
     }
 
@@ -612,7 +655,7 @@ public class ImageFragment extends Fragment {
     }
 
     //<---Methods and classes for first fragment------------------------------START-----------------
-    class LoadAlbum extends AsyncTask<String, Void, String> {
+    private class LoadAlbum extends AsyncTask<String, Void, String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -714,11 +757,23 @@ public class ImageFragment extends Fragment {
                 convertView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(getActivity(), AlbumActivity.class);
-                        intent.putExtra("name", albumList.get(+getAdapterPosition()).get(Function.KEY_ALBUM));
-                        intent.putExtra("key", key);
-                        intent.putExtra("pics", pics);
-                        startActivity(intent);
+                        AlbumActivity fragment = new AlbumActivity();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("name", albumList.get(+getAdapterPosition()).get(Function.KEY_ALBUM));
+                        bundle.putString("key", key);
+                        bundle.putInt("maxPics", maxPics);
+                        fragment.setArguments(bundle);
+                        FragmentTransaction fragmentTransaction;
+                        fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+                        fragmentTransaction.setCustomAnimations(R.anim.slide_in_left,
+                                R.anim.slide_out_left, R.anim.slide_in_left,
+                                R.anim.slide_out_left
+                        );
+                        fragmentTransaction.replace(R.id.show_more, fragment, "albumactivity");
+                        fragmentTransaction.addToBackStack("albumactivity");
+                        fragmentTransaction.commit();
+
+
                     }
                 });
                 convertView.getLayoutParams().height = w;

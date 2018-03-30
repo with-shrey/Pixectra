@@ -20,6 +20,9 @@ import com.pixectra.app.Utils.SessionHelper;
 
 import java.util.HashMap;
 
+import io.branch.referral.Branch;
+import io.branch.referral.BranchError;
+
 /**
  * Created by Yugansh on 1/10/2018.
  */
@@ -29,9 +32,9 @@ public class UserProfileFragment extends Fragment{
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 ImageView profilePic;
-TextView userName;
+    TextView userName, remaining;
 CardView address;
-    CardView linkAccount, account;
+    CardView linkAccount, account, order, subscription;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -78,6 +81,17 @@ CardView address;
         address=view.findViewById(R.id.address_card_view);
         linkAccount=view.findViewById(R.id.link_account_card_view);
         account = view.findViewById(R.id.account_card_view);
+        order = view.findViewById(R.id.order_card_view);
+        subscription = view.findViewById(R.id.subscription_card_view);
+        remaining = view.findViewById(R.id.subscription_remaining);
+
+        Branch.getInstance().loadRewards(new Branch.BranchReferralStateChangedListener() {
+            @Override
+            public void onStateChanged(boolean changed, BranchError error) {
+                remaining.setText("Credits Earned " + Branch.getInstance().getCredits());
+            }
+        });
+
 
         if (data.get(SessionHelper.User_Image) != null)
             GlideHelper.load(getActivity(), Uri.parse(data.get(SessionHelper.User_Image)), profilePic
@@ -97,10 +111,25 @@ CardView address;
                 startActivity(intent);
             }
         });
+
         account.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), MyProfileActivity.class);
+                startActivity(intent);
+            }
+        });
+        order.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), orders_placed.class);
+                startActivity(intent);
+            }
+        });
+        subscription.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), subscription_list.class);
                 startActivity(intent);
             }
         });
