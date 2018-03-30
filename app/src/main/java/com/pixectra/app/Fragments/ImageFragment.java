@@ -54,7 +54,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.Scope;
 import com.pixectra.app.Adapter.ImageSelectAdapter;
 import com.pixectra.app.Adapter.PicasaImageSelectAdapter;
-import com.pixectra.app.Adapter.PicasaImageSelectAdapter;
 import com.pixectra.app.FacebookActivity;
 import com.pixectra.app.Models.PicasaAlbumExtra;
 import com.pixectra.app.Utils.GetOAuthAccessTokenTask;
@@ -74,8 +73,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -135,7 +132,11 @@ public class ImageFragment extends Fragment {
         key = getActivity().getIntent().getStringExtra("key");
         maxPics = getActivity().getIntent().getIntExtra("maxPics", 0);
         minPics = getActivity().getIntent().getIntExtra("minPics", 0);
-        View layout = inflater.inflate(R.layout.image_select_fragment, null);
+        View layout;
+        if(category != 3)
+            layout = inflater.inflate(R.layout.image_select_fragment, null);
+        else
+            layout = inflater.inflate(R.layout.picasa_image_select_fragment, null);
         imageData = new ArrayList<>();
         albumExtras = new ArrayList<>();
         recyclerView = layout.findViewById(R.id.Imagelist);
@@ -144,7 +145,6 @@ public class ImageFragment extends Fragment {
         albumAdapter = new AlbumAdapter(getActivity(), albumList);
         adapter = new ImageSelectAdapter(getActivity(), key, getActivity().getIntent().getIntExtra("maxPics", 0), imageData);
         picasaAdapter = new PicasaImageSelectAdapter(getActivity(), key, getActivity().getIntent().getIntExtra("pics", 0), imageData, albumExtras);
-
         //imagegrid = layout.findViewById(R.id.PhoneImageGrid);
           // selectBtn = layout.findViewById(R.id.selectBtn);
 

@@ -1,18 +1,19 @@
 package com.pixectra.app.Utils;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -33,7 +34,6 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.pixectra.app.Models.Images;
-import com.pixectra.app.Models.PicasaAlbumExtra;
 import com.pixectra.app.R;
 
 import org.json.JSONArray;
@@ -51,7 +51,7 @@ import java.util.concurrent.ExecutionException;
  * Created by Sanath on 3/25/2018.
  */
 
-public class PicasaAlbumActivity extends Activity {
+public class PicasaAlbumFragment extends Fragment{
 
     RecyclerView galleryGridView;
     ArrayList<Images> imageList = new ArrayList<>();
@@ -63,7 +63,7 @@ public class PicasaAlbumActivity extends Activity {
     RequestQueue queue;
     String accessToken;
 
-
+/*
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,7 +91,44 @@ public class PicasaAlbumActivity extends Activity {
         albumId = intent.getStringExtra("albumId");
         accessToken = intent.getStringExtra("accessToken");
         fetchAlbumImagesJSON();
+    }*/
+
+    public PicasaAlbumFragment() {
     }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.activity_album, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        albumName = getArguments().getString("albumName");
+        //setTitle(album_name);
+        ((TextView) view.findViewById(R.id.toolbar_text)).setText(albumName);
+        (view.findViewById(R.id.toolbar_back)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().getSupportFragmentManager().popBackStack("picasaAlbumActivity", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            }
+        });
+
+        queue = Volley.newRequestQueue(getActivity());
+        galleryGridView = view.findViewById(R.id.galleryGridView);
+        galleryGridView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
+        adapter = new PicasaSingleAlbumAdapter(getActivity(), imageList);
+        galleryGridView.setAdapter(adapter);
+        key = getArguments().getString("key");
+        maxP = getArguments().getInt("maxP", 0);
+        albumId = getArguments().getString("albumId");
+        accessToken = getArguments().getString("accessToken");
+        fetchAlbumImagesJSON();
+
+    }
+
 
     private void fetchAlbumImagesJSON() {
         String url = "https://picasaweb.google.com/data/feed/api/user/default/albumid/"+ albumId + "?alt=json";
@@ -150,8 +187,8 @@ public class PicasaAlbumActivity extends Activity {
             activity = a;
             data = d;
             DisplayMetrics dm = new DisplayMetrics();
-            (PicasaAlbumActivity.this).getWindowManager().getDefaultDisplay().getMetrics(dm);
-            w = (dm.widthPixels / 3) - (int) (PicasaAlbumActivity.this.getResources().getDimension(R.dimen.image_cell_padding) * 5);
+            (getActivity()).getWindowManager().getDefaultDisplay().getMetrics(dm);
+            w = (dm.widthPixels / 3) - (int) (PicasaAlbumFragment.this.getResources().getDimension(R.dimen.image_cell_padding) * 5);
         }
 
         @Override
