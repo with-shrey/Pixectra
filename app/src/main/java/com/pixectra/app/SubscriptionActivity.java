@@ -5,6 +5,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.graphics.Point;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.Display;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -24,7 +25,13 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.pixectra.app.Adapter.SubscriptionAdaptor;
+import com.pixectra.app.Models.Product;
 import com.pixectra.app.Models.SubscriptionDetails;
 
 import java.util.ArrayList;
@@ -42,7 +49,7 @@ public class SubscriptionActivity extends AppCompatActivity  {
     int NUM_ITEMS;
     private static final String BUNDLE_LIST_PIXELS = "allPixels";
     LinearLayout linearLayout;
-
+    SubscriptionAdaptor adaptor;
     RecyclerView recyclerView;
 
     @SuppressLint("ClickableViewAccessibility")
@@ -50,7 +57,32 @@ public class SubscriptionActivity extends AppCompatActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_subscription);
+        final ArrayList<SubscriptionDetails> data=new ArrayList<>();
+        final FirebaseDatabase database=FirebaseDatabase.getInstance();
+        final DatabaseReference ref = database.getReference("CommonData").child("SubscriptionDetails");
+        adaptor=new SubscriptionAdaptor(data, SubscriptionActivity.this, SubscriptionActivity.this);
+        ref.keepSynced(true);
+        Log.d("prashu", "ref");
+           ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                data.clear();
+                Log.d("prashu", "ondata");
+                for (DataSnapshot temp:dataSnapshot.getChildren()){
+                    SubscriptionDetails details = temp.getValue(SubscriptionDetails.class);
+                    Log.d("prashu", "full");
+                    data.add(details);
+                }
+                adaptor.notifyDataSetChanged();
+                ref.removeEventListener(this);
+            }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("prashu", "error");
+            }
+        });
+        Log.d("prashu", String.valueOf(data.size()));
         linearLayout = findViewById(R.id.layoutOne);
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
@@ -58,47 +90,13 @@ public class SubscriptionActivity extends AppCompatActivity  {
         itemWidth = 300;
         padding = (size.x - itemWidth) / 2;
         firstItemWidth = 300;
-        //getResources().getDimension(R.dimen.padding_item_width);
-
         allPixels = 0;
-
-
-
-
-// add a background color to the recyclerview
         recyclerView = findViewById(R.id.SubscriptionRecyclerView);
-
-        final ArrayList<SubscriptionDetails> data = new ArrayList<>();
-
-        SubscriptionDetails subscriptionDetails =
-                new SubscriptionDetails("Title", "Sub-Title", "> First item<br/>"+
-                        "> Second item<br/>"+
-                        "> Third item");
-                // new SubscriptionDetails("dummy21", "dummy22", "dummy23")
-
-
-        SubscriptionDetails subscriptionDetails2 =
-                // new SubscriptionDetails("Dummy 1", "dummy2", "dummy3")
-                new SubscriptionDetails("Title2", "Sub-Title2", "> First item1<br/>"+
-                        "> Second item2<br/>"+
-                        "> Third item3");
-        data.add(subscriptionDetails);
-        data.add(subscriptionDetails2);
-
-
-        NUM_ITEMS = 5;
-        //data.size();
-
-
+         NUM_ITEMS = data.size();
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(SubscriptionActivity.this,
                 LinearLayoutManager.HORIZONTAL, false);
-
-        recyclerView.setLayoutManager(linearLayoutManager);
-
-        //  recyclerView.setAdapter(new SubscriptionAdaptor(data,SubscriptionActivity.this, SubscriptionActivity.this));
-
-
-        recyclerView.setAdapter(new SubscriptionAdaptor(data, SubscriptionActivity.this, SubscriptionActivity.this));
+       recyclerView.setLayoutManager(linearLayoutManager);
+       recyclerView.setAdapter(adaptor);
 
         //  recyclerView.scrollToPosition();
 
