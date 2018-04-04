@@ -2,7 +2,6 @@ package com.pixectra.app;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,6 +14,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
+import android.util.SparseIntArray;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,7 +38,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pixectra.app.Adapter.CartImagesAdapter;
 import com.pixectra.app.Models.Address;
-import com.pixectra.app.Models.CheckoutData;
 import com.pixectra.app.Models.Coupon;
 import com.pixectra.app.Models.Price;
 import com.pixectra.app.Models.Product;
@@ -52,7 +51,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Vector;
 
 import io.branch.referral.Branch;
 
@@ -67,7 +65,7 @@ public class Checkout extends AppCompatActivity {
     EditText couponBottomSheet;
     TextView addressText;
     ImageController uploader;
-
+    SparseIntArray prices;
     @Override
     protected void onResume() {
         super.onResume();
@@ -76,6 +74,8 @@ public class Checkout extends AppCompatActivity {
         }
     }
 
+    Tax tax;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +83,7 @@ public class Checkout extends AppCompatActivity {
         setContentView(R.layout.activity_checkout);
         uploader = new ImageController(Checkout.this, getWindow());
         couponApplied = CartHolder.getInstance().getDiscount() != null;
+        coupon = CartHolder.getInstance().getCoupon();
         recyclerView = findViewById(R.id.cart_recyclerview);
         empty = findViewById(R.id.empty_view_cart);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -96,14 +97,6 @@ public class Checkout extends AppCompatActivity {
             }
         });
         toggleVisibility();
-    }
-
-    int getBaseAmount() {
-        int total = 0;
-        for (Pair<Product, Vector<Bitmap>> product : CartHolder.getInstance().getCart()) {
-            total += product.first.getPrice();
-        }
-        return total;
     }
 
     void toggleVisibility() {
@@ -138,6 +131,15 @@ public class Checkout extends AppCompatActivity {
         });
     }
 
+    int getBaseAmount() {
+        int total = 0;
+        int n = prices.size();
+        for (int i = 0; i < n; i++) {
+            total += prices.valueAt(i);
+        }
+        return total;
+    }
+
     public void onplaceorder() {
 
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(Checkout.this
@@ -153,78 +155,35 @@ public class Checkout extends AppCompatActivity {
         final Button apply = parentview.findViewById(R.id.applycoupn);
         final TextView carttotal = parentview.findViewById(R.id.carttotal);
         final TextView cartDiscount = parentview.findViewById(R.id.cartdiscount);
-        final TextView stategst = parentview.findViewById(R.id.stategst);
-        final TextView centralgst = parentview.findViewById(R.id.centralgst);
-        final TextView cess = parentview.findViewById(R.id.cess);
         final TextView totalpayable = parentview.findViewById(R.id.totalpayable);
         final CheckBox credits = parentview.findViewById(R.id.credits);
         addressText = parentview.findViewById(R.id.bottom_sheet_address);
 
         final TextView discountType = parentview.findViewById(R.id.discount_type);
-        final TextView cgstType = parentview.findViewById(R.id.cgst_type);
-        final TextView sgstType = parentview.findViewById(R.id.sgst_type);
-        final TextView cessType = parentview.findViewById(R.id.cess_type);
+        final TextView creditsUsed = parentview.findViewById(R.id.credits_used);
+        creditsUsed.setText("0.0");
         credits.setText("Use Credit Balance( Available : " + Branch.getInstance().getCredits() + ")");
-        int creditBalance = Branch.getInstance().getCredits();
+        final int creditBalance = Branch.getInstance().getCredits();
         credits.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b)
+                    computeAndSetCreditPayment(creditsUsed, carttotal, cartDiscount, creditBalance);
+                else
+                    creditsUsed.setText("0");
 
+                computeTotal(discountType, totalpayable, carttotal, cartDiscount, creditsUsed);
             }
+
+
         });
         Button cancel = parentview.findViewById(R.id.bottomsheet_cancel);
         Button pay = parentview.findViewById(R.id.bottomsheet_pay);
         Button scan = parentview.findViewById(R.id.scanqr);
         Button selectShipping = parentview.findViewById(R.id.shipping_address_choose);
         carttotal.setText(String.valueOf(getBaseAmount()));
-        final DatabaseReference db = FirebaseDatabase.getInstance().getReference("Tax");
-        db.keepSynced(true);
-        db.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Tax tax = dataSnapshot.getValue(Tax.class);
-                cgstType.setText(tax.getCgst() + "%");
-                sgstType.setText(tax.getSgst() + "%");
-                cessType.setText(tax.getCess() + "%");
 
-                if (tax.getType() == 0 && tax.getThreshold() <= Double.parseDouble(carttotal.getText().toString())) {
-                    discountType.setText("-" + tax.getDiscount() + "%");
-                    cartDiscount.setText(String.valueOf(-1.0 * tax.getDiscount() * Double.parseDouble(carttotal.getText().toString()) / 100.0));
-                } else {
-                    if (tax.getThreshold() <= Double.parseDouble(carttotal.getText().toString())) {
-                        discountType.setText("-Rs." + tax.getDiscount());
-                        cartDiscount.setText(String.valueOf(-1.0 * tax.getDiscount()));
-                    }
-                }
-                centralgst.setText(String.valueOf(tax.getCgst() * Double.parseDouble(carttotal.getText().toString()) / 100.0));
-                stategst.setText(String.valueOf(tax.getSgst() * Double.parseDouble(carttotal.getText().toString()) / 100.0));
-                cess.setText(String.valueOf(tax.getCess() * Double.parseDouble(carttotal.getText().toString()) / 100.0));
-                totalpayable.setText(String.valueOf(
-                        Double.parseDouble(centralgst.getText().toString())
-                                + Double.parseDouble(stategst.getText().toString())
-                                + Double.parseDouble(cess.getText().toString())
-                                + Double.parseDouble(carttotal.getText().toString())
-                                + Double.parseDouble(cartDiscount.getText().toString())
-                ));
-                db.removeEventListener(this);
-                if (CartHolder.getInstance().getDiscount() != null) {
-                    if (CartHolder.getInstance().getDiscount().first == 0 && CartHolder.getInstance().getDiscount().second.first <= Double.parseDouble(carttotal.getText().toString())) {
-                        discountType.setText("-" + CartHolder.getInstance().getDiscount().second.second + "%");
-                        cartDiscount.setText(String.valueOf(-1.0 * CartHolder.getInstance().getDiscount().second.second * Double.parseDouble(carttotal.getText().toString()) / 100.0));
-                    } else {
-                        if (CartHolder.getInstance().getDiscount().second.first <= Double.parseDouble(carttotal.getText().toString())) {
-                            discountType.setText("-Rs." + CartHolder.getInstance().getDiscount().second.second);
-                            cartDiscount.setText(String.valueOf(-1.0 * CartHolder.getInstance().getDiscount().second.second));
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        computeTotal(discountType, totalpayable, carttotal, cartDiscount, creditsUsed);
 
         selectShipping.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -274,16 +233,12 @@ public class Checkout extends AppCompatActivity {
                                                                                 -(1.0 * coupon.getDiscount())));
                                                                     }
                                                                 }
+                                                                CartHolder.getInstance().setCoupon(coupon);
                                                                 CartHolder.getInstance().setDiscount(
                                                                         new Pair<>(coupon.getType()
                                                                                 , new Pair<>(coupon.getThreshold(), coupon.getDiscount())));
-                                                                totalpayable.setText(String.valueOf(
-                                                                        Double.parseDouble(centralgst.getText().toString())
-                                                                                + Double.parseDouble(stategst.getText().toString())
-                                                                                + Double.parseDouble(cess.getText().toString())
-                                                                                + Double.parseDouble(carttotal.getText().toString())
-                                                                                + Double.parseDouble(cartDiscount.getText().toString())
-                                                                ));
+                                                                computeTotal(discountType, totalpayable, carttotal, cartDiscount, creditsUsed);
+                                                                computeAndSetCreditPayment(creditsUsed, carttotal, cartDiscount, creditBalance);
                                                                 couponApplied = true;
                                                                 earned.child(code).setValue(null);
                                                             }
@@ -313,13 +268,7 @@ public class Checkout extends AppCompatActivity {
                                                 CartHolder.getInstance().setDiscount(
                                                         new Pair<>(1
                                                                 , new Pair<>(0, 0.0)));
-                                                totalpayable.setText(String.valueOf(
-                                                        Double.parseDouble(centralgst.getText().toString())
-                                                                + Double.parseDouble(stategst.getText().toString())
-                                                                + Double.parseDouble(cess.getText().toString())
-                                                                + Double.parseDouble(carttotal.getText().toString())
-                                                                + Double.parseDouble(cartDiscount.getText().toString())
-                                                ));
+                                                computeTotal(discountType, totalpayable, carttotal, cartDiscount, creditsUsed);
 
                                             }
                                         } else {
@@ -371,7 +320,7 @@ public class Checkout extends AppCompatActivity {
         pay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final CheckoutData checkout = new CheckoutData();
+                final com.pixectra.app.Models.CheckoutData checkout = new com.pixectra.app.Models.CheckoutData();
 
                 final DatabaseReference user = FirebaseDatabase.getInstance().getReference("User").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
                 user.keepSynced(true);
@@ -380,29 +329,25 @@ public class Checkout extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         checkout.setUser(dataSnapshot.getValue(User.class));
                         Price price = new Price(Double.parseDouble(carttotal.getText().toString())
-                                , Double.parseDouble(centralgst.getText().toString())
-                                , Double.parseDouble(stategst.getText().toString())
-                                , Double.parseDouble(cess.getText().toString())
                                 , Double.parseDouble(cartDiscount.getText().toString())
+                                , Integer.parseInt(creditsUsed.getText().toString())
                                 , Double.parseDouble(totalpayable.getText().toString())
                         );
                         checkout.setPrice(price);
                         checkout.setAddress(address);
 
-
-
+                        CartHolder.getInstance().setCheckout(checkout);
+                        user.removeEventListener(this);
 
                         Intent intent = new Intent(Checkout.this, PayUMoneyActivity.class);
                         intent.putExtra("name", checkout.getUser().getName());
                         intent.putExtra("email", checkout.getUser().getEmail());
-                        intent.putExtra("amount", checkout.getPrice().getTotal());
+                        intent.putExtra("amount", Double.parseDouble(totalpayable.getText().toString()));
                         intent.putExtra("phone", checkout.getUser().getPhoneNo());
                         intent.putExtra("id", FirebaseAuth.getInstance().getCurrentUser().getUid());
                         intent.putExtra("isOneTime", true);
-                        intent.putExtra("Obj", checkout);
                         startActivity(intent);
 
-                        user.removeEventListener(this);
                     }
 
                     @Override
@@ -422,13 +367,42 @@ public class Checkout extends AppCompatActivity {
         });
     }
 
-    int calculateCreditDiscount(int credits, int total) {
+
+    double calculateCreditDiscount(int credits, double total) {
         if (credits > total) {
-            return total;
+            return -1 * total;
         } else {
-            return credits;
+            return -1 * credits;
         }
 
+    }
+
+    private void computeAndSetCreditPayment(TextView creditsUsed, TextView carttotal, TextView cartDiscount, int creditBalance) {
+        creditsUsed.setText(""
+                + calculateCreditDiscount(creditBalance
+                , Double.parseDouble(carttotal.getText().toString())
+                        - Double.parseDouble(cartDiscount.getText().toString())));
+    }
+
+    void computeTotal(TextView discountType, TextView totalPayable, TextView carttotal, TextView cartDiscount, TextView creditsUsed) {
+        if (coupon != null) {
+            if (coupon.getType() == 0 && coupon.getThreshold() <= Double.parseDouble(carttotal.getText().toString())) {
+                discountType.setText(coupon.getDiscount() + "%");
+                cartDiscount.setText(String.valueOf(
+                        -(1.0 * coupon.getDiscount() / 100.0 * Double.parseDouble(carttotal.getText().toString()))));
+            } else {
+                if (coupon.getThreshold() <= Double.parseDouble(carttotal.getText().toString())) {
+                    discountType.setText("-Rs." + coupon.getDiscount());
+                    cartDiscount.setText(String.valueOf(
+                            -(1.0 * coupon.getDiscount())));
+                }
+            }
+        }
+        totalPayable.setText(String.valueOf(
+                +Double.parseDouble(carttotal.getText().toString())
+                        + Double.parseDouble(cartDiscount.getText().toString())
+                        + Double.parseDouble(creditsUsed.getText().toString())
+        ));
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -469,11 +443,11 @@ public class Checkout extends AppCompatActivity {
     }
 
 
-    class CartAdapter extends RecyclerView.Adapter<CartAdapter.VH> {
+    public class CartAdapter extends RecyclerView.Adapter<CartAdapter.VH> {
         // ArrayList<String> keys;
 
         public CartAdapter() {
-            //  keys=new ArrayList<>(CartHolder.getInstance().getCart().keySet());
+            prices = new SparseIntArray();
         }
 
         @Override
@@ -488,7 +462,17 @@ public class Checkout extends AppCompatActivity {
             holder.title.setText(String.format(Locale.getDefault(), "%s ( %d )", product.getType(), CartHolder.getInstance().getCart().get(position).second.size()));
             holder.type.setText(String.format(Locale.getDefault(), "%s@%d", product.getTitle(), product.getPrice()));
             Glide.with(Checkout.this).load(product.getUrl()).into(holder.titleImage);
-            holder.images.setAdapter(new CartImagesAdapter(Checkout.this, CartHolder.getInstance().getCart().get(position).second, position));
+            holder.images.setAdapter(new CartImagesAdapter(this, Checkout.this, CartHolder.getInstance().getCart().get(position).second, position));
+            int price = product.getPrice();
+            String priceText = "" + price;
+            if (product.getMaxPics() == -1) {
+                price += (CartHolder.getInstance().getCart().get(position).second.size() - product.getMinPics()) * product.getPricePerPiece();
+                priceText = priceText + "+" + (CartHolder.getInstance().getCart().get(position).second.size() - product.getMinPics()) + " X "
+                        + product.getPricePerPiece();
+            }
+            priceText = priceText + " = " + price;
+            holder.price.setText(priceText);
+            prices.put(position, price);
         }
 
         @Override
@@ -497,7 +481,7 @@ public class Checkout extends AppCompatActivity {
         }
 
         class VH extends RecyclerView.ViewHolder implements View.OnClickListener {
-            TextView title, type;
+            TextView title, type, price;
             ImageView titleImage;
             RecyclerView images;
             ImageView remove;
@@ -509,6 +493,7 @@ public class Checkout extends AppCompatActivity {
                 titleImage = itemView.findViewById(R.id.title_image);
                 images = itemView.findViewById(R.id.images_cart);
                 remove = itemView.findViewById(R.id.remove);
+                price = itemView.findViewById(R.id.price_of_item);
                 remove.setOnClickListener(this);
                 images.setLayoutManager(new LinearLayoutManager(Checkout.this, LinearLayoutManager.HORIZONTAL, false));
             }
@@ -516,6 +501,7 @@ public class Checkout extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 CartHolder.getInstance().getCart().remove(getAdapterPosition());
+                prices.delete(getAdapterPosition());
                 notifyItemRemoved(getAdapterPosition());
 
             }

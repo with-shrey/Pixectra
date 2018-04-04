@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.pixectra.app.Checkout;
 import com.pixectra.app.CroppingActivity;
 import com.pixectra.app.R;
 import com.pixectra.app.Utils.CartHolder;
@@ -26,11 +27,13 @@ public class CartImagesAdapter extends RecyclerView.Adapter<CartImagesAdapter.Vi
     Context context;
     Vector<Bitmap> data;
     int position;
+    Checkout.CartAdapter mCartAdapter;
 
-    public CartImagesAdapter(Context context, Vector<Bitmap> data, int pos) {
+    public CartImagesAdapter(Checkout.CartAdapter adapter, Context context, Vector<Bitmap> data, int pos) {
         this.context = context;
         this.data = data;
         position = pos;
+        mCartAdapter = adapter;
     }
 
     @Override
@@ -85,6 +88,7 @@ public class CartImagesAdapter extends RecyclerView.Adapter<CartImagesAdapter.Vi
             intent.putExtra("position", position);
             intent.putExtra("index", getAdapterPosition());
             context.startActivity(intent);
+            mCartAdapter.notifyItemChanged(position);
 
         }
     }

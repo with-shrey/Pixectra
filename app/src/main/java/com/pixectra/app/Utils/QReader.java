@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
@@ -36,6 +38,7 @@ public class QReader extends Activity implements QRCodeReaderView.OnQRCodeReadLi
     String location = null;
     Coupon details = null;
     SimpleDateFormat format;
+    boolean isBack, torchEnabled;
     private QRCodeReaderView qrCodeReaderView;
 
     @Override
@@ -49,9 +52,39 @@ public class QReader extends Activity implements QRCodeReaderView.OnQRCodeReadLi
 
     void init() {
         format = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-
+        isBack = true;
+        torchEnabled = false;
         qrCodeReaderView = findViewById(R.id.qrdecoderview);
         qrCodeReaderView.setOnQRCodeReadListener(this);
+        ImageButton rotate = findViewById(R.id.rotateCamera);
+        ImageButton flash = findViewById(R.id.flashIcon);
+        View qrBlock = findViewById(R.id.qrblock);
+        qrBlock.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                qrCodeReaderView.forceAutoFocus();
+            }
+        });
+        rotate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isBack)
+                    qrCodeReaderView.setFrontCamera();
+                else {
+                    qrCodeReaderView.setBackCamera();
+                }
+                isBack = !isBack;
+            }
+        });
+
+        flash.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                qrCodeReaderView.setTorchEnabled(!torchEnabled);
+                torchEnabled = !torchEnabled;
+            }
+        });
+
 
         // Use this function to enable/disable decoding
         qrCodeReaderView.setQRDecodingEnabled(true);

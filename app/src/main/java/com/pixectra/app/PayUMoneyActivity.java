@@ -22,9 +22,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
-import com.pixectra.app.Models.CheckoutData;
-import com.pixectra.app.Utils.ImageController;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.security.MessageDigest;
@@ -87,7 +84,6 @@ public class PayUMoneyActivity extends AppCompatActivity {
     private String mSuccessUrl = "pixectra.com/success";
     private String mFailedUrl = "pixectra.com/failed";
     private ProgressDialog mProgress;
-    CheckoutData checkout;
 
     /**
      * @param savedInstanceState
@@ -166,7 +162,6 @@ public class PayUMoneyActivity extends AppCompatActivity {
             mPhone = bundle.getString("phone");
             mId = bundle.getInt("id");
             isOneTime = bundle.getBoolean("isOneTime");
-            checkout = (CheckoutData) bundle.getSerializable("Obj");
             Log.i("Params", "" + mFirstName + " : " + mEmailId + " : " + mAmount + " : " + mPhone);
 
             /**
@@ -234,7 +229,6 @@ public class PayUMoneyActivity extends AppCompatActivity {
                        /*
                        replace MainActivity with Cart Activity
                         */
-                        new ImageController(PayUMoneyActivity.this, getWindow()).placeOrder(checkout);
 
                         Intent intent = new Intent(PayUMoneyActivity.this, MainActivity.class);
 

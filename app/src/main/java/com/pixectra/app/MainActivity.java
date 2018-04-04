@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
             }
         });
         //rewards to refers
-        add();
+//        add();
         viewPager = findViewById(R.id.main_viewpager);
         viewPager.setOffscreenPageLimit(3);
         viewPager.setAdapter(new ViewPagerAdapter(getSupportFragmentManager()));

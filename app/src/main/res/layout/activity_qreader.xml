@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -19,6 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/flashIcon"
+            android:textColor="@color/colorwhite"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="45dp"
         android:text="Scan your Coupon"
@@ -37,6 +37,7 @@
         android:maxHeight="60dp"
         android:maxWidth="60dp"
         android:scaleType="fitCenter"
+            android:tint="@color/colorwhite"
         android:src="@drawable/flashicon"
         android:background="@android:color/transparent"/>
 
@@ -46,6 +47,7 @@
         android:layout_below="@+id/textView"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="31dp"
+        android:id="@+id/qrblock"
         android:background="@drawable/scanner_square" />
 
         <ImageButton
@@ -61,7 +63,8 @@
         android:adjustViewBounds="true"
         android:maxHeight="60dp"
         android:maxWidth="60dp"
-        android:scaleType="fitCenter"
+            android:scaleType="fitCenter"
+            android:tint="@color/colorwhite"
         android:src="@drawable/rotatecamera"
         android:background="@android:color/transparent"/>
 

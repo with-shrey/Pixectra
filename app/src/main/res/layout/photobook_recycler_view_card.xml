@@ -79,12 +79,10 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:gravity="end"
-            android:text="25/Unit"
+            android:text="-/-"
             android:textColor="#fff"
             android:layout_alignParentRight="true"
-            android:textSize="18sp"
-            android:textStyle="bold"
-
+            android:textSize="20sp"
             android:layout_gravity="bottom|end"
             />
 
@@ -101,9 +99,7 @@
             android:layout_toStartOf="@id/image_price_poster"
             android:gravity="end"
             android:textColor="#fff"
-
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textSize="20sp" />
 
 
     </RelativeLayout>

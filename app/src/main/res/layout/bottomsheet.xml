@@ -103,7 +103,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_weight="1"
-                android:text="Base Amount"
+                android:text="Amount (Inc. of Taxes)"
                 android:textColor="@color/black"
                 android:textSize="15sp" />
 
@@ -177,113 +177,26 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_weight="1"
-                android:text="SGST"
+                android:text="Credits Used"
                 android:textColor="@color/black"
                 android:textSize="15sp" />
+
             <TextView
-                android:id="@+id/sgst_type"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:textColor="@color/black"
-                android:textSize="15sp" />
-            <TextView
-                android:id="@+id/stategst"
+                android:id="@+id/credits_used"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="45dp"
                 android:layout_weight="1"
                 android:gravity="end"
+                android:text="0.0"
                 android:textColor="@color/black"
                 android:textSize="15sp" />
         </LinearLayout>
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="8dp"></Space>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_weight="1"
-                android:text="CGST"
-                android:textColor="@color/black"
-                android:textSize="15sp" />
-            <TextView
-                android:id="@+id/cgst_type"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:textColor="@color/black"
-                android:textSize="15sp" />
-            <TextView
-                android:id="@+id/centralgst"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="45dp"
-                android:layout_weight="1"
-                android:gravity="end"
-                android:textColor="@color/black"
-                android:textSize="15sp" />
-        </LinearLayout>
-
-
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="8dp"></Space>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp">
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_weight="1"
-                android:text="CESS"
-                android:textColor="@color/black"
-                android:textSize="15sp" />
-            <TextView
-                android:id="@+id/cess_type"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:textColor="@color/black"
-                android:textSize="15sp" />
-            <TextView
-                android:id="@+id/cess"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="45dp"
-                android:layout_weight="1"
-                android:gravity="end"
-                android:text="0"
-                android:textColor="@color/black"
-                android:textSize="15sp" />
-        </LinearLayout>
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="8dp"></Space>
-
+            android:layout_height="8dp" />
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
