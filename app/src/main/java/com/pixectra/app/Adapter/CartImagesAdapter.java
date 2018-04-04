@@ -68,7 +68,7 @@ public class CartImagesAdapter extends RecyclerView.Adapter<CartImagesAdapter.Vi
                 public void onClick(View view) {
                     if (CartHolder.getInstance().getCart().get(position).first.getMinPics() < data.size()) {
                         data.remove(getAdapterPosition());
-                        CartImagesAdapter.this.notifyDataSetChanged();
+                        mCartAdapter.notifyItemChanged(position);
                     } else {
                         Toast.makeText(context
                                 , "Minimum "
@@ -88,8 +88,6 @@ public class CartImagesAdapter extends RecyclerView.Adapter<CartImagesAdapter.Vi
             intent.putExtra("position", position);
             intent.putExtra("index", getAdapterPosition());
             context.startActivity(intent);
-            mCartAdapter.notifyItemChanged(position);
-
         }
     }
 }

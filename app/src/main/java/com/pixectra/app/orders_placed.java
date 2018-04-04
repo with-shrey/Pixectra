@@ -54,8 +54,6 @@ public class orders_placed extends AppCompatActivity {
                 list.clear();
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
                     Myorders myorders = data.getValue(Myorders.class);
-                    assert myorders != null;
-                    myorders.setKey(data.getKey());
                     list.add(myorders);
                 }
                 findViewById(R.id.progress_order).setVisibility(View.GONE);

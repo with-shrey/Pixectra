@@ -7,81 +7,46 @@ import java.io.Serializable;
  */
 
 public class Myorders implements Serializable {
-    String key;
-    String id;
-    String name;
+    String fKey;
+    String payId;
     String time;
     String date;
-    String uploaded;
-    Long amount;
+    boolean uploaded;
+    Double amount;
 
-    public Myorders(String id, String name, String time, String date, String uploaded, Long amount) {
-        this.id = id;
-        this.name = name;
+    public Myorders() {
+    }
+
+    public Myorders(String fKey, String payId, String time, String date, boolean uploaded, Double amount) {
+        this.fKey = fKey;
+        this.payId = payId;
         this.time = time;
         this.date = date;
         this.uploaded = uploaded;
         this.amount = amount;
     }
 
-    public Myorders() {
+    public String getfKey() {
+        return fKey;
     }
 
-    public String getid() {
-        return id;
-    }
-
-    public void setid(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public String getPayId() {
+        return payId;
     }
 
     public String getTime() {
         return time;
     }
 
-    public void setTime(String time) {
-        this.time = time;
-    }
-
     public String getDate() {
         return date;
     }
 
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public String getUploaded() {
+    public boolean isUploaded() {
         return uploaded;
     }
 
-    public void setUploaded(String uploaded) {
-        this.uploaded = uploaded;
-    }
-
-    public Long getAmount() {
+    public Double getAmount() {
         return amount;
     }
-
-    public void setAmount(Long amount) {
-        this.amount = amount;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-
 }

@@ -20,7 +20,7 @@ import com.pixectra.app.SubscriptionActivity;
 import com.pixectra.app.Utils.CartHolder;
 import com.pixectra.app.Utils.GlideHelper;
 import com.pixectra.app.Utils.LogManager;
-import com.pixectra.app.VideoSelectActivity;
+import com.pixectra.app.VideoSelection;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -127,7 +127,7 @@ public class PhotobookRecyclerViewAdapter extends RecyclerView.Adapter<Photobook
                     if (list.get(getAdapterPosition()).getTypeOfUpload() == 0)
                         intent = new Intent(mcontext, ImageSelectActivity.class);
                     else {
-                        intent = new Intent(mcontext, VideoSelectActivity.class);
+                        intent = new Intent(mcontext, VideoSelection.class);
                     }
                     intent.putExtra("minPics", list.get(getAdapterPosition()).getMinPics());
                     if (list.get(getAdapterPosition()).getMaxPics() == -1)

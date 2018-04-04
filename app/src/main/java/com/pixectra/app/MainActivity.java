@@ -43,12 +43,12 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
         DatabaseReference ref = db.getReference("CommonData");
 
         ref.child("PhotoBooks").setValue(null);
-        ref.child("PhotoBooks").push().setValue(new Product("PhotoBooks", "6 X 4 ", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 25, 22, 119, "Book", 0, 0, 150));
-        ref.child("PhotoBooks").push().setValue(new Product("PhotoBooks", "6 X 4 ", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 50, 45, 190, "Book", 0, 0, 220));
-        ref.child("PhotoBooks").push().setValue(new Product("PhotoBooks", "6 X 4 ", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 100, 70, 250, "Book", 0, 0, 300));
-        ref.child("PhotoBooks").push().setValue(new Product("PhotoBooks", "6 X 8 ", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 25, 22, 230, "Book", 0, 0, 270));
-        ref.child("PhotoBooks").push().setValue(new Product("PhotoBooks", "6 X 8 ", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 50, 45, 340, "Book", 0, 0, 380));
-        ref.child("PhotoBooks").push().setValue(new Product("PhotoBooks", "6 X 8 ", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 100, 70, 450, "Book", 0, 0, 490));
+        ref.child("PhotoBooks").child("6X4").push().setValue(new Product("PhotoBooks", "6 X 4 ", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 25, 22, 119, "Book", 0, 0, 150));
+        ref.child("PhotoBooks").child("6X4").push().setValue(new Product("PhotoBooks", "6 X 4 ", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 50, 45, 190, "Book", 0, 0, 220));
+        ref.child("PhotoBooks").child("6X4").push().setValue(new Product("PhotoBooks", "6 X 4 ", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 100, 70, 250, "Book", 0, 0, 300));
+        ref.child("PhotoBooks").child("6X8").push().setValue(new Product("PhotoBooks", "6 X 8 ", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 25, 22, 230, "Book", 0, 0, 270));
+        ref.child("PhotoBooks").child("6X8").push().setValue(new Product("PhotoBooks", "6 X 8 ", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 50, 45, 340, "Book", 0, 0, 380));
+        ref.child("PhotoBooks").child("6X8").push().setValue(new Product("PhotoBooks", "6 X 8 ", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 100, 70, 450, "Book", 0, 0, 490));
         ref.child("FlipBook").setValue(null);
 
         ref.child("FlipBook").push().setValue(new Product("FlipBook", "Small", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 1, 1, 200, "VideoBook", 0, 1, 250));

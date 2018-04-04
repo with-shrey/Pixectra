@@ -19,7 +19,7 @@
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="190dp"
-                android:backgroundTint="@color/colorPrimaryDark"
+                app:cardBackgroundColor="@color/colorPrimaryDark"
                 app:cardCornerRadius="15dp">
 
                 <LinearLayout
@@ -41,7 +41,7 @@
                         android:gravity="center"
                         android:padding="5dp"
                         android:textSize="40dp"
-                        android:text="Vedio"/>
+                        android:text="Video" />
 
                 </LinearLayout>
             </android.support.v7.widget.CardView>
@@ -54,14 +54,14 @@
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/colorPrimaryDark"
             app:cardCornerRadius="15dp"
+            app:cardBackgroundColor="@color/colorPrimaryDark"
             android:layout_margin="10dp">
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@null"
-                android:text="Upload Vedio"
+                android:text="Choose Video"
                 android:textColor="#ffffff"
                 android:id="@+id/uploadvedio"
                 android:textSize="20dp"

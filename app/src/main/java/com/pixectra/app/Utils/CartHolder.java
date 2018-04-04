@@ -1,6 +1,7 @@
 package com.pixectra.app.Utils;
 
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.util.Pair;
 
 import com.pixectra.app.Models.CheckoutData;
@@ -17,6 +18,7 @@ public class CartHolder {
     private static HashMap<String, Vector<Bitmap>> data;
     private static HashMap<String, Product> details;
     private static ArrayList<Pair<Product, Vector<Bitmap>>> cart;
+    private static ArrayList<Pair<Product, Uri>> video;
     private static ImageChangedListner listner;
     private static Pair<Integer, Pair<Integer, Double>> discount;
     private static Coupon sCoupon;
@@ -37,6 +39,12 @@ public class CartHolder {
         }
 
         return sSoleInstance;
+    }
+
+    public ArrayList<Pair<Product, Uri>> getVideo() {
+        if (video == null)
+            video = new ArrayList<>();
+        return video;
     }
 
     public CheckoutData getCheckout() {
@@ -60,6 +68,9 @@ public class CartHolder {
     }
 
     public ArrayList<Pair<Product, Vector<Bitmap>>> getCart() {
+        if (cart == null) {
+            cart = new ArrayList<>();
+        }
         return cart;
     }
 

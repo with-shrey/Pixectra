@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -13,6 +14,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -38,14 +41,17 @@ public class ImageController {
     int i, j, totalJ;
     String folder;
     Window window;
+    String dbkey;
     private ProgressDialog mProgress;
+    CheckoutData data;
 
-    public ImageController(Context context, Window window) {
+    public ImageController(String key, Context context, Window window) {
         this.context = context;
         this.window = window;
         folder = null;
         i = 0;
         j = 0;
+        dbkey = key;
     }
 
 
@@ -59,6 +65,7 @@ public class ImageController {
 
     public void placeOrder(final CheckoutData data) {
         window.addFlags(FLAG_KEEP_SCREEN_ON);
+        this.data = data;
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd~HH-mm-ss~", Locale.getDefault());
         if (folder == null) {
             folder = "Present/" + format.format(new Date());
@@ -70,29 +77,16 @@ public class ImageController {
             i = 0;
             j = 0;
         }
-        StorageReference mStorageRef = FirebaseStorage.getInstance().getReference().child(folder);
         mProgress = new ProgressDialog(context);
         mProgress.setTitle("Uploading");
-        mProgress.setMessage("User Details...");
+        mProgress.setMessage("Starting...");
         mProgress.setCancelable(false);
         mProgress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         mProgress.setSecondaryProgress(0);
         mProgress.show();
-        mStorageRef.child("info.txt").putBytes(data.toString().getBytes()).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                i = 0;
-                j = 0;
-                processUpload(i, j);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-
+        i = 0;
+        j = 0;
+        processUpload(i, j);
     }
 
     void processUpload(final int i, final int j) {
@@ -111,53 +105,116 @@ public class ImageController {
                 mProgress.setProgress((int) ((taskSnapshot.getBytesTransferred() * 100) / taskSnapshot.getTotalByteCount()));
             }
         })
-                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                int n = CartHolder.getInstance().getCart().size();
-                                int product = i;
-                                int photo = j;
-                                if (j < totalJ - 1) {
-                                    photo++;
-                                    processUpload(product, photo);
-                                } else {
-                                    if (product < n - 1) {
-                                        product++;
-                                        photo = 0;
-                                        processUpload(product, photo);
-                                    } else {
-                                        mProgress.dismiss();
-                                        window.clearFlags(FLAG_KEEP_SCREEN_ON);
-                                    }
-                                }
-
-
-                                //<--Set up dialog box
-
-
-                                // Get a URL to the uploaded content
-
-
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        int n = CartHolder.getInstance().getCart().size();
+                        int product = i;
+                        int photo = j;
+                        if (j < totalJ - 1) {
+                            photo++;
+                            processUpload(product, photo);
+                        } else {
+                            if (product < n - 1) {
+                                product++;
+                                photo = 0;
+                                processUpload(product, photo);
+                            } else {
+                                ImageController.this.i = 0;
+                                uploadVideos(0);
                             }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception exception) {
+                        }
 
-                                //<!--Start from same index
-                                mProgress.dismiss();
-                                window.clearFlags(FLAG_KEEP_SCREEN_ON);
-                                Toast.makeText(context, exception.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                                showalert("Upload Failed", "RETRY", i, j);
-                                // Handle unsuccessful uploads
-                                // ...
-                            }
-                        });
+
+                        //<--Set up dialog box
+
+
+                        // Get a URL to the uploaded content
+
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+
+                        //<!--Start from same index
+                        mProgress.dismiss();
+                        window.clearFlags(FLAG_KEEP_SCREEN_ON);
+                        Toast.makeText(context, exception.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                        showalert(true, "Upload Failed", "RETRY", i, j);
+                        // Handle unsuccessful uploads
+                        // ...
+                    }
+                });
 
 
     }
 
-    void showalert(String Message, String CancelText, final int index1, final int index2) {
+    void uploadUserDataAndStatus() {
+        StorageReference mStorageRef = FirebaseStorage.getInstance().getReference().child(folder);
+        mStorageRef.child("info.txt").putBytes(data.toString().getBytes()).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                FirebaseDatabase db = FirebaseDatabase.getInstance();
+                DatabaseReference ref = db.getReference("Users/" + new SessionHelper(context).getUid() + "/orders");
+                ref.child(dbkey).child("fKey").setValue(folder);
+                ref.child(dbkey).child("uploaded").setValue(true);
+                mProgress.dismiss();
+                window.clearFlags(FLAG_KEEP_SCREEN_ON);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    void uploadVideos(final int i) {
+        mProgress.setSecondaryProgress((i * 100) / CartHolder.getInstance().getVideo().size());
+        StorageReference mStorageRef = FirebaseStorage.getInstance().getReference().child(folder);
+        Pair<Product, Uri> pair = CartHolder.getInstance().getVideo().get(i);
+        mProgress.setTitle(pair.first.getType() + "(" + pair.first.getTitle() + ")");
+        mProgress.setMessage("Uploading Video .. [" + i + "]");
+        StorageReference riversRef = mStorageRef.child(pair.first.getId() + "~~" + i);
+        riversRef.putFile(pair.second).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                mProgress.setProgress((int) ((taskSnapshot.getBytesTransferred() * 100) / taskSnapshot.getTotalByteCount()));
+            }
+        })
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        int n = CartHolder.getInstance().getVideo().size();
+                        int product = i;
+                        if (product < n) {
+                            product++;
+                            uploadVideos(product);
+                        } else {
+                            uploadUserDataAndStatus();
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+
+                        //<!--Start from same index
+                        mProgress.dismiss();
+                        window.clearFlags(FLAG_KEEP_SCREEN_ON);
+                        Toast.makeText(context, exception.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                        showalert(false, "Upload Failed", "RETRY", i, 0);
+
+                        // Handle unsuccessful uploads
+                        // ...
+                    }
+                });
+
+    }
+
+    void showalert(final boolean photo, String Message, String CancelText, final int index1, final int index2) {
 
 
         AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
@@ -177,7 +234,10 @@ public class ImageController {
                         mProgress.setCancelable(false);
                         mProgress.setIndeterminate(false);
                         mProgress.show();
-                        processUpload(index1, index2);
+                        if (photo)
+                            processUpload(index1, index2);
+                        else
+                            uploadVideos(index1);
 
                         dialog.dismiss();
                     }
@@ -199,6 +259,32 @@ public class ImageController {
 
 
         );
+    }
+
+    public void saveTofirebase(Uri selectedVedioUri) {
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        final StorageReference photoRef = storageRef.child("user").child("NameYoWantToAdd");
+// add File/URI
+        photoRef.putFile(selectedVedioUri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+
+                    }
+                }).addOnProgressListener(
+                new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                        //calculating progress percentage
+                    }
+                });
     }
 
 

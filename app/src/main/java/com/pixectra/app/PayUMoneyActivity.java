@@ -230,12 +230,11 @@ public class PayUMoneyActivity extends AppCompatActivity {
                        replace MainActivity with Cart Activity
                         */
 
-                        Intent intent = new Intent(PayUMoneyActivity.this, MainActivity.class);
-
-                        intent.putExtra("fromPayU", true);
+                        Intent intent = new Intent(PayUMoneyActivity.this, PaymentStatus.class);
                         intent.putExtra("status", true);
                         intent.putExtra("transaction_id", mTXNId);
                         intent.putExtra("id", mId);
+                        intent.putExtra("amount", mAmount);
                         intent.putExtra("isOneTime", isOneTime);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
@@ -249,10 +248,11 @@ public class PayUMoneyActivity extends AppCompatActivity {
                        replace MainActivity with Cart Activity
                         */
 
-                        Intent intent = new Intent(PayUMoneyActivity.this, MainActivity.class);
+                        Intent intent = new Intent(PayUMoneyActivity.this, PaymentStatus.class);
                         intent.putExtra("status", false);
                         intent.putExtra("transaction_id", mTXNId);
                         intent.putExtra("id", mId);
+                        intent.putExtra("amount", mAmount);
                         intent.putExtra("isOneTime", isOneTime);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);

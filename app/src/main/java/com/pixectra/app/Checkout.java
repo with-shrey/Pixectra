@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.Pair;
 import android.util.SparseIntArray;
 import android.util.TypedValue;
@@ -44,7 +45,6 @@ import com.pixectra.app.Models.Product;
 import com.pixectra.app.Models.Tax;
 import com.pixectra.app.Models.User;
 import com.pixectra.app.Utils.CartHolder;
-import com.pixectra.app.Utils.ImageController;
 import com.pixectra.app.Utils.QReader;
 
 import java.text.ParseException;
@@ -64,7 +64,6 @@ public class Checkout extends AppCompatActivity {
     SimpleDateFormat format;
     EditText couponBottomSheet;
     TextView addressText;
-    ImageController uploader;
     SparseIntArray prices;
     @Override
     protected void onResume() {
@@ -81,7 +80,6 @@ public class Checkout extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Branch.getInstance().loadRewards();
         setContentView(R.layout.activity_checkout);
-        uploader = new ImageController(Checkout.this, getWindow());
         couponApplied = CartHolder.getInstance().getDiscount() != null;
         coupon = CartHolder.getInstance().getCoupon();
         recyclerView = findViewById(R.id.cart_recyclerview);
@@ -104,7 +102,7 @@ public class Checkout extends AppCompatActivity {
             @Override
             public void onItemRangeRemoved(int positionStart, int itemCount) {
                 super.onItemRangeRemoved(positionStart, itemCount);
-                if (CartHolder.getInstance().getCart().size() > 0) {
+                if (CartHolder.getInstance().getCart().size() + CartHolder.getInstance().getVideo().size() > 0) {
                     findViewById(R.id.cart_proceed).setVisibility(View.VISIBLE);
                     recyclerView.setVisibility(View.VISIBLE);
                     empty.setVisibility(View.GONE);
@@ -118,7 +116,7 @@ public class Checkout extends AppCompatActivity {
             @Override
             public void onChanged() {
                 super.onChanged();
-                if (CartHolder.getInstance().getCart().size() > 0) {
+                if (CartHolder.getInstance().getCart().size() + CartHolder.getInstance().getVideo().size() > 0) {
                     findViewById(R.id.cart_proceed).setVisibility(View.VISIBLE);
                     recyclerView.setVisibility(View.VISIBLE);
                     empty.setVisibility(View.GONE);
@@ -160,8 +158,9 @@ public class Checkout extends AppCompatActivity {
         addressText = parentview.findViewById(R.id.bottom_sheet_address);
 
         final TextView discountType = parentview.findViewById(R.id.discount_type);
+        final TextView deliveryCharges = parentview.findViewById(R.id.delivery_charges);
         final TextView creditsUsed = parentview.findViewById(R.id.credits_used);
-        creditsUsed.setText("0.0");
+        creditsUsed.setText("0");
         credits.setText("Use Credit Balance( Available : " + Branch.getInstance().getCredits() + ")");
         final int creditBalance = Branch.getInstance().getCredits();
         credits.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -172,7 +171,7 @@ public class Checkout extends AppCompatActivity {
                 else
                     creditsUsed.setText("0");
 
-                computeTotal(discountType, totalpayable, carttotal, cartDiscount, creditsUsed);
+                computeTotal(deliveryCharges, discountType, totalpayable, carttotal, cartDiscount, creditsUsed);
             }
 
 
@@ -182,8 +181,22 @@ public class Checkout extends AppCompatActivity {
         Button scan = parentview.findViewById(R.id.scanqr);
         Button selectShipping = parentview.findViewById(R.id.shipping_address_choose);
         carttotal.setText(String.valueOf(getBaseAmount()));
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Delivery");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                deliveryCharges.setText("" + dataSnapshot.getValue(Double.class));
+                computeTotal(deliveryCharges, discountType, totalpayable, carttotal, cartDiscount, creditsUsed);
+            }
 
-        computeTotal(discountType, totalpayable, carttotal, cartDiscount, creditsUsed);
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+//        computeTotal(discountType, totalpayable, carttotal, cartDiscount, creditsUsed);
+
 
         selectShipping.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -237,7 +250,7 @@ public class Checkout extends AppCompatActivity {
                                                                 CartHolder.getInstance().setDiscount(
                                                                         new Pair<>(coupon.getType()
                                                                                 , new Pair<>(coupon.getThreshold(), coupon.getDiscount())));
-                                                                computeTotal(discountType, totalpayable, carttotal, cartDiscount, creditsUsed);
+                                                                computeTotal(deliveryCharges, discountType, totalpayable, carttotal, cartDiscount, creditsUsed);
                                                                 computeAndSetCreditPayment(creditsUsed, carttotal, cartDiscount, creditBalance);
                                                                 couponApplied = true;
                                                                 earned.child(code).setValue(null);
@@ -268,7 +281,7 @@ public class Checkout extends AppCompatActivity {
                                                 CartHolder.getInstance().setDiscount(
                                                         new Pair<>(1
                                                                 , new Pair<>(0, 0.0)));
-                                                computeTotal(discountType, totalpayable, carttotal, cartDiscount, creditsUsed);
+                                                computeTotal(deliveryCharges, discountType, totalpayable, carttotal, cartDiscount, creditsUsed);
 
                                             }
                                         } else {
@@ -322,7 +335,8 @@ public class Checkout extends AppCompatActivity {
             public void onClick(View view) {
                 final com.pixectra.app.Models.CheckoutData checkout = new com.pixectra.app.Models.CheckoutData();
 
-                final DatabaseReference user = FirebaseDatabase.getInstance().getReference("User").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                final DatabaseReference user = FirebaseDatabase.getInstance().getReference("Users")
+                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Info");
                 user.keepSynced(true);
                 user.addValueEventListener(new ValueEventListener() {
                     @Override
@@ -384,7 +398,7 @@ public class Checkout extends AppCompatActivity {
                         - Double.parseDouble(cartDiscount.getText().toString())));
     }
 
-    void computeTotal(TextView discountType, TextView totalPayable, TextView carttotal, TextView cartDiscount, TextView creditsUsed) {
+    void computeTotal(TextView deliveryCharges, TextView discountType, TextView totalPayable, TextView carttotal, TextView cartDiscount, TextView creditsUsed) {
         if (coupon != null) {
             if (coupon.getType() == 0 && coupon.getThreshold() <= Double.parseDouble(carttotal.getText().toString())) {
                 discountType.setText(coupon.getDiscount() + "%");
@@ -400,6 +414,7 @@ public class Checkout extends AppCompatActivity {
         }
         totalPayable.setText(String.valueOf(
                 +Double.parseDouble(carttotal.getText().toString())
+                        + Double.parseDouble(deliveryCharges.getText().toString())
                         + Double.parseDouble(cartDiscount.getText().toString())
                         + Double.parseDouble(creditsUsed.getText().toString())
         ));
@@ -457,12 +472,26 @@ public class Checkout extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(VH holder, int position) {
-            Product product = CartHolder.getInstance().getCart().get(position).first;
-            holder.title.setText(String.format(Locale.getDefault(), "%s ( %d )", product.getType(), CartHolder.getInstance().getCart().get(position).second.size()));
+        public void onBindViewHolder(@NonNull VH holder, int position) {
+            Product product;
+            int sizeOfCart = CartHolder.getInstance().getCart().size();
+            if (position < sizeOfCart) {
+                Toast.makeText(Checkout.this, "Normal " + (position), Toast.LENGTH_SHORT).show();
+                Log.v("Cart", "Normal" + position);
+                product = CartHolder.getInstance().getCart().get(position).first;
+                holder.images.setAdapter(new CartImagesAdapter(this, Checkout.this, CartHolder.getInstance().getCart().get(position).second, position));
+                holder.title.setText(String.format(Locale.getDefault(), "%s ( %d )", product.getType(), CartHolder.getInstance().getCart().get(position).second.size()));
+
+            } else {
+                Log.v("Cart", "Video" + (position - sizeOfCart));
+                Toast.makeText(Checkout.this, "Video " + (position - sizeOfCart), Toast.LENGTH_SHORT).show();
+                product = CartHolder.getInstance().getVideo().get(position - sizeOfCart).first;
+                holder.images.setVisibility(View.GONE);
+                holder.title.setText(String.format(Locale.getDefault(), "%s ( %d )", product.getType(), 1));
+            }
+
             holder.type.setText(String.format(Locale.getDefault(), "%s@%d", product.getTitle(), product.getPrice()));
             Glide.with(Checkout.this).load(product.getUrl()).into(holder.titleImage);
-            holder.images.setAdapter(new CartImagesAdapter(this, Checkout.this, CartHolder.getInstance().getCart().get(position).second, position));
             int price = product.getPrice();
             String priceText = "" + price;
             if (product.getMaxPics() == -1) {
@@ -477,7 +506,8 @@ public class Checkout extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return CartHolder.getInstance().getCart().size();
+            Toast.makeText(Checkout.this, "" + (CartHolder.getInstance().getCart().size() + CartHolder.getInstance().getVideo().size()), Toast.LENGTH_SHORT).show();
+            return CartHolder.getInstance().getCart().size() + CartHolder.getInstance().getVideo().size();
         }
 
         class VH extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -500,7 +530,11 @@ public class Checkout extends AppCompatActivity {
 
             @Override
             public void onClick(View view) {
-                CartHolder.getInstance().getCart().remove(getAdapterPosition());
+                if (getAdapterPosition() < CartHolder.getInstance().getCart().size())
+                    CartHolder.getInstance().getCart().remove(getAdapterPosition());
+                else {
+                    CartHolder.getInstance().getVideo().remove(getAdapterPosition() - CartHolder.getInstance().getCart().size());
+                }
                 prices.delete(getAdapterPosition());
                 notifyItemRemoved(getAdapterPosition());
 

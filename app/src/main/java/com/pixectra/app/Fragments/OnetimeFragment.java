@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -26,28 +27,30 @@ import java.util.ArrayList;
  * A simple {@link Fragment} subclass.
  */
 public class OnetimeFragment extends Fragment {
-
+    private String type;
 
   //<--dummy titles
-    String[] title = {"Kaneki", "Child", "Clothes", "Dummy"};
+  private ArrayList<Product> data;
+    private RecyclerView mrecyclerview;
+    private PhotobookRecyclerViewAdapter mposterRecyclerViewAdapter;
 
-
-
- //<--dummy image links
-    String[] image_links = {"http://media.comicbook.com/2017/02/tokyoghoulseason3-234960-1280x0.jpg",
-            "http://www.essentialbaby.com.au/content/dam/images/2/8/7/r/0/image.related.articleLeadwide.620x349.36m36.png/1467682109866.jpg",
-            "https://www.wikihow.com/images/thumb/c/c8/Make-a-Halloween-Dummy-Step-3.jpg/aid7602-v4-728px-Make-a-Halloween-Dummy-Step-3.jpg",
-            "http://www.dummymag.com//media/img/dummy-logo.png"
-    };
-
-    ArrayList<Product> data;
-    RecyclerView mrecyclerview;
-    PhotobookRecyclerViewAdapter mposterRecyclerViewAdapter;
+    public static Fragment newInstance(String s) {
+        OnetimeFragment fragment = new OnetimeFragment();
+        Bundle args = new Bundle();
+        args.putString("category", s);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     public OnetimeFragment() {
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        type = getArguments().getString("category");
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -62,12 +65,13 @@ public class OnetimeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         data=new ArrayList<>();
         FirebaseDatabase database=FirebaseDatabase.getInstance();
-        final DatabaseReference ref = database.getReference("CommonData").child("PhotoBooks");
+        final DatabaseReference ref = database.getReference("CommonData").child("PhotoBooks").child(type);
+        Toast.makeText(getActivity(), ref.toString(), Toast.LENGTH_SHORT).show();
         ref.keepSynced(true);
         //<--setting up recycler view
         mrecyclerview = getActivity().findViewById(R.id.recyclerview_poster_onetime);
         mrecyclerview.setLayoutManager(new LinearLayoutManager(getActivity()));
-        SetupRecyclerview();
+        //SetupRecyclerview();
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -77,7 +81,7 @@ public class OnetimeFragment extends Fragment {
                     data.add(product);
                 }
                 view.findViewById(R.id.onetime_progress).setVisibility(View.GONE);
-                mposterRecyclerViewAdapter.notifyDataSetChanged();
+                SetupRecyclerview();
                 ref.removeEventListener(this);
             }
 
@@ -95,5 +99,6 @@ public class OnetimeFragment extends Fragment {
         mposterRecyclerViewAdapter = new PhotobookRecyclerViewAdapter(getActivity(), R.layout.photobook_recycler_view_card, data,0);
         mrecyclerview.setAdapter(mposterRecyclerViewAdapter);
     }
+
 
 }

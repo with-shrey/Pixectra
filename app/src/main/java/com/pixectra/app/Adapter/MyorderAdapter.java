@@ -38,13 +38,14 @@ public class MyorderAdapter extends RecyclerView.Adapter<MyorderAdapter.viewHold
         final Myorders ord = (Myorders) arrayList.get(position);
         CardView cardView = holder.cardView;
         TextView name = cardView.findViewById(R.id.Order_name);
-        name.setText(ord.getName());
+        if (ord.getfKey() != null)
+            name.setText(ord.getfKey());
         TextView number = cardView.findViewById(R.id.Order_number);
-        number.setText("Order No " + ord.getid());
+        number.setText("Order No " + ord.getPayId());
         TextView time = cardView.findViewById(R.id.Order_time);
         time.setText(ord.getDate() + "  " + ord.getTime());
         TextView uploaded = cardView.findViewById(R.id.Order_uploaded);
-        uploaded.setText(ord.getUploaded());
+        uploaded.setText("" + ord.getAmount());
         TextView amount = cardView.findViewById(R.id.Order_amount);
         amount.setText("₹" + ord.getAmount().toString());
     }

@@ -106,14 +106,14 @@
         <activity android:name=".orders_placed" />
         <activity android:name=".subscription_list" />
         <activity android:name=".SubscriptionActivity"/>
-        <activity android:name=".successfull"/>
+        <activity android:name=".PaymentStatus" />
 
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="24d096531d852632ab1c7f98d4485791c5e5eaa1" />
 
         <activity android:name=".Utils.QReader" />
-        <activity android:name=".VideoSelectActivity"></activity>
+        <activity android:name=".VideoSelection" />
     </application>
 
 </manifest>

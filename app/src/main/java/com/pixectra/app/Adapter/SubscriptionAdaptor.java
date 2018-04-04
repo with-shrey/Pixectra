@@ -3,11 +3,9 @@ package com.pixectra.app.Adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +13,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.pixectra.app.Models.SubscriptionDetails;
+import com.pixectra.app.PaymentStatus;
 import com.pixectra.app.R;
-import com.pixectra.app.ShippingAddressForm;
-import com.pixectra.app.successfull;
 
 import java.util.ArrayList;
 
@@ -70,7 +67,7 @@ public class SubscriptionAdaptor extends RecyclerView.Adapter<SubscriptionAdapto
         holder.purchaseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent= new Intent(holder.c0,successfull.class);
+                Intent intent = new Intent(holder.c0, PaymentStatus.class);
                 holder.c0.startActivity(intent);
             }
 
