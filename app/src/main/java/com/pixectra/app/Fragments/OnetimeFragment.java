@@ -69,7 +69,7 @@ public class OnetimeFragment extends Fragment {
         Toast.makeText(getActivity(), ref.toString(), Toast.LENGTH_SHORT).show();
         ref.keepSynced(true);
         //<--setting up recycler view
-        mrecyclerview = getActivity().findViewById(R.id.recyclerview_poster_onetime);
+        mrecyclerview = view.findViewById(R.id.recyclerview_poster_onetime);
         mrecyclerview.setLayoutManager(new LinearLayoutManager(getActivity()));
         //SetupRecyclerview();
         ref.addValueEventListener(new ValueEventListener() {
