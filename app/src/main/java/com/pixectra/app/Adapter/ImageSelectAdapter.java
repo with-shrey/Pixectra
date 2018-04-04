@@ -37,9 +37,9 @@ import java.util.concurrent.ExecutionException;
 
 public class ImageSelectAdapter extends RecyclerView.Adapter<ImageSelectAdapter.myViewHolder> {
     List<Images> data = Collections.emptyList();
-    String key;
+    private String key;
     Context c;
-    int w, maxP;
+    private int w, maxP;
     private LayoutInflater inflater;
 
     public ImageSelectAdapter(Context context, String key, int maxPics, List<Images> data) {

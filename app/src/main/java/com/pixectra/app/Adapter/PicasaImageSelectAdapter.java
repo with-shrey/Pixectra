@@ -1,6 +1,5 @@
 package com.pixectra.app.Adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -9,11 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.pixectra.app.ImageSelectActivity;
 import com.pixectra.app.Models.Images;
 import com.pixectra.app.Models.PicasaAlbumExtra;
 import com.pixectra.app.R;
-import com.pixectra.app.Utils.AlbumActivity;
 import com.pixectra.app.Utils.PicasaAlbumFragment;
 
 import java.util.List;
@@ -27,7 +24,8 @@ public class PicasaImageSelectAdapter extends ImageSelectAdapter {
     private List<PicasaAlbumExtra> albumExtras;
     private String accessToken;
     private FragmentActivity fragmentActivity;
-
+    String key;
+    int maxP;
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
     }
@@ -36,6 +34,8 @@ public class PicasaImageSelectAdapter extends ImageSelectAdapter {
                                     List<PicasaAlbumExtra> albumExtras) {
         super(context, key, maxPics, data);
         this.albumExtras = albumExtras;
+        maxP = maxPics;
+        this.key = key;
     }
 
     @Override

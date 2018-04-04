@@ -55,14 +55,14 @@ import com.google.android.gms.common.api.Scope;
 import com.pixectra.app.Adapter.ImageSelectAdapter;
 import com.pixectra.app.Adapter.PicasaImageSelectAdapter;
 import com.pixectra.app.FacebookActivity;
-import com.pixectra.app.Models.PicasaAlbumExtra;
-import com.pixectra.app.Utils.GetOAuthAccessTokenTask;
 import com.pixectra.app.Instagram.ApplicationData;
 import com.pixectra.app.Instagram.InstagramApp;
 import com.pixectra.app.Models.Images;
+import com.pixectra.app.Models.PicasaAlbumExtra;
 import com.pixectra.app.R;
 import com.pixectra.app.Utils.AlbumActivity;
 import com.pixectra.app.Utils.Function;
+import com.pixectra.app.Utils.GetOAuthAccessTokenTask;
 import com.pixectra.app.Utils.GlideHelper;
 import com.pixectra.app.Utils.MapComparator;
 import com.pixectra.app.Utils.SessionHelper;
@@ -144,7 +144,7 @@ public class ImageFragment extends Fragment {
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
         albumAdapter = new AlbumAdapter(getActivity(), albumList);
         adapter = new ImageSelectAdapter(getActivity(), key, getActivity().getIntent().getIntExtra("maxPics", 0), imageData);
-        picasaAdapter = new PicasaImageSelectAdapter(getActivity(), key, getActivity().getIntent().getIntExtra("pics", 0), imageData, albumExtras);
+        picasaAdapter = new PicasaImageSelectAdapter(getActivity(), key, getActivity().getIntent().getIntExtra("maxPics", 0), imageData, albumExtras);
         //imagegrid = layout.findViewById(R.id.PhoneImageGrid);
           // selectBtn = layout.findViewById(R.id.selectBtn);
 
@@ -313,7 +313,7 @@ public class ImageFragment extends Fragment {
             }
         }){
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() {
                 Map<String,String> params ;//=  super.getHeaders();
                 //if(params==null)
                 params = new HashMap<>();
