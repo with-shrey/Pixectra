@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.pixectra.app.ImageSelectActivity;
 import com.pixectra.app.Models.Product;
 import com.pixectra.app.R;
+import com.pixectra.app.SubscriptionActivity;
 import com.pixectra.app.Utils.CartHolder;
 import com.pixectra.app.Utils.GlideHelper;
 import com.pixectra.app.Utils.LogManager;
@@ -35,14 +36,17 @@ public class PhotobookRecyclerViewAdapter extends RecyclerView.Adapter<Photobook
     int layout;
     Context mcontext;
     ArrayList<Product> list;
-
-    public PhotobookRecyclerViewAdapter(Context mcontext, int layout, ArrayList<Product> data) {
+    int subscription;
+    // subs variable add to recognise that the adapter is called for subscription fragment
+    public PhotobookRecyclerViewAdapter(Context mcontext, int layout, ArrayList<Product> data,int subs) {
         if (mcontext != null && layout != 0)
 
         {
             list = data;
             this.mcontext = mcontext;        //<-- context
-            this.layout = layout;            //<-- layout
+            this.layout = layout; //<-- layout
+            this.subscription=subs;
+
         } else {
             Log.d("PhtbkRcyclrViewAdapter", "Empty Constructor Params");
         }
@@ -96,7 +100,8 @@ public class PhotobookRecyclerViewAdapter extends RecyclerView.Adapter<Photobook
         return list.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public class
+    MyViewHolder extends RecyclerView.ViewHolder {
 
         ImageView mimageview;
         TextView image_title, price, count, falsePrice;
@@ -114,7 +119,8 @@ public class PhotobookRecyclerViewAdapter extends RecyclerView.Adapter<Photobook
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    LogManager.viewContent(list.get(getAdapterPosition()).getId(), list.get(getAdapterPosition()).getTitle()
+                    if(subscription!=1)//for image selection
+                    {LogManager.viewContent(list.get(getAdapterPosition()).getId(), list.get(getAdapterPosition()).getTitle()
                             , list.get(getAdapterPosition()).getType());
                     CartHolder.getInstance().addDetails(list.get(getAdapterPosition()).getId(), list.get(getAdapterPosition()));
                     Intent intent = new Intent();
@@ -129,7 +135,12 @@ public class PhotobookRecyclerViewAdapter extends RecyclerView.Adapter<Photobook
                     else
                         intent.putExtra("maxPics", list.get(getAdapterPosition()).getMaxPics());
                     intent.putExtra("key", list.get(getAdapterPosition()).getId());
-                    mcontext.startActivity(intent);
+                    mcontext.startActivity(intent);}
+                    else//for subscription
+                    {
+                      Intent intent=new Intent(mcontext, SubscriptionActivity.class);
+                      mcontext.startActivity(intent);
+                    }
                 }
             });
 

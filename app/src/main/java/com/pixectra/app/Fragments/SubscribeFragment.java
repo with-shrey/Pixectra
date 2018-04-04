@@ -23,6 +23,8 @@ import com.pixectra.app.R;
 
 import java.util.ArrayList;
 
+import static com.facebook.internal.Utility.logd;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -56,7 +58,7 @@ public class SubscribeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        Log.d("name",getActivity().toString());
         data=new ArrayList<>();
         FirebaseDatabase database=FirebaseDatabase.getInstance();
         final DatabaseReference ref = database.getReference("CommonData").child("PhotoBooks");
@@ -91,7 +93,7 @@ public class SubscribeFragment extends Fragment {
 
     private void SetupRecyclerview() {
 
-        mposterRecyclerViewAdapter = new PhotobookRecyclerViewAdapter(getActivity(), R.layout.photobook_recycler_view_card, data);
+        mposterRecyclerViewAdapter = new PhotobookRecyclerViewAdapter(getActivity(), R.layout.photobook_recycler_view_card, data,1);
         mrecyclerview.setAdapter(mposterRecyclerViewAdapter);
     }
 }

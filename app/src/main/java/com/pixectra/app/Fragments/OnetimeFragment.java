@@ -92,7 +92,7 @@ public class OnetimeFragment extends Fragment {
     private void SetupRecyclerview(){
 
 
-        mposterRecyclerViewAdapter = new PhotobookRecyclerViewAdapter(getActivity(), R.layout.photobook_recycler_view_card, data);
+        mposterRecyclerViewAdapter = new PhotobookRecyclerViewAdapter(getActivity(), R.layout.photobook_recycler_view_card, data,0);
         mrecyclerview.setAdapter(mposterRecyclerViewAdapter);
     }
 

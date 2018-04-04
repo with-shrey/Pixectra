@@ -93,7 +93,7 @@ public class PosterActivity extends AppCompatActivity {
      */
     private void setuprecyclerview() {
 
-        mposterRecyclerViewAdapter = new PhotobookRecyclerViewAdapter(PosterActivity.this, R.layout.photobook_recycler_view_card, data);
+        mposterRecyclerViewAdapter = new PhotobookRecyclerViewAdapter(PosterActivity.this, R.layout.photobook_recycler_view_card, data,0);
         mrecyclerview.setAdapter(mposterRecyclerViewAdapter);
     }
 }

@@ -105,6 +105,8 @@
         <activity android:name=".PayUMoneyActivity" />
         <activity android:name=".orders_placed" />
         <activity android:name=".subscription_list" />
+        <activity android:name=".SubscriptionActivity"/>
+        <activity android:name=".successfull"/>
 
         <meta-data
             android:name="io.fabric.ApiKey"

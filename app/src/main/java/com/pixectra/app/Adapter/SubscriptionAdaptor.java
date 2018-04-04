@@ -2,9 +2,12 @@ package com.pixectra.app.Adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +16,8 @@ import android.widget.TextView;
 
 import com.pixectra.app.Models.SubscriptionDetails;
 import com.pixectra.app.R;
+import com.pixectra.app.ShippingAddressForm;
+import com.pixectra.app.successfull;
 
 import java.util.ArrayList;
 
@@ -27,7 +32,7 @@ public class SubscriptionAdaptor extends RecyclerView.Adapter<SubscriptionAdapto
     int[] colorsActive;
     int[] colorsInactive;
     Activity activity;
-    int size;
+
 
     public SubscriptionAdaptor(ArrayList<SubscriptionDetails> data, Context context, Activity activity) {
 
@@ -37,8 +42,6 @@ public class SubscriptionAdaptor extends RecyclerView.Adapter<SubscriptionAdapto
         this.context = context;
         colorsActive = context.getResources().getIntArray(R.array.array_dot_active);
         colorsInactive = context.getResources().getIntArray(R.array.array_dot_inactive);
-
-        size = data.size();
     }
 
     @NonNull
@@ -58,11 +61,20 @@ public class SubscriptionAdaptor extends RecyclerView.Adapter<SubscriptionAdapto
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         holder.Title.setText(data.get(position).getTitle());
-        holder.SubTitle.setText(data.get(position).getSub_title());
-        holder.description.setText(Html.fromHtml(data.get(position).getDetails()));
-        holder.index.setText(String.valueOf(position+1) + "/" + String.valueOf(size));
+        holder.Type.setText(data.get(position).getType());
+        holder.description.setText(Html.fromHtml(data.get(position).getDesc()));
+        holder.index.setText(String.valueOf(position+1) + "/" + String.valueOf(data.size()));
+        holder.price.setText("₹ "+data.get(position).getPrice()+"/"+data.get(position).getNo_of_books()+" books");
+        holder.purchaseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent= new Intent(holder.c0,successfull.class);
+                holder.c0.startActivity(intent);
+            }
+
+        });
 
     }
 
@@ -75,17 +87,21 @@ public class SubscriptionAdaptor extends RecyclerView.Adapter<SubscriptionAdapto
 
         TextView description;
         TextView Title;
-        TextView SubTitle;
+        TextView Type;
         Button purchaseButton;
+        TextView price;
         TextView index;
+        Context c0;
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(final View itemView) {
             super(itemView);
             index = itemView.findViewById(R.id.index_subscription_card);
             description = itemView.findViewById(R.id.Subscription_detail_TextView);
             Title = itemView.findViewById(R.id.Subscription_Title_TextView);
-            SubTitle = itemView.findViewById(R.id.Subscription_Sub_Title_TextView);
+            Type = itemView.findViewById(R.id.Subscription_type);
             purchaseButton = itemView.findViewById(R.id.subscription_button);
+            price=itemView.findViewById(R.id.subscription_Price);
+            this.c0 = itemView.getContext();
 
         }
     }
