@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -84,7 +85,7 @@ public class PhotobookRecyclerViewAdapter extends RecyclerView.Adapter<Photobook
     }
 
     void setPrice(TextView textView, int price, String text) {
-        textView.setText(String.format(Locale.getDefault(), "%s %d/%s", mcontext.getResources().getString(R.string.Rs), price, text));
+        textView.setText(String.format(Locale.getDefault(), "%s %d/%s", mcontext.getResources().getString(R.string.Rs), price, Html.fromHtml(text)));
     }
 
     void setPicsCount(TextView textView, String count) {

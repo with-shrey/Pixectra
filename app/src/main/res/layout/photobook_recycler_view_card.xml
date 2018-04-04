@@ -82,7 +82,7 @@
             android:text="25/Unit"
             android:textColor="#fff"
             android:layout_alignParentRight="true"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:textStyle="bold"
 
             android:layout_gravity="bottom|end"
