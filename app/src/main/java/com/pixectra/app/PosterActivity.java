@@ -26,7 +26,7 @@ public class PosterActivity extends AppCompatActivity {
     RecyclerView mrecyclerview;
     PhotobookRecyclerViewAdapter mposterRecyclerViewAdapter;
     int type;
-ArrayList<Product> data;
+    ArrayList<Product> data;
     DatabaseReference dataref;
 
     private int getDrawableFromType() {

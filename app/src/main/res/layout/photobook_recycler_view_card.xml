@@ -53,7 +53,7 @@
         android:textSize="20sp"
         android:textStyle="bold" />
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -61,33 +61,52 @@
         android:padding="10dp">
 
         <TextView
+            android:layout_width="wrap_content"
             android:id="@+id/image_title_poster"
-            android:layout_width="0dp"
+            android:layout_alignParentLeft="true"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="start"
+            android:layout_alignParentStart="true"
             android:text="No title found"
             android:textColor="#fff"
             android:textSize="20sp"
             android:textStyle="bold"
 
-            />
-
+            android:layout_gravity="start" />
         <TextView
             android:id="@+id/image_price_poster"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_weight="1"
+            android:layout_alignParentEnd="true"
             android:gravity="end"
             android:text="25/Unit"
             android:textColor="#fff"
+            android:layout_alignParentRight="true"
             android:textSize="20sp"
             android:textStyle="bold"
 
+            android:layout_gravity="bottom|end"
             />
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/false_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginEnd="4dp"
+            android:layout_marginStart="4dp"
+            android:layout_toEndOf="@id/image_title_poster"
+            android:layout_toLeftOf="@id/image_price_poster"
+            android:layout_toRightOf="@id/image_title_poster"
+            android:layout_toStartOf="@id/image_price_poster"
+            android:gravity="end"
+            android:textColor="#fff"
+
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+
+    </RelativeLayout>
     <ProgressBar
         android:id="@+id/progress_bar_photobook"
         android:layout_width="wrap_content"

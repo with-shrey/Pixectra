@@ -43,22 +43,31 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
         DatabaseReference ref = db.getReference("CommonData");
 
         ref.child("PhotoBooks").setValue(null);
-        ref.child("PhotoBooks").push().setValue(new Product("PhotoBooks", "Size1", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 5, 2, 100, "Book"));
+        ref.child("PhotoBooks").push().setValue(new Product("PhotoBooks", "6 X 4 ", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 25, 22, 119, "Book", 0, 0, 150));
+        ref.child("PhotoBooks").push().setValue(new Product("PhotoBooks", "6 X 4 ", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 50, 45, 190, "Book", 0, 0, 220));
+        ref.child("PhotoBooks").push().setValue(new Product("PhotoBooks", "6 X 4 ", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 100, 70, 250, "Book", 0, 0, 300));
+        ref.child("PhotoBooks").push().setValue(new Product("PhotoBooks", "6 X 8 ", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 25, 22, 230, "Book", 0, 0, 270));
+        ref.child("PhotoBooks").push().setValue(new Product("PhotoBooks", "6 X 8 ", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 50, 45, 340, "Book", 0, 0, 380));
+        ref.child("PhotoBooks").push().setValue(new Product("PhotoBooks", "6 X 8 ", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 100, 70, 450, "Book", 0, 0, 490));
         ref.child("FlipBook").setValue(null);
 
-        ref.child("FlipBook").push().setValue(new Product("FlipBook", "Size1", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 5, 2, 100, "Book"));
+        ref.child("FlipBook").push().setValue(new Product("FlipBook", "Small", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 1, 1, 200, "VideoBook", 0, 1, 250));
+        ref.child("FlipBook").push().setValue(new Product("FlipBook", "Standard", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 1, 1, 300, "VideoBook", 0, 1, 400));
         ref.child("Photos").setValue(null);
 
-        ref.child("Photos").push().setValue(new Product("Photos", "Size1", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 5, 2, 100, "Book"));
+        ref.child("Photos").push().setValue(new Product("Photos", "6 X 4", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", -1, 8, 80, "Set Of 8 + Rs.8/PIC", 8, 0, 95));
+        ref.child("Photos").push().setValue(new Product("Photos", "6 X 8", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", -1, 8, 90, "Set Of 8 + Rs.9/PIC", 10, 0, 100));
         ref.child("Polaroids").setValue(null);
 
-        ref.child("Polaroids").push().setValue(new Product("Polaroids", "Size1", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 5, 2, 100, "Book"));
+        ref.child("Polaroids").push().setValue(new Product("Polaroids", "Wallet Set", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", -1, 15, 99, "Set Of 15 + Rs.6/Piece", 6, 0, 120));
+        ref.child("Polaroids").push().setValue(new Product("Polaroids", "Standard Set", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", -1, 15, 170, "Set Of 15 + Rs.6/Piece", 9, 0, 200));
         ref.child("PostCard").setValue(null);
 
-        ref.child("PostCard").push().setValue(new Product("PostCard", "Size1", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 5, 2, 100, "Book"));
+        ref.child("PostCard").push().setValue(new Product("PostCard", "Photo PostCard", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 1, 1, 69, "Card", 0, 0, 100));
         ref.child("Posters").setValue(null);
 
-        ref.child("Posters").push().setValue(new Product("Posters", "Size1", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 5, 2, 100, "Book"));
+        ref.child("Posters").push().setValue(new Product("Posters", "Small", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 1, 1, 59, "Poster", 0, 0, 70));
+        ref.child("Posters").push().setValue(new Product("Posters", "Large", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 1, 1, 99, "Poster", 0, 0, 120));
 
     }
 
@@ -98,7 +107,6 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
             }
         });
         //rewards to refers
-
         viewPager = findViewById(R.id.main_viewpager);
         viewPager.setOffscreenPageLimit(3);
         viewPager.setAdapter(new ViewPagerAdapter(getSupportFragmentManager()));

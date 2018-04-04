@@ -2,6 +2,7 @@ package com.pixectra.app.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,6 +18,7 @@ import com.pixectra.app.R;
 import com.pixectra.app.Utils.CartHolder;
 import com.pixectra.app.Utils.GlideHelper;
 import com.pixectra.app.Utils.LogManager;
+import com.pixectra.app.VideoSelectActivity;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -59,7 +61,12 @@ public class PhotobookRecyclerViewAdapter extends RecyclerView.Adapter<Photobook
             setPrice(holder.price, product.getPrice(), product.getPriceDesc());
             //<<-- setting image title
             holder.image_title.setText(product.getTitle());
-            setPicsCount(holder.count, product.getMinPics() + "-" + product.getMaxPics());
+            String max = "0";
+            if (product.getMaxPics() == -1)
+                max = mcontext.getString(R.string.infinite);
+            else
+                max = "" + product.getMaxPics();
+            setPicsCount(holder.count, product.getMinPics() + "-" + max);
         } else {
             Log.d("Recycler View ", "Empty Image title at : " + position);
         }
@@ -68,6 +75,10 @@ public class PhotobookRecyclerViewAdapter extends RecyclerView.Adapter<Photobook
             GlideHelper.load(mcontext, product.getUrl(), holder.mimageview, holder.progress);
         } else {
             Log.d("Recycler View ", "Empty image link at : " + position);
+        }
+
+        if (product.getFalsePrice() != -1) {
+            holder.falsePrice.setText(String.format(Locale.getDefault(), "%s %d", mcontext.getResources().getString(R.string.Rs), product.getFalsePrice()));
         }
 
     }
@@ -87,25 +98,35 @@ public class PhotobookRecyclerViewAdapter extends RecyclerView.Adapter<Photobook
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         ImageView mimageview;
-        TextView image_title, price, count;
+        TextView image_title, price, count, falsePrice;
         ProgressBar progress;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             progress = itemView.findViewById(R.id.progress_bar_photobook);
             image_title = itemView.findViewById(R.id.image_title_poster);
+            falsePrice = itemView.findViewById(R.id.false_price);
             price = itemView.findViewById(R.id.image_price_poster);
             count = itemView.findViewById(R.id.image_count_poster);
             mimageview = itemView.findViewById(R.id.imageview_poster_recycler_view);
+            falsePrice.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     LogManager.viewContent(list.get(getAdapterPosition()).getId(), list.get(getAdapterPosition()).getTitle()
                             , list.get(getAdapterPosition()).getType());
                     CartHolder.getInstance().addDetails(list.get(getAdapterPosition()).getId(), list.get(getAdapterPosition()));
-                    Intent intent = new Intent(mcontext, ImageSelectActivity.class);
+                    Intent intent = new Intent();
+                    if (list.get(getAdapterPosition()).getTypeOfUpload() == 0)
+                        intent = new Intent(mcontext, ImageSelectActivity.class);
+                    else {
+                        intent = new Intent(mcontext, VideoSelectActivity.class);
+                    }
                     intent.putExtra("minPics", list.get(getAdapterPosition()).getMinPics());
-                    intent.putExtra("maxPics", list.get(getAdapterPosition()).getMaxPics());
+                    if (list.get(getAdapterPosition()).getMaxPics() == -1)
+                        intent.putExtra("maxPics", Integer.MAX_VALUE);
+                    else
+                        intent.putExtra("maxPics", list.get(getAdapterPosition()).getMaxPics());
                     intent.putExtra("key", list.get(getAdapterPosition()).getId());
                     mcontext.startActivity(intent);
                 }

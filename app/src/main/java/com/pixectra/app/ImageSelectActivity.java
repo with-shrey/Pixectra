@@ -18,10 +18,7 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.pixectra.app.Adapter.SelectedItemsAdapter;
 import com.pixectra.app.Fragments.ImageFragment;
 import com.pixectra.app.Utils.CartHolder;
@@ -133,8 +130,16 @@ TabLayout tabLayout;
     }*/
 
     void setToolbarText(int count) {
-        if (getSupportActionBar() != null)
-            getSupportActionBar().setTitle("Select Images (" + count + "/" + getIntent().getIntExtra("minPics", 0) + "-" + getIntent().getIntExtra("maxPics", 0) + ")");
+        if (getSupportActionBar() != null) {
+            String max = "0";
+            if (getIntent().getIntExtra("maxPics", 0) == Integer.MAX_VALUE) {
+                max = getString(R.string.infinite);
+            } else
+                max = "" + getIntent().getIntExtra("maxPics", 0);
+
+            getSupportActionBar().setTitle("Select Images (" + count + "/" + getIntent().getIntExtra("minPics", 0) + "-" + max + ")");
+
+        }
     }
     void setTabIcons(TabLayout tabs){
         int[] icons = {R.drawable.device, R.drawable.facebook, R.drawable.instagram, R.drawable.google_photos};

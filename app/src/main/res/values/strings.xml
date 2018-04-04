@@ -14,5 +14,6 @@
     <string name="connect">CONNECT</string>
     <string name="google_token" tools:ignore="TypographyDashes">802114397478-121sl0s0bfr0ts2ojchta7b22lc98q5n.apps.googleusercontent.com</string>
     <string name="Rs">\u20B9</string>
+    <string name="infinite">\u221e</string>
     <string name="io.branch.apiKey" translatable="false">key_live_omFS21l61XLXuq5CNE59OfecEBhm0ZoT</string>
 </resources>

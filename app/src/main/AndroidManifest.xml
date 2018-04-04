@@ -26,7 +26,7 @@
 
         <activity android:name=".MobileVerifyActivity" />
         <activity android:name=".MyProfileActivity" />
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".MainActivity" />
         <activity android:name=".PicasaActivity" />
         <!-- Branch install referrer tracking (optional) -->
         <receiver
@@ -54,6 +54,7 @@
                 <data
                     android:host="open"
                     android:scheme="pixectra" />
+
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -82,12 +83,15 @@
         <activity android:name=".LActivity" />
         <activity
             android:name=".ImageSelectActivity"
-            android:label="Select Images.." >
-            <!--<intent-filter>
+            android:label="Select Images..">
+
+            <!--
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
+            </intent-filter>
+            -->
         </activity>
         <activity android:name=".LinkedAccounts" />
         <activity android:name=".FacebookActivity" />
@@ -107,6 +111,7 @@
             android:value="24d096531d852632ab1c7f98d4485791c5e5eaa1" />
 
         <activity android:name=".Utils.QReader" />
+        <activity android:name=".VideoSelectActivity"></activity>
     </application>
 
 </manifest>
