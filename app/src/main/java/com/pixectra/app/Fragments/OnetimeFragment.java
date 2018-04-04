@@ -10,7 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -66,7 +65,6 @@ public class OnetimeFragment extends Fragment {
         data=new ArrayList<>();
         FirebaseDatabase database=FirebaseDatabase.getInstance();
         final DatabaseReference ref = database.getReference("CommonData").child("PhotoBooks").child(type);
-        Toast.makeText(getActivity(), ref.toString(), Toast.LENGTH_SHORT).show();
         ref.keepSynced(true);
         //<--setting up recycler view
         mrecyclerview = view.findViewById(R.id.recyclerview_poster_onetime);

@@ -13,7 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.Pair;
 import android.util.SparseIntArray;
 import android.util.TypedValue;
@@ -45,6 +44,7 @@ import com.pixectra.app.Models.Product;
 import com.pixectra.app.Models.Tax;
 import com.pixectra.app.Models.User;
 import com.pixectra.app.Utils.CartHolder;
+import com.pixectra.app.Utils.LogManager;
 import com.pixectra.app.Utils.QReader;
 
 import java.text.ParseException;
@@ -352,7 +352,7 @@ public class Checkout extends AppCompatActivity {
 
                         CartHolder.getInstance().setCheckout(checkout);
                         user.removeEventListener(this);
-
+                        LogManager.checkOutStarted(checkout);
                         Intent intent = new Intent(Checkout.this, PayUMoneyActivity.class);
                         intent.putExtra("name", checkout.getUser().getName());
                         intent.putExtra("email", checkout.getUser().getEmail());
@@ -476,15 +476,11 @@ public class Checkout extends AppCompatActivity {
             Product product;
             int sizeOfCart = CartHolder.getInstance().getCart().size();
             if (position < sizeOfCart) {
-                Toast.makeText(Checkout.this, "Normal " + (position), Toast.LENGTH_SHORT).show();
-                Log.v("Cart", "Normal" + position);
                 product = CartHolder.getInstance().getCart().get(position).first;
                 holder.images.setAdapter(new CartImagesAdapter(this, Checkout.this, CartHolder.getInstance().getCart().get(position).second, position));
                 holder.title.setText(String.format(Locale.getDefault(), "%s ( %d )", product.getType(), CartHolder.getInstance().getCart().get(position).second.size()));
 
             } else {
-                Log.v("Cart", "Video" + (position - sizeOfCart));
-                Toast.makeText(Checkout.this, "Video " + (position - sizeOfCart), Toast.LENGTH_SHORT).show();
                 product = CartHolder.getInstance().getVideo().get(position - sizeOfCart).first;
                 holder.images.setVisibility(View.GONE);
                 holder.title.setText(String.format(Locale.getDefault(), "%s ( %d )", product.getType(), 1));
@@ -506,7 +502,6 @@ public class Checkout extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            Toast.makeText(Checkout.this, "" + (CartHolder.getInstance().getCart().size() + CartHolder.getInstance().getVideo().size()), Toast.LENGTH_SHORT).show();
             return CartHolder.getInstance().getCart().size() + CartHolder.getInstance().getVideo().size();
         }
 

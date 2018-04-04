@@ -12,7 +12,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -51,7 +50,6 @@ public class PhotobookActivity extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                     tabTitles.add(dataSnapshot1.getKey());
                 }
-                Toast.makeText(PhotobookActivity.this, tabTitles.toString(), Toast.LENGTH_SHORT).show();
                 myAdpater = new MyAdpater(getSupportFragmentManager());
                 viewPager.setAdapter(myAdpater);
                 TabLayout tabLayout = findViewById(R.id.tablayout_poster);

@@ -59,11 +59,10 @@ public class LogManager {
                 .putItemId(product.getId()));
     }
 
-    public static void purchaseComplete(CheckoutData checkoutData, String folder, boolean status, String id) {
+    public static void purchaseComplete(CheckoutData checkoutData, boolean status, String id) {
         Answers.getInstance().logPurchase(new PurchaseEvent()
                 .putItemPrice(BigDecimal.valueOf(checkoutData.getPrice().getTotal()))
                 .putCurrency(Currency.getInstance("INR"))
-                .putCustomAttribute("folder", folder)
                 .putCustomAttribute("info", checkoutData.toString())
                 .putCustomAttribute("paymentid", id)
                 .putSuccess(status));

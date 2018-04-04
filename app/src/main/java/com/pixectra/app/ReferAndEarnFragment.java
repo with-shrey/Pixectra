@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.pixectra.app.Utils.LogManager;
 
 import io.branch.indexing.BranchUniversalObject;
 import io.branch.referral.Branch;
@@ -155,6 +156,7 @@ public class ReferAndEarnFragment extends Fragment {
 
             @Override
             public void onLinkShareResponse(String sharedLink, String sharedChannel, BranchError error) {
+                LogManager.inviteLinkCreated(FirebaseAuth.getInstance().getCurrentUser().getUid(), sharedLink);
                 // The link will be available in sharedLink
             }
         });

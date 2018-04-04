@@ -22,6 +22,9 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import com.pixectra.app.Utils.CartHolder;
+import com.pixectra.app.Utils.LogManager;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.security.MessageDigest;
@@ -224,6 +227,8 @@ public class PayUMoneyActivity extends AppCompatActivity {
                     if (url.equals(mSuccessUrl)) {
                         mProgress.dismiss();
                         Toast.makeText(activity, "payment successful", Toast.LENGTH_SHORT).show();
+                        LogManager.purchaseComplete(CartHolder.getInstance().getCheckout(),
+                                true, mTXNId);
 
 
                        /*
@@ -243,7 +248,8 @@ public class PayUMoneyActivity extends AppCompatActivity {
                     } else if (url.equals(mFailedUrl)) {
                         mProgress.dismiss();
                         Toast.makeText(activity, "payment unsuccessful", Toast.LENGTH_SHORT).show();
-
+                        LogManager.purchaseComplete(CartHolder.getInstance().getCheckout(),
+                                false, mTXNId);
                          /*
                        replace MainActivity with Cart Activity
                         */
@@ -372,14 +378,6 @@ public class PayUMoneyActivity extends AppCompatActivity {
 
         final Intent intent;
 
-        if (isOneTime) {
-            Toast.makeText(activity, "back to previos", Toast.LENGTH_SHORT).show();
-            intent = new Intent(PayUMoneyActivity.this, MainActivity.class);
-        } else
-            intent = new Intent(PayUMoneyActivity.this, MainActivity.class);
-
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(PayUMoneyActivity.this);
 
         // Setting Dialog Title
@@ -392,7 +390,6 @@ public class PayUMoneyActivity extends AppCompatActivity {
         alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 finish();
-                startActivity(intent);
             }
         });
 
