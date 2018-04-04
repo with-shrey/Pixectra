@@ -131,7 +131,7 @@ public class PicasaAlbumFragment extends Fragment{
 
 
     private void fetchAlbumImagesJSON() {
-        String url = "https://picasaweb.google.com/data/feed/api/user/default/albumid/"+ albumId + "?alt=json";
+        String url = "https://picasaweb.google.com/data/feed/api/user/default/albumid/"+ albumId + "?alt=json&kind=photo";
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null,
                 new Response.Listener<JSONObject>() {
 
@@ -169,9 +169,12 @@ public class PicasaAlbumFragment extends Fragment{
         int l = entries.length();
         for (int i = 0; i < l; i++) {
             JSONObject entry = entries.getJSONObject(i);
+            String contentType = entry.getJSONObject("content").getString("type");
+            if(contentType.contains("gif") || !contentType.contains("image"))
+                continue;
             String imageUrl = entry.getJSONObject("content").getString("src");
             String thumbnailUrl = entry.getJSONObject("media$group").getJSONArray("media$thumbnail")
-                    .getJSONObject(0).getString("url");
+                    .getJSONObject(1).getString("url");
 
             imageList.add(new Images(imageUrl, thumbnailUrl));
         }
