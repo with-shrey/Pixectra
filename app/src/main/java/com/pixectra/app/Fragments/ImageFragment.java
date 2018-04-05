@@ -92,6 +92,7 @@ public class ImageFragment extends Fragment {
     private static final int RC_AUTHORIZE_PICASA = 2;
     private static final int RC_SIGN_IN = 1;
     ImageView noLoginView;
+    TextView emptyView;
     int category;
     String key;
     InstagramApp mApp;//Instagram
@@ -141,6 +142,7 @@ public class ImageFragment extends Fragment {
         albumExtras = new ArrayList<>();
         recyclerView = layout.findViewById(R.id.Imagelist);
         noLoginView = layout.findViewById(R.id.no_login_view);
+        emptyView = layout.findViewById(R.id.empty_view_image);
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
         albumAdapter = new AlbumAdapter(getActivity(), albumList);
         adapter = new ImageSelectAdapter(getActivity(), key, getActivity().getIntent().getIntExtra("maxPics", 0), imageData);
@@ -187,6 +189,7 @@ public class ImageFragment extends Fragment {
                 if (AccessToken.getCurrentAccessToken() == null)
                     userLoggedIn(false);
                 else {
+
                     userLoggedIn(true);
                     Profile profile = Profile.getCurrentProfile();
                     if (profile != null) {
@@ -267,7 +270,7 @@ public class ImageFragment extends Fragment {
 
     private boolean checkForPicasaAuthPermission() {
         Scope SCOPE_PICASA = new Scope("https://picasaweb.google.com/data/");
-        String scope = "oauth2:https://picasaweb.google.com/data/";
+//        String scope = "oauth2:https://picasaweb.google.com/data/";
         Context context = getActivity();
         if (!GoogleSignIn.hasPermissions(
                 GoogleSignIn.getLastSignedInAccount(context),
@@ -304,12 +307,16 @@ public class ImageFragment extends Fragment {
                             getPicasaImages(response);
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            emptyView.setVisibility(View.VISIBLE);
+                            emptyView.setText("Cannot Show Photos / Permission Denied");
                         }
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
+                emptyView.setVisibility(View.VISIBLE);
+                emptyView.setText("Cannot Show Photos / Permission Denied");
             }
         }){
             @Override
@@ -405,7 +412,12 @@ public class ImageFragment extends Fragment {
      */
    void getFacebookImages(Profile profile){
         Bundle params  = new Bundle();
-        Log.v("permissions",AccessToken.getCurrentAccessToken().getPermissions().toString());
+       if (AccessToken.getCurrentAccessToken().getPermissions().contains("user_photos")) {
+           emptyView.setVisibility(View.VISIBLE);
+           emptyView.setText("Facebook Verification Is Pending For Our App");
+       } else {
+
+       }
         params.putString("fields","images");
         new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
@@ -570,8 +582,9 @@ public class ImageFragment extends Fragment {
                 userLoggedIn(true);
                 if (account == null)
                     return;
-                if (checkForPicasaAuthPermission())
+                if (checkForPicasaAuthPermission()) {
                     fetchOauthAccessToken(account);
+                }
             }
         }
     }
