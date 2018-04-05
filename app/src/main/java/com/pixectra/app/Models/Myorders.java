@@ -12,18 +12,24 @@ public class Myorders implements Serializable {
     String time;
     String date;
     boolean uploaded;
+    boolean success;
     Double amount;
 
     public Myorders() {
     }
 
-    public Myorders(String fKey, String payId, String time, String date, boolean uploaded, Double amount) {
+    public Myorders(String fKey, String payId, String time, String date, boolean uploaded, boolean success, Double amount) {
         this.fKey = fKey;
         this.payId = payId;
         this.time = time;
         this.date = date;
         this.uploaded = uploaded;
+        this.success = success;
         this.amount = amount;
+    }
+
+    public boolean isSuccess() {
+        return success;
     }
 
     public String getfKey() {

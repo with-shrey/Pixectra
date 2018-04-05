@@ -83,6 +83,7 @@ CardView address;
         account = view.findViewById(R.id.account_card_view);
         order = view.findViewById(R.id.order_card_view);
         subscription = view.findViewById(R.id.subscription_card_view);
+        subscription.setVisibility(View.GONE);
         remaining = view.findViewById(R.id.subscription_remaining);
 
         Branch.getInstance().loadRewards(new Branch.BranchReferralStateChangedListener() {

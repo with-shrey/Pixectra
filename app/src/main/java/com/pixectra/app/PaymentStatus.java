@@ -17,7 +17,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.pixectra.app.Models.Myorders;
 import com.pixectra.app.Utils.CartHolder;
 import com.pixectra.app.Utils.ImageController;
-import com.pixectra.app.Utils.SessionHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,7 +33,6 @@ public class PaymentStatus extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.successfull);
-        uploader = new ImageController(key, PaymentStatus.this, getWindow());
         Animation anim = AnimationUtils.loadAnimation(this, R.anim.enlarging);
         Button button = findViewById(R.id.successupload);
         TextView transaction_id = findViewById(R.id.success_tansaction_id);
@@ -47,23 +45,28 @@ public class PaymentStatus extends AppCompatActivity {
         String uid = getIntent().getStringExtra("id");
         boolean onetime = getIntent().getBooleanExtra("isOneTime", true);
         transaction_id.setText(trxnid);
+        transaction_amount.setText("" + amount);
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH-mm", Locale.getDefault());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        DatabaseReference ref = db.getReference("Users/" + uid + "/orders");
+        key = ref.push().getKey();
+        uploader = new ImageController(key, PaymentStatus.this, getWindow());
+        ref.child(key).setValue(new Myorders("", trxnid, timeFormat.format(new Date())
+                , dateFormat.format(new Date()), false, txnstatus, amount));
         if (txnstatus) {
-            Glide.with(this).load(R.drawable.failed).into(image);
+            CartHolder.getInstance().setDiscount(null);
+            CartHolder.getInstance().setCoupon(null);
+            Glide.with(this).load(R.drawable.successfull).into(image);
             status.setText("Successfull");
             status.setTextColor(ContextCompat.getColor(this, android.R.color.holo_green_dark));
-            SimpleDateFormat timeFormat = new SimpleDateFormat("HH-mm", Locale.getDefault());
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-            FirebaseDatabase db = FirebaseDatabase.getInstance();
-            DatabaseReference ref = db.getReference("Users/" + new SessionHelper(this).getUid() + "/orders");
-            key = ref.push().getKey();
-            ref.child(key).setValue(new Myorders("", trxnid, timeFormat.format(new Date()), dateFormat.format(new Date()), false, amount));
+
             if (onetime) {
                 button.setVisibility(View.VISIBLE);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        uploader
-                                .placeOrder(CartHolder.getInstance().getCheckout());
+                        uploader.placeOrder(CartHolder.getInstance().getCheckout());
                     }
                 });
             } else {
@@ -78,7 +81,8 @@ public class PaymentStatus extends AppCompatActivity {
                 });
             }
         } else {
-            Glide.with(this).load(R.drawable.successfull).into(image);
+            button.setVisibility(View.GONE);
+            Glide.with(this).load(R.drawable.failed).into(image);
             status.setText("Failed");
             status.setTextColor(ContextCompat.getColor(this, R.color.colorAccent));
 

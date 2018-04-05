@@ -1,12 +1,16 @@
 package com.pixectra.app.Adapter;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.pixectra.app.Models.Myorders;
 import com.pixectra.app.R;
 
@@ -19,10 +23,12 @@ import java.util.ArrayList;
 public class MyorderAdapter extends RecyclerView.Adapter<MyorderAdapter.viewHolder> {
     ArrayList arrayList;
     Context c;
+    boolean onlyUploaded;
 
-    public MyorderAdapter(Context context, ArrayList list) {
+    public MyorderAdapter(Context context, ArrayList list, boolean onlyUploaded) {
         this.arrayList = list;
         c = context;
+        this.onlyUploaded = onlyUploaded;
     }
 
     @Override
@@ -37,17 +43,35 @@ public class MyorderAdapter extends RecyclerView.Adapter<MyorderAdapter.viewHold
     public void onBindViewHolder(final viewHolder holder, final int position) {
         final Myorders ord = (Myorders) arrayList.get(position);
         CardView cardView = holder.cardView;
-        TextView name = cardView.findViewById(R.id.Order_name);
-        if (ord.getfKey() != null)
-            name.setText(ord.getfKey());
-        TextView number = cardView.findViewById(R.id.Order_number);
-        number.setText("Order No " + ord.getPayId());
-        TextView time = cardView.findViewById(R.id.Order_time);
-        time.setText(ord.getDate() + "  " + ord.getTime());
-        TextView uploaded = cardView.findViewById(R.id.Order_uploaded);
-        uploaded.setText("" + ord.getAmount());
-        TextView amount = cardView.findViewById(R.id.Order_amount);
-        amount.setText("₹" + ord.getAmount().toString());
+        if (onlyUploaded) {
+            if ((!ord.isSuccess() || ord.isUploaded())) {
+                cardView.setVisibility(View.GONE);
+            }
+        } else {
+            if (ord.isSuccess())
+                cardView.setCardBackgroundColor(ContextCompat.getColor(holder.context, R.color.userProfileCardViewBlue));
+            else
+                cardView.setCardBackgroundColor(ContextCompat.getColor(holder.context, R.color.colorAccent));
+            TextView name = cardView.findViewById(R.id.Order_name);
+            if (ord.getfKey() != null)
+                name.setText(ord.getfKey());
+            else {
+                name.setText(" -- ");
+            }
+            ImageView imageView = cardView.findViewById(R.id.Order_image);
+            if (ord.isSuccess())
+                Glide.with(holder.context).load(R.drawable.successfull).into(imageView);
+            else
+                Glide.with(holder.context).load(R.drawable.failed).into(imageView);
+            TextView number = cardView.findViewById(R.id.Order_number);
+            number.setText("Payment Id" + ord.getPayId());
+            TextView time = cardView.findViewById(R.id.Order_time);
+            time.setText(ord.getDate() + "  " + ord.getTime());
+            TextView uploaded = cardView.findViewById(R.id.Order_uploaded);
+            uploaded.setText(ord.isUploaded() ? "Uploaded" : "Not Uploaded");
+            TextView amount = cardView.findViewById(R.id.Order_amount);
+            amount.setText("₹" + ord.getAmount().toString());
+        }
     }
 
     @Override

@@ -47,8 +47,9 @@ public class orders_placed extends AppCompatActivity {
             }
         });
         list = new ArrayList<>();
-        adap = new MyorderAdapter(this, list);
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+        adap = new MyorderAdapter(this, list, getIntent()
+                .getBooleanExtra("onlyUploaded", false));
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 list.clear();
@@ -58,6 +59,7 @@ public class orders_placed extends AppCompatActivity {
                 }
                 findViewById(R.id.progress_order).setVisibility(View.GONE);
                 adap.notifyDataSetChanged();
+                ref.removeEventListener(this);
             }
 
             @Override

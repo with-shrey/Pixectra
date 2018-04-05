@@ -16,6 +16,10 @@ public class Coupon {
     public Coupon() {
     }
 
+    public void setCurrent(boolean current) {
+        this.current = current;
+    }
+
     public int getType() {
         return type;
     }

@@ -65,10 +65,9 @@ public class PayUMoneyActivity extends AppCompatActivity {
     // Test Variables
 
 
-  /*  private String mMerchantKey = "FCyqqZ";
-    private String mSalt = "sfBpGA8E";
-    private String mBaseURL = "https://test.payu.in";
-*/
+//    private String mMerchantKey = "FCyqqZ";
+//    private String mSalt = "sfBpGA8E";
+//    private String mBaseURL = "https://test.payu.in";
 
     // Final Variables
     private String mMerchantID = " 6114969";
@@ -110,7 +109,8 @@ public class PayUMoneyActivity extends AppCompatActivity {
         mProgress.setMessage("Please wait...");
         mProgress.setCancelable(false);
         mProgress.setIndeterminate(true);
-
+        mProgress.setCanceledOnTouchOutside(false);
+        mProgress.show();
 
         /**
          * Creating WebView
@@ -265,6 +265,7 @@ public class PayUMoneyActivity extends AppCompatActivity {
 
 
                     }
+                    mProgress.dismiss();
 
                     super.onPageFinished(view, url);
                 }

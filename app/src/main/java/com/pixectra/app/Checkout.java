@@ -176,7 +176,7 @@ public class Checkout extends AppCompatActivity {
 
 
         });
-        Button cancel = parentview.findViewById(R.id.bottomsheet_cancel);
+        final Button cancel = parentview.findViewById(R.id.bottomsheet_cancel);
         Button pay = parentview.findViewById(R.id.bottomsheet_pay);
         Button scan = parentview.findViewById(R.id.scanqr);
         Button selectShipping = parentview.findViewById(R.id.shipping_address_choose);
@@ -231,20 +231,23 @@ public class Checkout extends AppCompatActivity {
                                             if (coupon.isCurrent()) {
                                                 try {
                                                     if (format.parse(coupon.getStartDate()).compareTo(format.parse(format.format(new Date()))) <= 0
-                                                            && format.parse(coupon.getEndDate()).compareTo(format.parse(format.format(new Date()))) >= 0) {
+                                                            && format.parse(coupon.getEndDate()).compareTo(format.parse(format.format(new Date()))) >= 0
+                                                            && coupon.getThreshold() <= Double.parseDouble(carttotal.getText().toString())) {
                                                         used.child(code).setValue(coupon).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                             @Override
                                                             public void onSuccess(Void aVoid) {
-                                                                if (coupon.getType() == 0 && coupon.getThreshold() <= Double.parseDouble(carttotal.getText().toString())) {
+                                                                if (coupon.getType() == 0) {
                                                                     discountType.setText(coupon.getDiscount() + "%");
                                                                     cartDiscount.setText(String.valueOf(
                                                                             -(1.0 * coupon.getDiscount() / 100.0 * Double.parseDouble(carttotal.getText().toString()))));
                                                                 } else {
-                                                                    if (coupon.getThreshold() <= Double.parseDouble(carttotal.getText().toString())) {
                                                                         discountType.setText("-Rs." + coupon.getDiscount());
+                                                                    if (coupon.getDiscount() > Double.parseDouble(carttotal.getText().toString()))
+                                                                        cartDiscount.setText(String.valueOf(
+                                                                                -(1.0 * Double.parseDouble(carttotal.getText().toString()))));
+                                                                    else
                                                                         cartDiscount.setText(String.valueOf(
                                                                                 -(1.0 * coupon.getDiscount())));
-                                                                    }
                                                                 }
                                                                 CartHolder.getInstance().setCoupon(coupon);
                                                                 CartHolder.getInstance().setDiscount(
@@ -265,6 +268,8 @@ public class Checkout extends AppCompatActivity {
                                                     } else {
                                                         if (format.parse(coupon.getStartDate()).compareTo(format.parse(format.format(new Date()))) > 0) {
                                                             Toast.makeText(Checkout.this, "Offer Not Started Yet \n" + format.parse(coupon.getStartDate()), Toast.LENGTH_SHORT).show();
+                                                        } else if (coupon.getThreshold() > Double.parseDouble(carttotal.getText().toString())) {
+                                                            Toast.makeText(Checkout.this, "Minimum Order Amount of " + coupon.getThreshold() + " Is required", Toast.LENGTH_SHORT).show();
                                                         } else if (format.parse(coupon.getEndDate()).compareTo(format.parse(format.format(new Date()))) < 0) {
                                                             Toast.makeText(Checkout.this, "Offer Has Ended", Toast.LENGTH_SHORT).show();
                                                         }
@@ -274,7 +279,8 @@ public class Checkout extends AppCompatActivity {
                                                 }
                                             } else {
                                                 Toast.makeText(Checkout.this, "You Will get Discount On Your Next Order Using Same Code", Toast.LENGTH_SHORT).show();
-                                                earned.child(code).child("current").setValue(true);
+                                                coupon.setCurrent(true);
+                                                earned.child(code).setValue(coupon);
                                                 couponApplied = true;
                                                 discountType.setText("-Rs." + 0);
                                                 cartDiscount.setText(String.valueOf(0));
@@ -353,14 +359,25 @@ public class Checkout extends AppCompatActivity {
                         CartHolder.getInstance().setCheckout(checkout);
                         user.removeEventListener(this);
                         LogManager.checkOutStarted(checkout);
-                        Intent intent = new Intent(Checkout.this, PayUMoneyActivity.class);
-                        intent.putExtra("name", checkout.getUser().getName());
-                        intent.putExtra("email", checkout.getUser().getEmail());
-                        intent.putExtra("amount", Double.parseDouble(totalpayable.getText().toString()));
-                        intent.putExtra("phone", checkout.getUser().getPhoneNo());
-                        intent.putExtra("id", FirebaseAuth.getInstance().getCurrentUser().getUid());
-                        intent.putExtra("isOneTime", true);
-                        startActivity(intent);
+                        if (((int) Double.parseDouble(totalpayable.getText().toString())) <= 0) {
+                            Intent intent = new Intent(Checkout.this, PayUMoneyActivity.class);
+                            intent.putExtra("name", checkout.getUser().getName());
+                            intent.putExtra("email", checkout.getUser().getEmail());
+                            intent.putExtra("amount", Double.parseDouble(totalpayable.getText().toString()));
+                            intent.putExtra("phone", checkout.getUser().getPhoneNo());
+                            intent.putExtra("id", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                            intent.putExtra("isOneTime", true);
+                            startActivity(intent);
+                        } else {
+                            Intent intent = new Intent(Checkout.this, PaymentStatus.class);
+                            intent.putExtra("status", true);
+                            intent.putExtra("transaction_id", "not required");
+                            intent.putExtra("id", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                            intent.putExtra("amount", 0);
+                            intent.putExtra("isOneTime", true);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                        }
 
                     }
 
@@ -382,9 +399,9 @@ public class Checkout extends AppCompatActivity {
     }
 
 
-    double calculateCreditDiscount(int credits, double total) {
+    int calculateCreditDiscount(int credits, double total) {
         if (credits > total) {
-            return -1 * total;
+            return (int) (-1 * total);
         } else {
             return -1 * credits;
         }
@@ -416,7 +433,7 @@ public class Checkout extends AppCompatActivity {
                 +Double.parseDouble(carttotal.getText().toString())
                         + Double.parseDouble(deliveryCharges.getText().toString())
                         + Double.parseDouble(cartDiscount.getText().toString())
-                        + Double.parseDouble(creditsUsed.getText().toString())
+                        + Integer.parseInt(creditsUsed.getText().toString())
         ));
     }
     @Override
