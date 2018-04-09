@@ -55,4 +55,17 @@ public class Myorders implements Serializable {
     public Double getAmount() {
         return amount;
     }
+
+    @Override
+    public String toString() {
+        return "Myorders{" +
+                "fKey='" + fKey + '\'' +
+                ", payId='" + payId + '\'' +
+                ", time='" + time + '\'' +
+                ", date='" + date + '\'' +
+                ", uploaded=" + uploaded +
+                ", success=" + success +
+                ", amount=" + amount +
+                '}';
+    }
 }

@@ -4,12 +4,27 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.pixectra.app.Models.Banner;
+import com.pixectra.app.Utils.GlideHelper;
 import com.pixectra.app.Utils.LogManager;
+
+import java.util.ArrayList;
+import java.util.Locale;
 
 import io.branch.indexing.BranchUniversalObject;
 import io.branch.referral.Branch;
@@ -25,66 +40,47 @@ import io.branch.referral.util.ShareSheetStyle;
 public class ReferAndEarnFragment extends Fragment {
 
     BranchUniversalObject branchUniversalObject;
-
+    ReferBanners mReferBanners;
+    ArrayList<Banner> mBannerArrayList;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.refer_earn_fragment, null);
-//        view.findViewById(R.id.refer_earn).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Toast.makeText(getActivity(), "Clicked", Toast.LENGTH_SHORT).show();
-//                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//                String uid = user.getUid();
-//                String link = "http://pixectra.com?user=" + "universal&coupon=DISC10";
-//                FirebaseDynamicLinks.getInstance().createDynamicLink()
-//                        .setLink(Uri.parse(link))
-//                        .setDynamicLinkDomain("v2xqe.app.goo.gl")
-//                        .setAndroidParameters(
-//                                new DynamicLink.AndroidParameters.Builder("com.pixectra.app")
-//                                        .setMinimumVersion(1)
-//                                        .build())
-////                        .setIosParameters(
-////                                new DynamicLink.IosParameters.Builder("com.example.ios")
-////                                        .setAppStoreId("123456789")
-////                                        .setMinimumVersion("1.0.1")
-////                                        .build())
-//                        .buildShortDynamicLink()
-//                        .addOnSuccessListener(new OnSuccessListener<ShortDynamicLink>() {
-//                            @Override
-//                            public void onSuccess(ShortDynamicLink shortDynamicLink) {
-//                                Uri mInvitationUrl = shortDynamicLink.getShortLink();
-//                                Log.d("prashu", mInvitationUrl.toString());
-//                                Toast.makeText(getActivity(), mInvitationUrl.toString(), Toast.LENGTH_SHORT).show();
-//                                String referrerName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
-//                                String subject = String.format("%s wants you to make memories with Pixectra", referrerName);
-//                                String invitationLink = mInvitationUrl.toString();
-//                                String msg = "the perfect app for you and your memories. The app that helps you free your photos and puts them into a monthly photo book Use my referrer link: "
-//                                        + invitationLink;
-//                                String msgHtml = String.format("<p>Let's Explore yourself with Pixectra! Use my "
-//                                        + "<a href=\"%s\">referrer link</a>!</p>", invitationLink);
-//
-//                                Intent intent = new Intent(Intent.ACTION_SEND);
-//                                intent.setType("text/plain"); // only email apps should handle this
-//                                intent.putExtra(Intent.EXTRA_SUBJECT, subject);
-//                                intent.putExtra(Intent.EXTRA_TEXT, msg);
-//                                intent.putExtra(Intent.EXTRA_HTML_TEXT, msgHtml);
-//                                if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-//                                    startActivity(intent);
-//                                }
-//                            }
-//                        }).addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                });
-//
-//            }
-//        });
-        // Hook up your share button to initiate sharing
-        view.findViewById(R.id.refer_earn).setOnClickListener(new View.OnClickListener() {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference ref = database.getReference("CommonData").child("Banner");
+        //<--setting up recycler view
+        mBannerArrayList = new ArrayList<>();
+        RecyclerView recyclerView = view.findViewById(R.id.refer_earn_recycler);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mReferBanners = new ReferBanners();
+        recyclerView.setAdapter(mReferBanners);
+        final TextView remaining = view.findViewById(R.id.subscription_remaining);
+
+        Branch.getInstance().loadRewards(new Branch.BranchReferralStateChangedListener() {
+            @Override
+            public void onStateChanged(boolean changed, BranchError error) {
+                remaining.setText(String.format(Locale.getDefault(), "Credits Earned %d", Branch.getInstance().getCredits()));
+            }
+        });
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                mBannerArrayList.clear();
+                for (DataSnapshot temp : dataSnapshot.getChildren()) {
+                    mBannerArrayList.add(temp.getValue(Banner.class));
+                }
+                mReferBanners.notifyDataSetChanged();
+                ref.removeEventListener(this);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+//                view.findViewById(R.id.onetime_progress).setVisibility(View.GONE);
+            }
+        });
+        ref.keepSynced(true);
+        view.findViewById(R.id.share_card).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
                 initiateSharing();
@@ -129,15 +125,7 @@ public class ReferAndEarnFragment extends Fragment {
                 .addPreferredSharingOption(SharingHelper.SHARE_WITH.EMAIL)
                 .addPreferredSharingOption(SharingHelper.SHARE_WITH.WHATS_APP)
                 .addPreferredSharingOption(SharingHelper.SHARE_WITH.MESSAGE)
-                .addPreferredSharingOption(SharingHelper.SHARE_WITH.TWITTER)
-                .addPreferredSharingOption(SharingHelper.SHARE_WITH.WECHAT)
-                .addPreferredSharingOption(SharingHelper.SHARE_WITH.FLICKR)
-                .addPreferredSharingOption(SharingHelper.SHARE_WITH.GMAIL)
-                .addPreferredSharingOption(SharingHelper.SHARE_WITH.GOOGLE_DOC)
-                .addPreferredSharingOption(SharingHelper.SHARE_WITH.HANGOUT)
                 .addPreferredSharingOption(SharingHelper.SHARE_WITH.INSTAGRAM)
-                .addPreferredSharingOption(SharingHelper.SHARE_WITH.SNAPCHAT)
-                .addPreferredSharingOption(SharingHelper.SHARE_WITH.PINTEREST)
                 .addPreferredSharingOption(SharingHelper.SHARE_WITH.FACEBOOK_MESSENGER);
 
         // Show the share sheet for the content you want the user to share. A link will be automatically created and put in the message.
@@ -160,6 +148,39 @@ public class ReferAndEarnFragment extends Fragment {
                 // The link will be available in sharedLink
             }
         });
+    }
+
+    class ReferBanners extends RecyclerView.Adapter<ReferBanners.VH> {
+
+        @NonNull
+        @Override
+        public ReferBanners.VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.home_viewpager_item_layout, parent, false);
+            return new VH(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ReferBanners.VH holder, int position) {
+            GlideHelper.load(getActivity(), mBannerArrayList.get(position).getImage()
+                    , holder.mImageView, holder.progressBar);
+        }
+
+        @Override
+        public int getItemCount() {
+            return mBannerArrayList.size();
+        }
+
+        class VH extends RecyclerView.ViewHolder {
+            ImageView mImageView;
+            ProgressBar progressBar;
+
+            public VH(View itemView) {
+                super(itemView);
+                itemView.getLayoutParams().height = (int) getActivity().getResources().getDimension(R.dimen.card_height);
+                mImageView = itemView.findViewById(R.id.sliding_image);
+                progressBar = itemView.findViewById(R.id.banner_loader);
+            }
+        }
     }
 
 }

@@ -1,15 +1,15 @@
 package com.pixectra.app.Utils;
 
-import android.app.ProgressDialog;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
-import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.util.Pair;
-import android.view.Window;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -22,6 +22,8 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.pixectra.app.Models.CheckoutData;
 import com.pixectra.app.Models.Product;
+import com.pixectra.app.R;
+import com.pixectra.app.UploadService;
 
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
@@ -29,8 +31,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
 import java.util.Vector;
-
-import static android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
 
 /**
  * Created by XCODER on 3/5/2018.
@@ -40,14 +40,13 @@ public class ImageController {
     Context context;
     int i, j, totalJ;
     String folder;
-    Window window;
     String dbkey;
-    private ProgressDialog mProgress;
+    NotificationManager manager;
+    private NotificationCompat.Builder mBuilder;
     CheckoutData data;
 
-    public ImageController(String key, Context context, Window window) {
+    public ImageController(String key, Context context) {
         this.context = context;
-        this.window = window;
         folder = null;
         i = 0;
         j = 0;
@@ -64,41 +63,67 @@ public class ImageController {
     }
 
     public void placeOrder(final CheckoutData data) {
-        window.addFlags(FLAG_KEEP_SCREEN_ON);
         this.data = data;
+        Toast.makeText(context, "Service Started", Toast.LENGTH_SHORT).show();
+
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd~HH-mm-ss~", Locale.getDefault());
         if (folder == null) {
             folder = "Present/" + format.format(new Date());
             Random random = new Random();
             folder = folder + random.nextInt(1000) + 1;
         }
-        mProgress = new ProgressDialog(context);
-        mProgress.setTitle("Uploading");
-        mProgress.setMessage("Starting...");
-        mProgress.setCancelable(false);
-        mProgress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        mProgress.setSecondaryProgress(0);
-        mProgress.show();
-        i = 0;
-        j = 0;
-        processUpload(i, j);
+        mBuilder = new NotificationCompat.Builder(context, "default");
+        mBuilder.setContentTitle("Starting Information ...");
+        mBuilder.setProgress(100, 0, false);
+        mBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
+        mBuilder.setSmallIcon(R.drawable.ic_stat_name);
+        manager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(1, mBuilder.build());
+        startUpload();
+
     }
 
-    void processUpload(final int i, final int j) {
+    public void startUpload() {
+        StorageReference mStorageRef = FirebaseStorage.getInstance().getReference().child(folder);
+        mStorageRef.child("info.txt").putBytes(data.toString().getBytes()).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                i = 0;
+                j = 0;
+                processUpload(i, j);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                showalert(3, "Failed Info Upload", " Tap To Retry ", 0, 0);
+                Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void processUpload(final int i, final int j) {
         Log.d("Image Uoload", i + " " + j);
         if (CartHolder.getInstance().getCart().size() != 0) {
-            mProgress.setSecondaryProgress((i * 100) / CartHolder.getInstance().getCart().size());
             StorageReference mStorageRef = FirebaseStorage.getInstance().getReference().child(folder);
             Pair<Product, Vector<Bitmap>> pair = CartHolder.getInstance().getCart().get(i);
             totalJ = pair.second.size();
-            mProgress.setTitle(pair.first.getType() + "(" + pair.first.getTitle() + ")");
+            mBuilder.setContentIntent(null);
+
+            mBuilder.setContentTitle(pair.first.getType() + "(" + pair.first.getTitle() + ")");
             Bitmap image = pair.second.get(j);
-            mProgress.setMessage("Image " + (j + 1) + "/" + totalJ);
+            mBuilder.setContentText("Image " + (j + 1) + "/" + totalJ);
+            mBuilder.setProgress(100, 0, false);
+            manager.notify(1, mBuilder.build());
             StorageReference riversRef = mStorageRef.child(pair.first.getId() + "-" + i).child("" + j + ".png");
             riversRef.putBytes(getBytes(image)).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                    mProgress.setProgress((int) ((taskSnapshot.getBytesTransferred() * 100) / taskSnapshot.getTotalByteCount()));
+                    mBuilder.setProgress(100,
+                            (int) ((taskSnapshot.getBytesTransferred() * 100) / taskSnapshot.getTotalByteCount())
+                            , false);
+                    manager.notify(1, mBuilder.build());
+
                 }
             })
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -130,10 +155,10 @@ public class ImageController {
                         public void onFailure(@NonNull Exception exception) {
 
                             //<!--Start from same index
-                            mProgress.dismiss();
-                            window.clearFlags(FLAG_KEEP_SCREEN_ON);
+                            mBuilder.setProgress(0, 0, false);
+                            manager.notify(1, mBuilder.build());
                             Toast.makeText(context, exception.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                            showalert(true, "Upload Failed", "RETRY", i, j);
+                            showalert(1, "Upload Failed", "Tap To Retry", i, j);
                             // Handle unsuccessful uploads
                             // ...
                         }
@@ -146,37 +171,48 @@ public class ImageController {
 
     }
 
-    void uploadUserDataAndStatus() {
+    public void uploadUserDataAndStatus() {
+        mBuilder.setContentTitle("Uploading Acknoledgement ...");
+        mBuilder.setContentText("Uploading ...");
+        mBuilder.setProgress(0, 0, false);
+        manager.notify(1, mBuilder.build());
         StorageReference mStorageRef = FirebaseStorage.getInstance().getReference().child(folder);
-        mStorageRef.child("info.txt").putBytes(data.toString().getBytes()).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        mStorageRef.child("CompleteAcknoledgement.txt").putBytes(computeAcknoledment().getBytes()).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 FirebaseDatabase db = FirebaseDatabase.getInstance();
                 DatabaseReference ref = db.getReference("Users/" + new SessionHelper(context).getUid() + "/orders");
                 ref.child(dbkey).child("fKey").setValue(folder);
                 ref.child(dbkey).child("uploaded").setValue(true);
-                mProgress.dismiss();
-                window.clearFlags(FLAG_KEEP_SCREEN_ON);
+                mBuilder.setContentTitle("Upload Successfull");
+                mBuilder.setProgress(0, 0, false);
+                mBuilder.setContentText("");
+                manager.notify(1, mBuilder.build());
+                CartHolder.getInstance().getCart().clear();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
+                showalert(2, "Failed Acknoledgement Upload", " Tap To Retry ", 0, 0);
                 Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    void uploadVideos(final int i) {
-        mProgress.setSecondaryProgress((i * 100) / CartHolder.getInstance().getVideo().size());
+    public void uploadVideos(final int i) {
         StorageReference mStorageRef = FirebaseStorage.getInstance().getReference().child(folder);
         Pair<Product, Uri> pair = CartHolder.getInstance().getVideo().get(i);
-        mProgress.setTitle(pair.first.getType() + "(" + pair.first.getTitle() + ")");
-        mProgress.setMessage("Uploading Video .. [" + i + "]");
+        mBuilder.setContentIntent(null);
+        mBuilder.setContentTitle(pair.first.getType() + "(" + pair.first.getTitle() + ")");
+        mBuilder.setProgress(100, 0, false);
+        mBuilder.setContentText("Uploading Video .. [" + i + 1 + "]");
         StorageReference riversRef = mStorageRef.child(pair.first.getId() + "~~" + i + ".mp4");
         riversRef.putFile(pair.second).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                mProgress.setProgress((int) ((taskSnapshot.getBytesTransferred() * 100) / taskSnapshot.getTotalByteCount()));
+                mBuilder.setProgress(100, (int) ((taskSnapshot.getBytesTransferred() * 100)
+                                / taskSnapshot.getTotalByteCount())
+                        , false);
             }
         })
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -197,10 +233,8 @@ public class ImageController {
                     public void onFailure(@NonNull Exception exception) {
 
                         //<!--Start from same index
-                        mProgress.dismiss();
-                        window.clearFlags(FLAG_KEEP_SCREEN_ON);
                         Toast.makeText(context, exception.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                        showalert(false, "Upload Failed", "RETRY", i, 0);
+                        showalert(0, "Upload Failed", "Tap To Retry", i, 0);
 
                         // Handle unsuccessful uploads
                         // ...
@@ -209,78 +243,27 @@ public class ImageController {
 
     }
 
-    void showalert(final boolean photo, String Message, String CancelText, final int index1, final int index2) {
-
-
-        AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
-        builder1.setMessage(Message);
-        builder1.setCancelable(true);
-
-        builder1.setPositiveButton(
-                CancelText,
-                new DialogInterface.OnClickListener()
-
-                {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Toast.makeText(context, "Retrying", Toast.LENGTH_LONG).show();
-                        window.addFlags(FLAG_KEEP_SCREEN_ON);
-                        mProgress = new ProgressDialog(context);
-                        mProgress.setMessage("Starting Upload..");
-                        mProgress.setCancelable(false);
-                        mProgress.setIndeterminate(false);
-                        mProgress.show();
-                        if (photo)
-                            processUpload(index1, index2);
-                        else
-                            uploadVideos(index1);
-
-                        dialog.dismiss();
-                    }
-                });
-
-
-        AlertDialog alert11 = builder1.create();
-        alert11.show();
-
-        alert11.setOnCancelListener(
-                new
-                        DialogInterface.OnCancelListener() {
-                            @Override
-                            public void onCancel(DialogInterface dialogInterface) {
-
-
-                            }
-                        }
-
-
-        );
+    void showalert(final int photo, String Message, String CancelText, final int index1, final int index2) {
+        final Intent intent = new Intent(context, UploadService.class);
+        intent.putExtra("i", index1);
+        intent.putExtra("j", index2);
+        intent.putExtra("photo", photo);
+        final PendingIntent contentIntent = PendingIntent.getService(context, 0, intent, 0);
+        mBuilder.setContentTitle(Message);
+        mBuilder.setContentText(CancelText);
+        mBuilder.setContentIntent(contentIntent);
+        mBuilder.setProgress(0, 0, false);
+        manager.notify(1, mBuilder.build());
     }
 
-    public void saveTofirebase(Uri selectedVedioUri) {
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        final StorageReference photoRef = storageRef.child("user").child("NameYoWantToAdd");
-// add File/URI
-        photoRef.putFile(selectedVedioUri)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-
-                    }
-                }).addOnProgressListener(
-                new OnProgressListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                        //calculating progress percentage
-                    }
-                });
+    String computeAcknoledment() {
+        StringBuilder ack = new StringBuilder();
+        ack.append("Total Types of Photo Products : ").append(CartHolder.getInstance().getCart()).append(",\n");
+        ack.append("Total Types of Video Products : ").append(CartHolder.getInstance().getVideo()).append(",\n");
+        for (Pair<Product, Vector<Bitmap>> details : CartHolder.getInstance().getCart()) {
+            ack.append(details.first.getType()).append("(").append(details.first.getType()).append(")").append(" : ").append(details.second.size()).append(",\n");
+        }
+        return ack.toString();
     }
-
 
 }

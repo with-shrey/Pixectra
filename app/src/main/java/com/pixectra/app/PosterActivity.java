@@ -62,6 +62,7 @@ public class PosterActivity extends AppCompatActivity {
         type = getIntent().getIntExtra("type", 1);
         ImageView image = findViewById(R.id.product_image);
         image.setImageResource(getDrawableFromType());
+//        Glide.with(this).load().into(image);
         LogManager.viewContent(activityTitles[type - 1], activityTitles[type - 1], "Product");
         title_page.setText(activityTitles[type-1]);
 

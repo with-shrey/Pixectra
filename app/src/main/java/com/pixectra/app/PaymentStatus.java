@@ -16,7 +16,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.pixectra.app.Models.Myorders;
 import com.pixectra.app.Utils.CartHolder;
-import com.pixectra.app.Utils.ImageController;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,7 +27,6 @@ import java.util.Locale;
 
 public class PaymentStatus extends AppCompatActivity {
     String key = "";
-    ImageController uploader;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +49,6 @@ public class PaymentStatus extends AppCompatActivity {
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         DatabaseReference ref = db.getReference("Users/" + uid + "/orders");
         key = ref.push().getKey();
-        uploader = new ImageController(key, PaymentStatus.this, getWindow());
         ref.child(key).setValue(new Myorders("", trxnid, timeFormat.format(new Date())
                 , dateFormat.format(new Date()), false, txnstatus, amount));
         if (txnstatus) {
@@ -63,12 +60,11 @@ public class PaymentStatus extends AppCompatActivity {
 
             if (onetime) {
                 button.setVisibility(View.VISIBLE);
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        uploader.placeOrder(CartHolder.getInstance().getCheckout());
-                    }
-                });
+                button.setText("    Starting Upload In Background \nDo Not Clear App From Recents");
+                Intent intent = new Intent(getApplicationContext(), UploadService.class);
+                intent.putExtra("key", key);
+                startService(intent);
+
             } else {
                 button.setText("Countinue Shopping");
                 button.setOnClickListener(new View.OnClickListener() {

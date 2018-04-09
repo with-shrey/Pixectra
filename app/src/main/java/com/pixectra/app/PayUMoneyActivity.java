@@ -83,8 +83,8 @@ public class PayUMoneyActivity extends AppCompatActivity {
     private double mAmount; // From Previous Activity
     private String mPhone; // From Previous Activity
     private String mServiceProvider = "payu_paisa";
-    private String mSuccessUrl = "pixectra.com/success";
-    private String mFailedUrl = "pixectra.com/failed";
+    private String mSuccessUrl = "http://pixectra.com/success.html";
+    private String mFailedUrl = "http://pixectra.com/fail.html";
     private ProgressDialog mProgress;
 
     /**
@@ -243,7 +243,7 @@ public class PayUMoneyActivity extends AppCompatActivity {
                         intent.putExtra("isOneTime", isOneTime);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
-
+                        finish();
 
                     } else if (url.equals(mFailedUrl)) {
                         mProgress.dismiss();
@@ -262,7 +262,7 @@ public class PayUMoneyActivity extends AppCompatActivity {
                         intent.putExtra("isOneTime", isOneTime);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
-
+                        finish();
 
                     }
                     mProgress.dismiss();
@@ -390,6 +390,15 @@ public class PayUMoneyActivity extends AppCompatActivity {
         // On pressing Settings button
         alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
+
+                Intent intent = new Intent(PayUMoneyActivity.this, PaymentStatus.class);
+                intent.putExtra("status", false);
+                intent.putExtra("transaction_id", " -- ");
+                intent.putExtra("id", mId);
+                intent.putExtra("amount", mAmount);
+                intent.putExtra("isOneTime", isOneTime);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
                 finish();
             }
         });

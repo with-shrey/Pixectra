@@ -359,7 +359,7 @@ public class Checkout extends AppCompatActivity {
                         CartHolder.getInstance().setCheckout(checkout);
                         user.removeEventListener(this);
                         LogManager.checkOutStarted(checkout);
-                        if (((int) Double.parseDouble(totalpayable.getText().toString())) <= 0) {
+                        if (((int) Double.parseDouble(totalpayable.getText().toString())) >= 1) {
                             Intent intent = new Intent(Checkout.this, PayUMoneyActivity.class);
                             intent.putExtra("name", checkout.getUser().getName());
                             intent.putExtra("email", checkout.getUser().getEmail());
@@ -371,9 +371,9 @@ public class Checkout extends AppCompatActivity {
                         } else {
                             Intent intent = new Intent(Checkout.this, PaymentStatus.class);
                             intent.putExtra("status", true);
-                            intent.putExtra("transaction_id", "not required");
+                            intent.putExtra("transaction_id", " - - ");
                             intent.putExtra("id", FirebaseAuth.getInstance().getCurrentUser().getUid());
-                            intent.putExtra("amount", 0);
+                            intent.putExtra("amount", Double.parseDouble(totalpayable.getText().toString()));
                             intent.putExtra("isOneTime", true);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
@@ -427,6 +427,9 @@ public class Checkout extends AppCompatActivity {
                     cartDiscount.setText(String.valueOf(
                             -(1.0 * coupon.getDiscount())));
                 }
+            }
+            if (coupon.isDelivery()) {
+                deliveryCharges.setText("0");
             }
         }
         totalPayable.setText(String.valueOf(

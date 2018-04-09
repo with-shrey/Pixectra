@@ -412,10 +412,11 @@ public class ImageFragment extends Fragment {
      */
    void getFacebookImages(Profile profile){
         Bundle params  = new Bundle();
-       if (AccessToken.getCurrentAccessToken().getPermissions().contains("user_photos")) {
+       if (!AccessToken.getCurrentAccessToken().getPermissions().contains("user_photos")) {
            emptyView.setVisibility(View.VISIBLE);
            emptyView.setText("Facebook Verification Is Pending For Our App");
        } else {
+           emptyView.setVisibility(View.GONE);
 
        }
         params.putString("fields","images");

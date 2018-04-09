@@ -12,6 +12,7 @@ public class Coupon {
     private int threshold; //  Minimum Amount
     private double discount; // either percent or amount
     private boolean current;
+    private boolean delivery;
 
     public Coupon() {
     }
@@ -70,5 +71,9 @@ public class Coupon {
 
     public double getDiscount() {
         return discount;
+    }
+
+    public boolean isDelivery() {
+        return delivery;
     }
 }

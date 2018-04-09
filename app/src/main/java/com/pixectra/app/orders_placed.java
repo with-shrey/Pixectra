@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -14,7 +15,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pixectra.app.Adapter.MyorderAdapter;
 import com.pixectra.app.Models.Myorders;
-import com.pixectra.app.Utils.SessionHelper;
 
 import java.util.ArrayList;
 
@@ -34,7 +34,7 @@ public class orders_placed extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.order_placed);
         db = FirebaseDatabase.getInstance();
-        ref = db.getReference("Users/" + new SessionHelper(this).getUid() + "/orders");
+        ref = db.getReference("Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/orders");
         Toolbar toolbar = findViewById(R.id.toolbar_order);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("My Orders");

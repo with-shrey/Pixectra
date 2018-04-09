@@ -106,7 +106,7 @@
         <activity android:name=".PayUMoneyActivity" />
         <activity android:name=".orders_placed" />
         <activity android:name=".subscription_list" />
-        <activity android:name=".SubscriptionActivity"/>
+        <activity android:name=".SubscriptionActivity" />
         <activity android:name=".PaymentStatus" />
 
         <meta-data
@@ -115,6 +115,10 @@
 
         <activity android:name=".Utils.QReader" />
         <activity android:name=".VideoSelection" />
+
+        <service
+            android:name=".UploadService"
+            android:exported="false" />
     </application>
 
 </manifest>
