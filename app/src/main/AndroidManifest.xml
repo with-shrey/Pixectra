@@ -84,15 +84,12 @@
         <activity android:name=".LActivity" />
         <activity
             android:name=".ImageSelectActivity"
-            android:label="Select Images..">
-
-            <!--
-            <intent-filter>
+            android:label="Select Images.." >
+            <!--<intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            -->
+            </intent-filter>-->
         </activity>
         <activity android:name=".LinkedAccounts" />
         <activity android:name=".FacebookActivity" />

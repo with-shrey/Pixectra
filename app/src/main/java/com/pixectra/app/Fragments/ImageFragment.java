@@ -345,7 +345,8 @@ public class ImageFragment extends Fragment {
 
             String albumName = entry.getJSONObject("title").getString("$t");
             String albumId = entry.getJSONObject("gphoto$id").getString("$t");
-            albumExtras.add(new PicasaAlbumExtra(albumId, albumName));
+            String numPhotos = entry.getJSONObject("gphoto$numphotos").getString("$t");
+            albumExtras.add(new PicasaAlbumExtra(albumId, albumName, numPhotos));
             imageData.add(new Images(imageUrl, thumbnailUrl));
         }
         picasaAdapter.notifyDataSetChanged();

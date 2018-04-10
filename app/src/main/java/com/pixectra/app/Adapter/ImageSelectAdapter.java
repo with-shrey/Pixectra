@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -53,6 +54,7 @@ public class ImageSelectAdapter extends RecyclerView.Adapter<ImageSelectAdapter.
         c = context;
     }
 
+    @NonNull
     @Override
     public myViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.image_recycler_item, parent, false);

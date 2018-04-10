@@ -2,11 +2,15 @@ package com.pixectra.app.Adapter;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.pixectra.app.Models.Images;
 import com.pixectra.app.Models.PicasaAlbumExtra;
@@ -38,33 +42,41 @@ public class PicasaImageSelectAdapter extends ImageSelectAdapter {
         this.key = key;
     }
 
+    @NonNull
     @Override
     public myViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.image_recycler_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.picasa_album_item, parent, false);
         return new PicasaHolder(view);
     }
 
-    public void setFragmentActivity(FragmentActivity fragmentActivity) {
-        this.fragmentActivity = fragmentActivity;
+    @Override
+    public void onBindViewHolder(myViewHolder holder1, int position) {
+        super.onBindViewHolder(holder1, position);
+        PicasaHolder holder = (PicasaHolder) holder1;
+        holder.nameView.setText(albumExtras.get(position).getAlbumName());
+        int numberOfPics = Integer.parseInt(albumExtras.get(position).getNumberOfPics());
+        String photosText;
+        if(numberOfPics == 1)
+            photosText = numberOfPics + " Photo";
+        else
+            photosText = numberOfPics + " Photos";
+        holder.picsNumView.setText(photosText);
     }
+
 
     class PicasaHolder extends myViewHolder{
 
-        public PicasaHolder(View itemView) {
+        TextView nameView, picsNumView;
+
+        PicasaHolder(View itemView) {
             super(itemView);
+            nameView = itemView.findViewById(R.id.picasa_album_name);
+            picsNumView = itemView.findViewById(R.id.picasa_photo_count);
         }
+
 
         @Override
         public void onClick(View view) {
-            //super.onClick(view);
-            /*Intent intent = new Intent(c, PicasaAlbumFragment.class);
-            intent.putExtra("key", key);
-            intent.putExtra("maxP", maxP);
-            intent.putExtra("albumId", albumExtras.get(getAdapterPosition()).getAlbumId());
-            intent.putExtra("albumName", albumExtras.get(getAdapterPosition()).getAlbumName());
-            intent.putExtra("accessToken", accessToken);
-            Activity activity = (Activity)c;
-            activity.startActivity(intent);*/
             PicasaAlbumFragment fragment = new PicasaAlbumFragment();
             Bundle bundle = new Bundle();
             bundle.putString("albumName", albumExtras.get(getAdapterPosition()).getAlbumName());
