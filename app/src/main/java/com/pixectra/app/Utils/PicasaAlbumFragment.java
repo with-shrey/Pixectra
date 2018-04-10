@@ -62,6 +62,7 @@ public class PicasaAlbumFragment extends Fragment{
     String albumId;
     RequestQueue queue;
     String accessToken;
+    ProgressBar progressBar;
 
 /*
     @Override
@@ -99,7 +100,7 @@ public class PicasaAlbumFragment extends Fragment{
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.activity_album, container, false);
+        return inflater.inflate(R.layout.picasa_album_images, container, false);
     }
 
     @Override
@@ -126,7 +127,7 @@ public class PicasaAlbumFragment extends Fragment{
         albumId = getArguments().getString("albumId");
         accessToken = getArguments().getString("accessToken");
         fetchAlbumImagesJSON();
-
+        progressBar = view.findViewById(R.id.loading_images_bar);
     }
 
 
@@ -160,7 +161,7 @@ public class PicasaAlbumFragment extends Fragment{
             }
         };
 
-        queue.add(jsonObjectRequest);
+        VolleyQueue.getInstance(getActivity()).addToRequestQueue(jsonObjectRequest);
     }
 
     void getPicasaImages(JSONObject response) throws JSONException
@@ -178,6 +179,7 @@ public class PicasaAlbumFragment extends Fragment{
 
             imageList.add(new Images(imageUrl, thumbnailUrl));
         }
+        progressBar.setVisibility(View.GONE);
         adapter.notifyDataSetChanged();
     }
 

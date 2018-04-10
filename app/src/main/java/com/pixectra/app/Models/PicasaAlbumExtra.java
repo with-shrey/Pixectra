@@ -5,11 +5,12 @@ package com.pixectra.app.Models;
  */
 
 public class PicasaAlbumExtra {
-    String albumId, albumName;
+    private String albumId, albumName, numberOfPics;
 
-    public PicasaAlbumExtra(String albumId, String albumName) {
+    public PicasaAlbumExtra(String albumId, String albumName, String numberOfPics) {
         this.albumId = albumId;
         this.albumName = albumName;
+        this.numberOfPics = numberOfPics;
     }
 
     public String getAlbumId() {
@@ -18,5 +19,9 @@ public class PicasaAlbumExtra {
 
     public String getAlbumName() {
         return albumName;
+    }
+
+    public String getNumberOfPics() {
+        return numberOfPics;
     }
 }

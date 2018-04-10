@@ -41,4 +41,6 @@
         <item>@color/dot_dark_screen4</item>
     </array>
 
+    <color name="image_cover">#80000000</color>
+
 </resources>
