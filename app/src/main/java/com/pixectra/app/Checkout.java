@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Pair;
 import android.util.SparseIntArray;
 import android.util.TypedValue;
@@ -44,6 +45,7 @@ import com.pixectra.app.Models.User;
 import com.pixectra.app.Utils.CartHolder;
 import com.pixectra.app.Utils.LogManager;
 import com.pixectra.app.Utils.QReader;
+import com.pixectra.app.Utils.SessionHelper;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -78,6 +80,12 @@ public class Checkout extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Branch.getInstance().loadRewards();
         setContentView(R.layout.activity_checkout);
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            new SessionHelper(getApplicationContext()).logOutUser();
+            startActivity(new Intent(this, LActivity.class));
+            finish();
+            return;
+        }
         couponApplied = CartHolder.getInstance().getDiscount() != null;
         coupon = CartHolder.getInstance().getCoupon();
         recyclerView = findViewById(R.id.cart_recyclerview);
@@ -331,54 +339,57 @@ public class Checkout extends AppCompatActivity {
         pay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final com.pixectra.app.Models.CheckoutData checkout = new com.pixectra.app.Models.CheckoutData();
+                if (TextUtils.isEmpty(addressText.getText().toString())) {
+                    Toast.makeText(Checkout.this, "Please Select Delivery Address", Toast.LENGTH_SHORT).show();
+                } else {
+                    final com.pixectra.app.Models.CheckoutData checkout = new com.pixectra.app.Models.CheckoutData();
 
-                final DatabaseReference user = FirebaseDatabase.getInstance().getReference("Users")
-                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Info");
-                user.keepSynced(true);
-                user.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        checkout.setUser(dataSnapshot.getValue(User.class));
-                        Price price = new Price(Double.parseDouble(carttotal.getText().toString())
-                                , Double.parseDouble(cartDiscount.getText().toString())
-                                , Integer.parseInt(creditsUsed.getText().toString())
-                                , Double.parseDouble(totalpayable.getText().toString())
-                        );
-                        checkout.setPrice(price);
-                        checkout.setAddress(address);
+                    final DatabaseReference user = FirebaseDatabase.getInstance().getReference("Users")
+                            .child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Info");
+                    user.keepSynced(true);
+                    user.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            checkout.setUser(dataSnapshot.getValue(User.class));
+                            Price price = new Price(Double.parseDouble(carttotal.getText().toString())
+                                    , Double.parseDouble(cartDiscount.getText().toString())
+                                    , Integer.parseInt(creditsUsed.getText().toString())
+                                    , Double.parseDouble(totalpayable.getText().toString())
+                            );
+                            checkout.setPrice(price);
+                            checkout.setAddress(address);
 
-                        CartHolder.getInstance().setCheckout(checkout);
-                        user.removeEventListener(this);
-                        LogManager.checkOutStarted(checkout);
-                        if (((int) Double.parseDouble(totalpayable.getText().toString())) >= 1) {
-                            Intent intent = new Intent(Checkout.this, PayUMoneyActivity.class);
-                            intent.putExtra("name", checkout.getUser().getName());
-                            intent.putExtra("email", checkout.getUser().getEmail());
-                            intent.putExtra("amount", Double.parseDouble(totalpayable.getText().toString()));
-                            intent.putExtra("phone", checkout.getUser().getPhoneNo());
-                            intent.putExtra("id", FirebaseAuth.getInstance().getCurrentUser().getUid());
-                            intent.putExtra("isOneTime", true);
-                            startActivity(intent);
-                        } else {
-                            Intent intent = new Intent(Checkout.this, PaymentStatus.class);
-                            intent.putExtra("status", true);
-                            intent.putExtra("transaction_id", " - - ");
-                            intent.putExtra("id", FirebaseAuth.getInstance().getCurrentUser().getUid());
-                            intent.putExtra("amount", Double.parseDouble(totalpayable.getText().toString()));
-                            intent.putExtra("isOneTime", true);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            startActivity(intent);
+                            CartHolder.getInstance().setCheckout(checkout);
+                            user.removeEventListener(this);
+                            LogManager.checkOutStarted(checkout);
+                            if (((int) Double.parseDouble(totalpayable.getText().toString())) >= 1) {
+                                Intent intent = new Intent(Checkout.this, PayUMoneyActivity.class);
+                                intent.putExtra("name", checkout.getUser().getName());
+                                intent.putExtra("email", checkout.getUser().getEmail());
+                                intent.putExtra("amount", Double.parseDouble(totalpayable.getText().toString()));
+                                intent.putExtra("phone", checkout.getUser().getPhoneNo());
+                                intent.putExtra("id", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                                intent.putExtra("isOneTime", true);
+                                startActivity(intent);
+                            } else {
+                                Intent intent = new Intent(Checkout.this, PaymentStatus.class);
+                                intent.putExtra("status", true);
+                                intent.putExtra("transaction_id", " - - ");
+                                intent.putExtra("id", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                                intent.putExtra("amount", Double.parseDouble(totalpayable.getText().toString()));
+                                intent.putExtra("isOneTime", true);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(intent);
+                            }
+
                         }
 
-                    }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
+                        }
+                    });
+                }
             }
         });
 

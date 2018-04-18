@@ -16,11 +16,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp">
-
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="190dp"
-                android:backgroundTint="@color/colorPrimaryDark"
+                app:cardBackgroundColor="@color/greyShadow"
+                app:cardCornerRadius="@dimen/shadow_card_radius">
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="190dp"
+                    android:layout_marginTop="8dp"
+                    app:cardBackgroundColor="@color/colorPrimaryDark"
                 app:cardCornerRadius="15dp">
 
                 <LinearLayout
@@ -49,6 +55,7 @@
                         android:textSize="40sp" />
 
                 </LinearLayout>
+                </android.support.v7.widget.CardView>
             </android.support.v7.widget.CardView>
         </LinearLayout>
 

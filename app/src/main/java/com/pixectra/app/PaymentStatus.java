@@ -18,6 +18,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.pixectra.app.Models.Coupon;
 import com.pixectra.app.Models.Myorders;
 import com.pixectra.app.Utils.CartHolder;
+import com.pixectra.app.Utils.SessionHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -35,6 +36,12 @@ public class PaymentStatus extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.successfull);
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            new SessionHelper(getApplicationContext()).logOutUser();
+            startActivity(new Intent(this, LActivity.class));
+            finish();
+            return;
+        }
         Animation anim = AnimationUtils.loadAnimation(this, R.anim.enlarging);
         Button button = findViewById(R.id.successupload);
         TextView transaction_id = findViewById(R.id.success_tansaction_id);
@@ -44,10 +51,10 @@ public class PaymentStatus extends AppCompatActivity {
         boolean txnstatus = getIntent().getBooleanExtra("status", false);
         String trxnid = getIntent().getStringExtra("transaction_id");
         double amount = getIntent().getDoubleExtra("amount", 0.0);
-        String uid = getIntent().getStringExtra("id");
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         boolean onetime = getIntent().getBooleanExtra("isOneTime", true);
         transaction_id.setText(trxnid);
-        transaction_amount.setText("" + amount);
+        transaction_amount.setText(getString(R.string.Rs) + " " + amount);
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH-mm", Locale.getDefault());
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
         FirebaseDatabase db = FirebaseDatabase.getInstance();

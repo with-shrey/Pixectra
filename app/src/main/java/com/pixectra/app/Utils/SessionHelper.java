@@ -197,7 +197,7 @@ public class SessionHelper extends MainActivity {
         FirebaseAuth.getInstance().signOut();
         if (GoogleSignIn.getLastSignedInAccount(context) != null) {
             GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestIdToken(getString(R.string.google_token))
+                    .requestIdToken(context.getString(R.string.google_token))
                     .requestEmail()
                     .build();
 

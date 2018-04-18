@@ -59,7 +59,7 @@ public class MyorderAdapter extends RecyclerView.Adapter<MyorderAdapter.viewHold
             if (ord.getfKey() != null)
                 name.setText(ord.getfKey());
             else {
-                name.setText(" ----- ");
+                name.setText(" ------ ");
             }
             ImageView imageView = cardView.findViewById(R.id.Order_image);
             if (ord.isSuccess())

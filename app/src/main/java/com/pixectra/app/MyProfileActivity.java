@@ -45,6 +45,12 @@ public class MyProfileActivity extends AppCompatActivity {
         db = FirebaseDatabase.getInstance();
         ref = db.getReference("Users");
         final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        if (mAuth.getCurrentUser() == null) {
+            new SessionHelper(getApplicationContext()).logOutUser();
+            startActivity(new Intent(this, LActivity.class));
+            finish();
+            return;
+        }
         final String uid = mAuth.getCurrentUser().getUid();
         ref.child(uid).child("Info").addValueEventListener(new ValueEventListener() {
             @Override
@@ -119,7 +125,7 @@ public class MyProfileActivity extends AppCompatActivity {
                 alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Log Out", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        new SessionHelper(MyProfileActivity.this).logOutUser();
+                        new SessionHelper(getApplicationContext()).logOutUser();
                         Intent intent = new Intent(MyProfileActivity.this, LActivity.class);
                         startActivity(intent);
                         finishAffinity();

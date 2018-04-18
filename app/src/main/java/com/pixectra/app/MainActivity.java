@@ -21,6 +21,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.pixectra.app.Models.Product;
+import com.pixectra.app.Utils.SessionHelper;
 
 import io.branch.referral.Branch;
 import io.branch.referral.BranchError;
@@ -84,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         if (mFirebaseUser == null) {
             // Not signed in, launch the Sign In activity
+            new SessionHelper(getApplicationContext()).logOutUser();
             startActivity(new Intent(this, LActivity.class));
             finish();
             return;

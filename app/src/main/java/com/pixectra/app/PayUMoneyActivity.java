@@ -393,7 +393,7 @@ public class PayUMoneyActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(PayUMoneyActivity.this, PaymentStatus.class);
                 intent.putExtra("status", false);
-                intent.putExtra("transaction_id", " -- ");
+                intent.putExtra("transaction_id", mTXNId);
                 intent.putExtra("id", mId);
                 intent.putExtra("amount", mAmount);
                 intent.putExtra("isOneTime", isOneTime);

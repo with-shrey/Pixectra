@@ -258,10 +258,10 @@ public class ImageController {
 
     String computeAcknoledment() {
         StringBuilder ack = new StringBuilder();
-        ack.append("Total Types of Photo Products : ").append(CartHolder.getInstance().getCart()).append(",\n");
-        ack.append("Total Types of Video Products : ").append(CartHolder.getInstance().getVideo()).append(",\n");
+        ack.append("Total Types of Photo Products : ").append(CartHolder.getInstance().getCart().size()).append(",\n");
+        ack.append("Total Types of Video Products : ").append(CartHolder.getInstance().getVideo().size()).append(",\n");
         for (Pair<Product, Vector<Bitmap>> details : CartHolder.getInstance().getCart()) {
-            ack.append(details.first.getType()).append("(").append(details.first.getType()).append(")").append(" : ").append(details.second.size()).append(",\n");
+            ack.append(details.first.getType()).append("(").append(details.first.getTitle()).append(")").append(" : ").append(details.second.size()).append(",\n");
         }
         return ack.toString();
     }

@@ -1,5 +1,6 @@
 package com.pixectra.app;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +16,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pixectra.app.Adapter.MyorderAdapter;
 import com.pixectra.app.Models.Myorders;
+import com.pixectra.app.Utils.SessionHelper;
 
 import java.util.ArrayList;
 
@@ -33,6 +35,12 @@ public class orders_placed extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.order_placed);
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            new SessionHelper(getApplicationContext()).logOutUser();
+            startActivity(new Intent(this, LActivity.class));
+            finish();
+            return;
+        }
         db = FirebaseDatabase.getInstance();
         ref = db.getReference("Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/orders");
         Toolbar toolbar = findViewById(R.id.toolbar_order);

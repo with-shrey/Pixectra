@@ -29,6 +29,7 @@
                 android:text="Payment Id "
                 android:textColor="#ffffff"
                 android:textSize="20dp"
+                android:layout_marginLeft="8dp"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <TextView
@@ -37,8 +38,10 @@
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
                 android:text="17 mar 2018  01:40 PM"
                 android:textColor="#ffffff"
+                android:gravity="end|right"
                 android:textSize="14dp" />
         </LinearLayout>
 
@@ -89,6 +92,7 @@
                 android:textSize="12dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/Order_image"
+                android:layout_marginLeft="20dp"
                 app:layout_constraintTop_toBottomOf="@+id/Order_name" />
 
             <TextView
