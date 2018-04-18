@@ -22,6 +22,7 @@ public class CartHolder {
     private static ImageChangedListner listner;
     private static Pair<Integer, Pair<Integer, Double>> discount;
     private static Coupon sCoupon;
+    private static int creditsUsed;
     private static CheckoutData sCheckoutData;
 
 
@@ -30,6 +31,7 @@ public class CartHolder {
         cart = new ArrayList<>();
         details = new HashMap<>();
         discount = null;
+        creditsUsed = 0;
     }  //private constructor.
 
     public static CartHolder getInstance(){
@@ -154,6 +156,13 @@ public class CartHolder {
         }
     }
 
+    public int getCreditsUsed() {
+        return creditsUsed;
+    }
+
+    public void setCreditsUsed(int mcreditsUsed) {
+        creditsUsed = mcreditsUsed;
+    }
 
     public interface ImageChangedListner {
         void onImageAdded(Bitmap img, int size);

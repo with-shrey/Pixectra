@@ -28,8 +28,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -168,8 +166,10 @@ public class Checkout extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b)
                     computeAndSetCreditPayment(creditsUsed, carttotal, cartDiscount, creditBalance);
-                else
+                else {
                     creditsUsed.setText("0");
+                    CartHolder.getInstance().setCreditsUsed(0);
+                }
 
                 computeTotal(deliveryCharges, discountType, totalpayable, carttotal, cartDiscount, creditsUsed);
             }
@@ -195,7 +195,6 @@ public class Checkout extends AppCompatActivity {
             }
         });
 
-//        computeTotal(discountType, totalpayable, carttotal, cartDiscount, creditsUsed);
 
 
         selectShipping.setOnClickListener(new View.OnClickListener() {
@@ -210,6 +209,9 @@ public class Checkout extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!couponApplied) {
+                    credits.setChecked(false);
+                    creditsUsed.setText("0");
+                    computeTotal(deliveryCharges, discountType, totalpayable, carttotal, cartDiscount, creditsUsed);
                     final DatabaseReference used = FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                             .child("Used");
                     used.keepSynced(true);
@@ -233,9 +235,6 @@ public class Checkout extends AppCompatActivity {
                                                     if (format.parse(coupon.getStartDate()).compareTo(format.parse(format.format(new Date()))) <= 0
                                                             && format.parse(coupon.getEndDate()).compareTo(format.parse(format.format(new Date()))) >= 0
                                                             && coupon.getThreshold() <= Double.parseDouble(carttotal.getText().toString())) {
-                                                        used.child(code).setValue(coupon).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                            @Override
-                                                            public void onSuccess(Void aVoid) {
                                                                 if (coupon.getType() == 0) {
                                                                     discountType.setText(coupon.getDiscount() + "%");
                                                                     cartDiscount.setText(String.valueOf(
@@ -253,18 +252,11 @@ public class Checkout extends AppCompatActivity {
                                                                 CartHolder.getInstance().setDiscount(
                                                                         new Pair<>(coupon.getType()
                                                                                 , new Pair<>(coupon.getThreshold(), coupon.getDiscount())));
-                                                                computeTotal(deliveryCharges, discountType, totalpayable, carttotal, cartDiscount, creditsUsed);
+                                                        if (credits.isChecked())
                                                                 computeAndSetCreditPayment(creditsUsed, carttotal, cartDiscount, creditBalance);
+                                                        computeTotal(deliveryCharges, discountType, totalpayable, carttotal, cartDiscount, creditsUsed);
+
                                                                 couponApplied = true;
-                                                                earned.child(code).setValue(null);
-                                                            }
-                                                        }).addOnFailureListener(new OnFailureListener() {
-                                                            @Override
-                                                            public void onFailure(@NonNull Exception e) {
-                                                                e.printStackTrace();
-                                                                Toast.makeText(Checkout.this, "Error Occured Try Again", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        });
                                                     } else {
                                                         if (format.parse(coupon.getStartDate()).compareTo(format.parse(format.format(new Date()))) > 0) {
                                                             Toast.makeText(Checkout.this, "Offer Not Started Yet \n" + format.parse(coupon.getStartDate()), Toast.LENGTH_SHORT).show();
@@ -413,6 +405,7 @@ public class Checkout extends AppCompatActivity {
                 + calculateCreditDiscount(creditBalance
                 , Double.parseDouble(carttotal.getText().toString())
                         - Double.parseDouble(cartDiscount.getText().toString())));
+        CartHolder.getInstance().setCreditsUsed(Integer.parseInt(creditsUsed.getText().toString()));
     }
 
     void computeTotal(TextView deliveryCharges, TextView discountType, TextView totalPayable, TextView carttotal, TextView cartDiscount, TextView creditsUsed) {
@@ -421,16 +414,20 @@ public class Checkout extends AppCompatActivity {
                 discountType.setText(coupon.getDiscount() + "%");
                 cartDiscount.setText(String.valueOf(
                         -(1.0 * coupon.getDiscount() / 100.0 * Double.parseDouble(carttotal.getText().toString()))));
+                if (coupon.isDelivery()) {
+                    deliveryCharges.setText("0");
+                }
             } else {
                 if (coupon.getThreshold() <= Double.parseDouble(carttotal.getText().toString())) {
                     discountType.setText("-Rs." + coupon.getDiscount());
                     cartDiscount.setText(String.valueOf(
                             -(1.0 * coupon.getDiscount())));
+                    if (coupon.isDelivery()) {
+                        deliveryCharges.setText("0");
+                    }
                 }
             }
-            if (coupon.isDelivery()) {
-                deliveryCharges.setText("0");
-            }
+
         }
         totalPayable.setText(String.valueOf(
                 +Double.parseDouble(carttotal.getText().toString())

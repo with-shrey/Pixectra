@@ -1,6 +1,5 @@
 package com.pixectra.app.Adapter;
 
-import android.animation.Animator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -65,8 +64,6 @@ public class ImageSelectAdapter extends RecyclerView.Adapter<ImageSelectAdapter.
     public void onBindViewHolder(final myViewHolder holder, int position) {
         RequestOptions requestOptions = new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL);
         Images current = data.get(position);
-        holder.overlay.setVisibility(View.GONE);
-
         Glide.with(c).load(current.getThumbnail()).apply(requestOptions)
 
                 .listener(new RequestListener<Drawable>() {
@@ -94,14 +91,14 @@ public class ImageSelectAdapter extends RecyclerView.Adapter<ImageSelectAdapter.
     }
 
     class myViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
-        ImageView icon, overlay;
+        boolean selected;
+        ImageView icon;
         ProgressBar progress;
 
         public myViewHolder(View itemView) {
             super(itemView);
+            selected = false;
             icon = itemView.findViewById(R.id.ListIcon);
-            overlay = itemView.findViewById(R.id.selected_view);
             progress = itemView.findViewById(R.id.image_loading_progress);
             itemView.setOnClickListener(this);
             itemView.getLayoutParams().height = w;
@@ -110,7 +107,7 @@ public class ImageSelectAdapter extends RecyclerView.Adapter<ImageSelectAdapter.
         @Override
         public void onClick(View view) {
             if (CartHolder.getInstance().getSize(key) < maxP) {
-                if (overlay.getVisibility() == View.GONE) {
+                if (!selected) {
                     progress.setVisibility(View.VISIBLE);
                     try {
                         GlideHelper.getBitmap(c, data.get(getAdapterPosition()).getUrl(), new RequestListener() {
@@ -124,33 +121,6 @@ public class ImageSelectAdapter extends RecyclerView.Adapter<ImageSelectAdapter.
                             @Override
                             public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
                                 progress.setVisibility(View.GONE);
-                                overlay.setVisibility(View.VISIBLE);
-                                overlay.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        overlay.animate().alpha(0f).setDuration(1000).setListener(new Animator.AnimatorListener() {
-                                            @Override
-                                            public void onAnimationStart(Animator animator) {
-
-                                            }
-
-                                            @Override
-                                            public void onAnimationEnd(Animator animator) {
-                                                overlay.setVisibility(View.GONE);
-                                                overlay.setAlpha(1f);
-                                            }
-
-                                            @Override
-                                            public void onAnimationCancel(Animator animator) {
-
-                                            }
-
-                                            @Override
-                                            public void onAnimationRepeat(Animator animator) {
-                                            }
-                                        });
-                                    }
-                                }, 500);
                                 CartHolder.getInstance().addImage(key, (Bitmap) resource);
                                 return false;
                             }
@@ -165,7 +135,7 @@ public class ImageSelectAdapter extends RecyclerView.Adapter<ImageSelectAdapter.
             } else {
                 Toast.makeText(c, "Max. No Of Images Selected", Toast.LENGTH_SHORT).show();
             }
-            if (overlay.getVisibility() == View.VISIBLE) {
+            if (selected) {
                 try {
                     GlideHelper.getBitmap(c, data.get(getAdapterPosition()).getUrl(), new RequestListener() {
                         @Override
@@ -176,7 +146,7 @@ public class ImageSelectAdapter extends RecyclerView.Adapter<ImageSelectAdapter.
                         @Override
                         public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
                             CartHolder.getInstance().removeImage(key, (Bitmap) resource);
-                            overlay.setVisibility(View.GONE);
+                            selected = false;
                             return false;
                         }
                     });

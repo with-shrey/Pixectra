@@ -97,7 +97,7 @@
                             android:layout_marginLeft="8dp"
                             android:layout_marginStart="8dp"
                             android:layout_marginTop="8dp"
-                            android:background="@drawable/circle"
+                            android:src="@drawable/user"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -129,7 +129,7 @@
                             app:layout_constraintStart_toEndOf="@+id/imageView11"
                             app:layout_constraintTop_toBottomOf="@+id/textView11" />
 
-                        <android.support.v7.widget.AppCompatImageView
+                        <ImageView
                             android:id="@+id/imageView12"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -164,15 +164,15 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
-                        <de.hdodenhof.circleimageview.CircleImageView
+                        <ImageView
                             android:id="@+id/imageView21"
                             android:layout_width="50dp"
                             android:layout_height="50dp"
                             android:layout_marginBottom="8dp"
                             android:layout_marginLeft="8dp"
                             android:layout_marginStart="8dp"
+                            android:src="@drawable/address"
                             android:layout_marginTop="8dp"
-                            android:background="@drawable/circle"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -237,15 +237,16 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
-                        <de.hdodenhof.circleimageview.CircleImageView
+                        <ImageView
                             android:id="@+id/imageView31"
                             android:layout_width="50dp"
                             android:layout_height="50dp"
                             android:layout_marginBottom="8dp"
                             android:layout_marginLeft="8dp"
                             android:layout_marginStart="8dp"
+                            android:scaleType="centerInside"
                             android:layout_marginTop="8dp"
-                            android:background="@drawable/circle"
+                            android:src="@drawable/link"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -309,7 +310,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
-                        <de.hdodenhof.circleimageview.CircleImageView
+                        <ImageView
                             android:id="@+id/imageView61"
                             android:layout_width="50dp"
                             android:layout_height="50dp"
@@ -317,7 +318,8 @@
                             android:layout_marginLeft="8dp"
                             android:layout_marginStart="8dp"
                             android:layout_marginTop="8dp"
-                            android:background="@drawable/circle"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/orders"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -387,7 +389,7 @@
                             android:layout_marginLeft="8dp"
                             android:layout_marginStart="8dp"
                             android:layout_marginTop="8dp"
-                            android:background="@drawable/circle"
+                            android:src="@drawable/faq"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -450,6 +452,7 @@
 
                     <android.support.constraint.ConstraintLayout
                         android:layout_width="match_parent"
+                        android:visibility="gone"
                         android:layout_height="match_parent">
 
                         <de.hdodenhof.circleimageview.CircleImageView

@@ -4,23 +4,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.pixectra.app.Models.Banner;
-import com.pixectra.app.Utils.GlideHelper;
 import com.pixectra.app.Utils.LogManager;
 
 import java.util.ArrayList;
@@ -40,21 +30,14 @@ import io.branch.referral.util.ShareSheetStyle;
 public class ReferAndEarnFragment extends Fragment {
 
     BranchUniversalObject branchUniversalObject;
-    ReferBanners mReferBanners;
     ArrayList<Banner> mBannerArrayList;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.refer_earn_fragment, null);
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference ref = database.getReference("CommonData").child("Banner");
         //<--setting up recycler view
         mBannerArrayList = new ArrayList<>();
-        RecyclerView recyclerView = view.findViewById(R.id.refer_earn_recycler);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mReferBanners = new ReferBanners();
-        recyclerView.setAdapter(mReferBanners);
         final TextView remaining = view.findViewById(R.id.subscription_remaining);
 
         Branch.getInstance().loadRewards(new Branch.BranchReferralStateChangedListener() {
@@ -63,23 +46,6 @@ public class ReferAndEarnFragment extends Fragment {
                 remaining.setText(String.format(Locale.getDefault(), "Credits Earned %d", Branch.getInstance().getCredits()));
             }
         });
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                mBannerArrayList.clear();
-                for (DataSnapshot temp : dataSnapshot.getChildren()) {
-                    mBannerArrayList.add(temp.getValue(Banner.class));
-                }
-                mReferBanners.notifyDataSetChanged();
-                ref.removeEventListener(this);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-//                view.findViewById(R.id.onetime_progress).setVisibility(View.GONE);
-            }
-        });
-        ref.keepSynced(true);
         view.findViewById(R.id.share_card).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
@@ -148,39 +114,6 @@ public class ReferAndEarnFragment extends Fragment {
                 // The link will be available in sharedLink
             }
         });
-    }
-
-    class ReferBanners extends RecyclerView.Adapter<ReferBanners.VH> {
-
-        @NonNull
-        @Override
-        public ReferBanners.VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.home_viewpager_item_layout, parent, false);
-            return new VH(view);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull ReferBanners.VH holder, int position) {
-            GlideHelper.load(getActivity(), mBannerArrayList.get(position).getImage()
-                    , holder.mImageView, holder.progressBar);
-        }
-
-        @Override
-        public int getItemCount() {
-            return mBannerArrayList.size();
-        }
-
-        class VH extends RecyclerView.ViewHolder {
-            ImageView mImageView;
-            ProgressBar progressBar;
-
-            public VH(View itemView) {
-                super(itemView);
-                itemView.getLayoutParams().height = (int) getActivity().getResources().getDimension(R.dimen.card_height);
-                mImageView = itemView.findViewById(R.id.sliding_image);
-                progressBar = itemView.findViewById(R.id.banner_loader);
-            }
-        }
     }
 
 }

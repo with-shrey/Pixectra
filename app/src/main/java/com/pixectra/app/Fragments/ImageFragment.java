@@ -467,9 +467,11 @@ public class ImageFragment extends Fragment {
             recyclerView.setVisibility(View.VISIBLE);
             noLoginView.setOnClickListener(null);
             noLoginView.setVisibility(View.GONE);
+            emptyView.setVisibility(View.GONE);
         } else {
             recyclerView.setVisibility(View.GONE);
             noLoginView.setVisibility(View.VISIBLE);
+            emptyView.setVisibility(View.VISIBLE);
             setImage();
             if (category == 0) {
                 noLoginView.setOnClickListener(new View.OnClickListener() {
@@ -530,7 +532,9 @@ public class ImageFragment extends Fragment {
     void setImage() {
         switch (category) {
             case 0:
-                noLoginView.setImageResource(R.drawable.allow);
+                noLoginView.setImageResource(R.mipmap.ic_launcher);
+                emptyView.setVisibility(View.VISIBLE);
+                emptyView.setText("Click To Allow Pixectra To Access Photos");
                 break;
             case 1:
                 noLoginView.setImageResource(R.drawable.loginwithfb);

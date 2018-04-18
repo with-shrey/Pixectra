@@ -31,20 +31,19 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
             <ImageView
                 android:id="@+id/imageView1"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_gravity="center"
+                android:layout_margin="8dp"
+                android:padding="24dp"
                 android:background="@drawable/white_radius"
                 android:src="@drawable/ic_shipping_cart"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
 
             <TextView
                 android:id="@+id/textView1"
@@ -103,12 +102,11 @@
 
             <ImageView
                 android:id="@+id/imageView3"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_gravity="center"
+                android:layout_margin="8dp"
+                android:padding="24dp"
                 android:background="@drawable/white_radius"
                 android:src="@drawable/ic_shipping_cart"
                 app:layout_constraintBottom_toBottomOf="parent"

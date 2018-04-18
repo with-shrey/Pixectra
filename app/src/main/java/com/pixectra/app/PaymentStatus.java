@@ -12,14 +12,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.pixectra.app.Models.Coupon;
 import com.pixectra.app.Models.Myorders;
 import com.pixectra.app.Utils.CartHolder;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import io.branch.referral.Branch;
 
 /**
  * Created by prashu on 4/4/2018.
@@ -52,8 +56,22 @@ public class PaymentStatus extends AppCompatActivity {
         ref.child(key).setValue(new Myorders("", trxnid, timeFormat.format(new Date())
                 , dateFormat.format(new Date()), false, txnstatus, amount));
         if (txnstatus) {
+            final DatabaseReference used = FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                    .child("Used");
+            final DatabaseReference earned = FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                    .child("Earned");
+
+            Branch.getInstance().userCompletedAction("order");
+            Coupon coupon = CartHolder.getInstance().getCoupon();
+            used.child(coupon.getCouponCode()).setValue(coupon);
+            earned.child(coupon.getCouponCode()).setValue(null);
+            if (CartHolder.getInstance().getCreditsUsed() > 0)
+                Branch.getInstance().redeemRewards(CartHolder.getInstance().getCreditsUsed());
+
             CartHolder.getInstance().setDiscount(null);
             CartHolder.getInstance().setCoupon(null);
+            CartHolder.getInstance().setCreditsUsed(0);
+
             Glide.with(this).load(R.drawable.successfull).into(image);
             status.setText("Successfull");
             status.setTextColor(ContextCompat.getColor(this, android.R.color.holo_green_dark));

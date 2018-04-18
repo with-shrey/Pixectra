@@ -1,6 +1,5 @@
 package com.pixectra.app.Utils;
 
-import android.animation.Animator;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -239,13 +238,14 @@ public class PicasaAlbumFragment extends Fragment {
         }
 
         public class PicasaSingleAlbumViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-            ImageView galleryImage, overlay;
+            ImageView galleryImage;
             ProgressBar progress;
+            boolean selected;
 
             PicasaSingleAlbumViewHolder(View itemView) {
                 super(itemView);
+                selected = false;
                 galleryImage = itemView.findViewById(R.id.ListIcon);
-                overlay = itemView.findViewById(R.id.selected_view);
                 progress = itemView.findViewById(R.id.image_loading_progress);
                 itemView.getLayoutParams().height = w;
                 itemView.setOnClickListener(this);
@@ -254,7 +254,7 @@ public class PicasaAlbumFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (CartHolder.getInstance().getSize(key) < maxP) {
-                    if (overlay.getVisibility() == View.GONE) {
+                    if (!selected) {
                         progress.setVisibility(View.VISIBLE);
                         try {
                             GlideHelper.getBitmap(getActivity(), data.get(getAdapterPosition()).getUrl(), new RequestListener() {
@@ -268,33 +268,7 @@ public class PicasaAlbumFragment extends Fragment {
                                 @Override
                                 public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
                                     progress.setVisibility(View.GONE);
-                                    overlay.setVisibility(View.VISIBLE);
-                                    overlay.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            overlay.animate().alpha(0f).setDuration(1000).setListener(new Animator.AnimatorListener() {
-                                                @Override
-                                                public void onAnimationStart(Animator animator) {
-
-                                                }
-
-                                                @Override
-                                                public void onAnimationEnd(Animator animator) {
-                                                    overlay.setVisibility(View.GONE);
-                                                    overlay.setAlpha(1f);
-                                                }
-
-                                                @Override
-                                                public void onAnimationCancel(Animator animator) {
-
-                                                }
-
-                                                @Override
-                                                public void onAnimationRepeat(Animator animator) {
-                                                }
-                                            });
-                                        }
-                                    }, 500);
+                                    selected = true;
                                     CartHolder.getInstance().addImage(key, (Bitmap) resource);
                                     return false;
                                 }
@@ -309,7 +283,7 @@ public class PicasaAlbumFragment extends Fragment {
                 } else {
                     Toast.makeText(getActivity(), "Max. No Of Images Selected", Toast.LENGTH_SHORT).show();
                 }
-                if (overlay.getVisibility() == View.VISIBLE) {
+                if (!selected) {
                     try {
                         GlideHelper.getBitmap(getActivity(), data.get(getAdapterPosition()).getUrl(), new RequestListener() {
                             @Override
@@ -320,7 +294,7 @@ public class PicasaAlbumFragment extends Fragment {
                             @Override
                             public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
                                 CartHolder.getInstance().removeImage(key, (Bitmap) resource);
-                                overlay.setVisibility(View.GONE);
+                                selected = false;
                                 return false;
                             }
                         });
