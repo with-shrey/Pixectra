@@ -48,10 +48,10 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/user_name"
             android:layout_marginTop="5dp"
-            android:background="@color/userProfileCardViewBlue"
+            android:background="#0d47a1"
             android:gravity="center"
             android:padding="5dp"
-            android:text="42 days remaining in your current subscription"
+            android:text="Credits Earned --"
             android:textColor="#ffffff"
             android:textStyle="bold" />
 

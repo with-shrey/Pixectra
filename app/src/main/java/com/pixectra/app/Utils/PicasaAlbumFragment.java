@@ -1,7 +1,6 @@
 package com.pixectra.app.Utils;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -269,7 +268,7 @@ public class PicasaAlbumFragment extends Fragment {
                                 public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
                                     progress.setVisibility(View.GONE);
                                     selected = true;
-                                    CartHolder.getInstance().addImage(key, (Bitmap) resource);
+                                    CartHolder.getInstance().addImage(key, resource);
                                     return false;
                                 }
                             });
@@ -279,30 +278,29 @@ public class PicasaAlbumFragment extends Fragment {
                             e.printStackTrace();
                         }
 
+                    } else {
+                        try {
+                            GlideHelper.getBitmap(getActivity(), data.get(getAdapterPosition()).getUrl(), new RequestListener() {
+                                @Override
+                                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target target, boolean isFirstResource) {
+                                    return false;
+                                }
+
+                                @Override
+                                public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
+                                    CartHolder.getInstance().removeImage(key, resource);
+                                    selected = false;
+                                    return false;
+                                }
+                            });
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                 } else {
                     Toast.makeText(getActivity(), "Max. No Of Images Selected", Toast.LENGTH_SHORT).show();
-                }
-                if (!selected) {
-                    try {
-                        GlideHelper.getBitmap(getActivity(), data.get(getAdapterPosition()).getUrl(), new RequestListener() {
-                            @Override
-                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target target, boolean isFirstResource) {
-                                return false;
-                            }
-
-                            @Override
-                            public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
-                                CartHolder.getInstance().removeImage(key, (Bitmap) resource);
-                                selected = false;
-                                return false;
-                            }
-                        });
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
                 }
             }
         }

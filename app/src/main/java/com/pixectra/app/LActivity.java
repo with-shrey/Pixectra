@@ -67,6 +67,7 @@ DatabaseReference ref;
         imageView = findViewById(R.id.google_login_button);
         facebookimageview1 = findViewById(R.id.facebook_login_button);
         progressBar = findViewById(R.id.simpleProgressBar);
+
         Scope SCOPE_PICASA = new Scope("https://picasaweb.google.com/data/");
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestScopes(SCOPE_PICASA)
@@ -229,7 +230,8 @@ DatabaseReference ref;
                 firebaseAuthWithGoogle(account, result);
             } catch (ApiException e) {
                 LogManager.userSignUp(false, "Google", "");
-                Toast.makeText(this, "Failed SignIn Exception Key: Google Sign In ", Toast.LENGTH_SHORT).show();
+
+                Toast.makeText(this, "Failed SignIn Exception Key: Google Sign In " + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                 // Google Sign In failed, update UI appropriately
                 Log.v("Google Sign In", "Google sign in failed", e);
                 // ...

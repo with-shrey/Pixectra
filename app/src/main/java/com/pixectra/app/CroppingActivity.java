@@ -1,5 +1,6 @@
 package com.pixectra.app;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -15,11 +16,16 @@ public class CroppingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_cropping);
         final CropImageView cropper = findViewById(R.id.cropImageView);
         if (getIntent().getBooleanExtra("cart", false)) {
-            cropper.setImageBitmap(CartHolder.getInstance().getCart()
+            if (CartHolder.getInstance().getCart()
+                    .get(getIntent().getIntExtra("position", 0))
+                    .second.get(getIntent().getIntExtra("index", 0)) instanceof Bitmap)
+                cropper.setImageBitmap((Bitmap) CartHolder.getInstance().getCart()
                     .get(getIntent().getIntExtra("position", 0))
                     .second.get(getIntent().getIntExtra("index", 0)));
         } else {
-            cropper.setImageBitmap(CartHolder.getInstance().getImage(getIntent().getStringExtra("key")
+            if (CartHolder.getInstance().getImage(getIntent().getStringExtra("key")
+                    , getIntent().getIntExtra("index", -1)) instanceof Bitmap)
+                cropper.setImageBitmap((Bitmap) CartHolder.getInstance().getImage(getIntent().getStringExtra("key")
                     , getIntent().getIntExtra("index", -1)));
         }
         findViewById(R.id.crop_cancel).setOnClickListener(new View.OnClickListener() {

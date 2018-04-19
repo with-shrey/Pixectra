@@ -60,7 +60,6 @@ CardView insta;
                 @Override
                 public void onClick(View view) {
                     Scope SCOPE_PICASA = new Scope("https://picasaweb.google.com/data/");
-
                     GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                             .requestScopes(SCOPE_PICASA)
                             .requestIdToken(getString(R.string.google_token))

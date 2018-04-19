@@ -2,7 +2,6 @@ package com.pixectra.app.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,11 +24,11 @@ import java.util.Vector;
 public class CartImagesAdapter extends RecyclerView.Adapter<CartImagesAdapter.ViewHolder> {
 
     Context context;
-    Vector<Bitmap> data;
+    Vector<Object> data;
     int position;
     Checkout.CartAdapter mCartAdapter;
 
-    public CartImagesAdapter(Checkout.CartAdapter adapter, Context context, Vector<Bitmap> data, int pos) {
+    public CartImagesAdapter(Checkout.CartAdapter adapter, Context context, Vector<Object> data, int pos) {
         this.context = context;
         this.data = data;
         position = pos;

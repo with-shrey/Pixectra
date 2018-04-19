@@ -5,11 +5,9 @@ package com.pixectra.app.Utils;
  */
 
 
-import android.animation.Animator;
 import android.app.Activity;
 import android.database.Cursor;
 import android.database.MergeCursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -29,17 +27,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.pixectra.app.R;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.concurrent.ExecutionException;
 
 
 public class AlbumActivity extends Fragment {
@@ -176,6 +169,7 @@ public class AlbumActivity extends Fragment {
                 overlay = itemView.findViewById(R.id.selected_view);
                 loader = itemView.findViewById(R.id.image_loading_progress);
                 itemView.getLayoutParams().height = w;
+                loader.setVisibility(View.GONE);
                 itemView.setOnClickListener(this);
             }
 
@@ -183,80 +177,16 @@ public class AlbumActivity extends Fragment {
             public void onClick(View view) {
                 if (CartHolder.getInstance().getSize(getArguments().getString("key", "")) < getArguments().getInt("maxPics", 0)) {
                     if (overlay.getVisibility() == View.GONE) {
-                        loader.setVisibility(View.VISIBLE);
-                        try {
-                            GlideHelper.getBitmap(getActivity(), new File(data.get(getAdapterPosition()).get(Function.KEY_PATH)), new RequestListener() {
-                                @Override
-                                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target target, boolean isFirstResource) {
-                                    loader.setVisibility(View.GONE);
-                                    Toast.makeText(getActivity(), "Unable To Fetch Full Size Image", Toast.LENGTH_SHORT).show();
-                                    return false;
-                                }
-
-                                @Override
-                                public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
-                                    loader.setVisibility(View.GONE);
-                                    overlay.setVisibility(View.VISIBLE);
-                                    overlay.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            overlay.animate().alpha(0f).setDuration(1000).setListener(new Animator.AnimatorListener() {
-                                                @Override
-                                                public void onAnimationStart(Animator animator) {
-
-                                                }
-
-                                                @Override
-                                                public void onAnimationEnd(Animator animator) {
-                                                    overlay.setVisibility(View.GONE);
-                                                    overlay.setAlpha(1f);
-                                                }
-
-                                                @Override
-                                                public void onAnimationCancel(Animator animator) {
-
-                                                }
-
-                                                @Override
-                                                public void onAnimationRepeat(Animator animator) {
-                                                }
-                                            });
-                                        }
-                                    }, 500);
-                                    CartHolder.getInstance().addImage(getActivity().getIntent().getStringExtra("key"), (Bitmap) resource);
-                                    return false;
-                                }
-                            });
-                        } catch (ExecutionException e) {
-                            e.printStackTrace();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-
+                        overlay.setVisibility(View.VISIBLE);
+                        CartHolder.getInstance().addImage(getActivity().getIntent().getStringExtra("key")
+                                , new File(data.get(getAdapterPosition()).get(Function.KEY_PATH)));
+                    } else {
+                        overlay.setVisibility(View.GONE);
+                        CartHolder.getInstance().removeImage(getActivity().getIntent().getStringExtra("key")
+                                , new File(data.get(getAdapterPosition()).get(Function.KEY_PATH)));
                     }
                 } else {
                     Toast.makeText(activity, "Images Already Selected", Toast.LENGTH_SHORT).show();
-                }
-                if (overlay.getVisibility() == View.VISIBLE) {
-                    overlay.setVisibility(View.GONE);
-                    try {
-                        GlideHelper.getBitmap(getActivity(), new File(data.get(getAdapterPosition()).get(Function.KEY_PATH)), new RequestListener() {
-                            @Override
-                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target target, boolean isFirstResource) {
-                                return false;
-                            }
-
-                            @Override
-                            public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
-                                CartHolder.getInstance().removeImage(getActivity().getIntent().getStringExtra("key"), (Bitmap) resource);
-                                return false;
-                            }
-                        });
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
                 }
             }
         }

@@ -26,6 +26,7 @@ import com.pixectra.app.R;
 import com.pixectra.app.UploadService;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -106,17 +107,17 @@ public class ImageController {
         Log.d("Image Uoload", i + " " + j);
         if (CartHolder.getInstance().getCart().size() != 0) {
             StorageReference mStorageRef = FirebaseStorage.getInstance().getReference().child(folder);
-            Pair<Product, Vector<Bitmap>> pair = CartHolder.getInstance().getCart().get(i);
+            Pair<Product, Vector<Object>> pair = CartHolder.getInstance().getCart().get(i);
             totalJ = pair.second.size();
             mBuilder.setContentIntent(null);
 
             mBuilder.setContentTitle(pair.first.getType() + "(" + pair.first.getTitle() + ")");
-            Bitmap image = pair.second.get(j);
+            Object image = pair.second.get(j);
             mBuilder.setContentText("Image " + (j + 1) + "/" + totalJ);
             mBuilder.setProgress(100, 0, false);
             manager.notify(1, mBuilder.build());
             StorageReference riversRef = mStorageRef.child(pair.first.getId() + "-" + i).child("" + j + ".png");
-            riversRef.putBytes(getBytes(image)).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+            OnProgressListener<UploadTask.TaskSnapshot> progressListener = new OnProgressListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                     mBuilder.setProgress(100,
@@ -125,44 +126,55 @@ public class ImageController {
                     manager.notify(1, mBuilder.build());
 
                 }
-            })
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            int n = CartHolder.getInstance().getCart().size();
-                            int product = i;
-                            int photo = j;
-                            if (j < totalJ - 1) {
-                                photo++;
-                                processUpload(product, photo);
-                            } else {
-                                if (product < n - 1) {
-                                    product++;
-                                    photo = 0;
-                                    processUpload(product, photo);
-                                } else {
-                                    ImageController.this.i = 0;
-                                    if (CartHolder.getInstance().getVideo().size() > 0)
-                                        uploadVideos(0);
-                                    else
-                                        uploadUserDataAndStatus();
-                                }
-                            }
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception exception) {
+            };
 
-                            //<!--Start from same index
-                            mBuilder.setProgress(0, 0, false);
-                            manager.notify(1, mBuilder.build());
-                            Toast.makeText(context, exception.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                            showalert(1, "Upload Failed", "Tap To Retry", i, j);
-                            // Handle unsuccessful uploads
-                            // ...
+            OnSuccessListener<UploadTask.TaskSnapshot> onSuccessListener = new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    int n = CartHolder.getInstance().getCart().size();
+                    int product = i;
+                    int photo = j;
+                    if (j < totalJ - 1) {
+                        photo++;
+                        processUpload(product, photo);
+                    } else {
+                        if (product < n - 1) {
+                            product++;
+                            photo = 0;
+                            processUpload(product, photo);
+                        } else {
+                            ImageController.this.i = 0;
+                            if (CartHolder.getInstance().getVideo().size() > 0)
+                                uploadVideos(0);
+                            else
+                                uploadUserDataAndStatus();
                         }
-                    });
+                    }
+                }
+            };
+
+            OnFailureListener onFailureListener = new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+
+                    //<!--Start from same index
+                    mBuilder.setProgress(0, 0, false);
+                    manager.notify(1, mBuilder.build());
+                    Toast.makeText(context, exception.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                    showalert(1, "Upload Failed", "Tap To Retry", i, j);
+                    // Handle unsuccessful uploads
+                    // ...
+                }
+            };
+            if (image instanceof Bitmap) {
+                riversRef.putBytes(getBytes((Bitmap) image)).addOnProgressListener(progressListener)
+                        .addOnSuccessListener(onSuccessListener)
+                        .addOnFailureListener(onFailureListener);
+            } else {
+                riversRef.putFile((Uri.fromFile((File) image))).addOnProgressListener(progressListener)
+                        .addOnSuccessListener(onSuccessListener)
+                        .addOnFailureListener(onFailureListener);
+            }
         } else {
             ImageController.this.i = 0;
             if (CartHolder.getInstance().getVideo().size() > 0)
@@ -260,7 +272,7 @@ public class ImageController {
         StringBuilder ack = new StringBuilder();
         ack.append("Total Types of Photo Products : ").append(CartHolder.getInstance().getCart().size()).append(",\n");
         ack.append("Total Types of Video Products : ").append(CartHolder.getInstance().getVideo().size()).append(",\n");
-        for (Pair<Product, Vector<Bitmap>> details : CartHolder.getInstance().getCart()) {
+        for (Pair<Product, Vector<Object>> details : CartHolder.getInstance().getCart()) {
             ack.append(details.first.getType()).append("(").append(details.first.getTitle()).append(")").append(" : ").append(details.second.size()).append(",\n");
         }
         return ack.toString();

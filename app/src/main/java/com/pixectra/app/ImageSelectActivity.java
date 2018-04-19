@@ -1,7 +1,6 @@
 package com.pixectra.app;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -15,6 +14,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -81,7 +81,9 @@ TabLayout tabLayout;
         setTabIcons(tabLayout);
         CartHolder.getInstance().setOnImageChangedListner(new CartHolder.ImageChangedListner() {
             @Override
-            public void onImageAdded(Bitmap img, int size) {
+            public void onImageAdded(Object img, int size) {
+                Log.v("image", "added " + size);
+
                 if (size > 0) {
                     save.setVisibility(View.VISIBLE);
                     selectedImages.setVisibility(View.VISIBLE);
@@ -92,7 +94,8 @@ TabLayout tabLayout;
             }
 
             @Override
-            public void onImageDeleted(Bitmap img, int size) {
+            public void onImageDeleted(Object img, int size) {
+                Log.v("image", "deleted " + size);
                 selectedItemsAdapter.notifyDataSetChanged();
                 if (size > 0) {
                     save.setVisibility(View.VISIBLE);
@@ -108,7 +111,7 @@ TabLayout tabLayout;
             }
 
             @Override
-            public void alreadyPresent(Bitmap img) {
+            public void alreadyPresent(Object img) {
                 Toast.makeText(ImageSelectActivity.this, "Image Already Present In Cart", Toast.LENGTH_SHORT).show();
                 selectedItemsAdapter.notifyDataSetChanged();
             }
@@ -142,7 +145,7 @@ TabLayout tabLayout;
         }
     }
     void setTabIcons(TabLayout tabs){
-        int[] icons = {R.drawable.device, R.drawable.facebook, R.drawable.instagram, R.drawable.google_photos};
+        int[] icons = {R.drawable.device, R.drawable.fb, R.drawable.insta, R.drawable.google_photos};
         for (int i=0;i<4;i++)
             tabs.getTabAt(i).setIcon(icons[i]);
     }
