@@ -208,10 +208,26 @@ public class PayUMoneyActivity extends AppCompatActivity {
                 @Override
                 public void onReceivedSslError(WebView view,
 
-                                               SslErrorHandler handler, SslError error) {
+                                               final SslErrorHandler handler, SslError error) {
                     mProgress.dismiss();
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(PayUMoneyActivity.this);
+                    builder.setMessage("Invalid SSL Certificate ");
+                    builder.setPositiveButton("continue", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            handler.proceed();
+                            mProgress.show();
+                        }
+                    });
+                    builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            handler.cancel();
+                        }
+                    });
+                    final AlertDialog dialog = builder.create();
+                    dialog.show();
                     Toast.makeText(activity, "SSL Error! " + error, Toast.LENGTH_SHORT).show();
-                    handler.proceed();
                 }
 
                 @Override
