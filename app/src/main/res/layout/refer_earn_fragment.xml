@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_margin="15dp"
-        android:layout_weight="0.4"
+        android:layout_weight="0.45"
         app:cardBackgroundColor="@color/greyShadow"
         app:cardCornerRadius="@dimen/shadow_card_radius"
         card_view:cardElevation="8dp">

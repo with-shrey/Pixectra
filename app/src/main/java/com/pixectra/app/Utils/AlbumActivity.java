@@ -170,6 +170,7 @@ public class AlbumActivity extends Fragment {
                 loader = itemView.findViewById(R.id.image_loading_progress);
                 itemView.getLayoutParams().height = w;
                 loader.setVisibility(View.GONE);
+                overlay.setVisibility(View.GONE);
                 itemView.setOnClickListener(this);
             }
 

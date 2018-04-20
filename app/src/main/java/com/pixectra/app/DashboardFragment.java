@@ -153,14 +153,15 @@ public class DashboardFragment extends Fragment {
                 increment = true;
             // As the TimerTask run on a seprate thread from UI thread we have
             // to call runOnUiThread to do work on UI thread.
-            (getActivity()).runOnUiThread(new Runnable() {
-                public void run() {
-                    if (increment)
-                    viewPager.setCurrentItem(i++,true);
-                    else
-                        viewPager.setCurrentItem(i--,true);
-                }
-            });
+            if (getActivity() != null)
+                (getActivity()).runOnUiThread(new Runnable() {
+                    public void run() {
+                        if (increment)
+                            viewPager.setCurrentItem(i++,true);
+                        else
+                            viewPager.setCurrentItem(i--,true);
+                    }
+                });
 
         }
     }

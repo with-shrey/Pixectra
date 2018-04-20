@@ -532,7 +532,7 @@ public class ImageFragment extends Fragment {
     void setImage() {
         switch (category) {
             case 0:
-                noLoginView.setImageResource(R.mipmap.ic_launcher);
+                noLoginView.setImageResource(R.drawable.logo);
                 emptyView.setVisibility(View.VISIBLE);
                 emptyView.setText("Click To Allow Pixectra To Access Photos");
                 break;

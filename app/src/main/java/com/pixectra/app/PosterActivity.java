@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -61,8 +62,7 @@ public class PosterActivity extends AppCompatActivity {
         //Type Of Activity
         type = getIntent().getIntExtra("type", 1);
         ImageView image = findViewById(R.id.product_image);
-        image.setImageResource(getDrawableFromType());
-//        Glide.with(this).load().into(image);
+        Glide.with(this).load(getDrawableFromType()).into(image);
         LogManager.viewContent(activityTitles[type - 1], activityTitles[type - 1], "Product");
         title_page.setText(activityTitles[type-1]);
 

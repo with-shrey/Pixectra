@@ -44,9 +44,12 @@ public class QReader extends Activity implements QRCodeReaderView.OnQRCodeReadLi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_qreader);
-        setFinishOnTouchOutside(false);
-        init();
+        try {
+            setContentView(R.layout.activity_qreader);
+            init();
+        } catch (Exception e) {
+            Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        }
 
     }
 
@@ -58,7 +61,7 @@ public class QReader extends Activity implements QRCodeReaderView.OnQRCodeReadLi
         qrCodeReaderView.setOnQRCodeReadListener(this);
         ImageButton rotate = findViewById(R.id.rotateCamera);
         ImageButton flash = findViewById(R.id.flashIcon);
-        View qrBlock = findViewById(R.id.qrblock);
+        final View qrBlock = findViewById(R.id.qrblock);
         qrBlock.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -68,12 +71,14 @@ public class QReader extends Activity implements QRCodeReaderView.OnQRCodeReadLi
         rotate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                qrCodeReaderView.stopCamera();
                 if (isBack)
                     qrCodeReaderView.setFrontCamera();
                 else {
                     qrCodeReaderView.setBackCamera();
                 }
                 isBack = !isBack;
+                qrCodeReaderView.startCamera();
             }
         });
 
