@@ -150,7 +150,6 @@ DatabaseReference ref;
                             Log.d("Google Sign In", "signInWithCredential:success");
                             boolean isNew = task.getResult().getAdditionalUserInfo().isNewUser();
                             Log.d("Google Sign In", "onComplete: " + (isNew ? "new user" : "old user"));
-                            Toast.makeText(LActivity.this, "onComplete: " + (isNew ? "new user" : "old user"), Toast.LENGTH_SHORT).show();
                             if (isNew) {
                                 Branch.getInstance().userCompletedAction("signup");
                                 // mAuth.getCurrentUser().getUid();
