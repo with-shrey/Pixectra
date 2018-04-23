@@ -7,7 +7,10 @@
     android:layout_margin="6dp"
     app:cardBackgroundColor="@color/userProfileCardViewBlue"
     app:cardCornerRadius="10dp"
-    app:cardElevation="5dp">
+    app:cardElevation="5dp"
+    android:foreground="?attr/selectableItemBackground"
+    android:stateListAnimator="@anim/card_view_animation"
+    android:clickable="true">
 
     <LinearLayout
         android:layout_width="match_parent"

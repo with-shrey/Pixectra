@@ -27,7 +27,9 @@
 
         <activity android:name=".MobileVerifyActivity" />
         <activity android:name=".MyProfileActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".MainActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
         <activity android:name=".PicasaActivity" />
         <!-- Branch install referrer tracking (optional) -->
         <receiver

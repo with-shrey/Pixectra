@@ -46,7 +46,8 @@
             android:foreground="?selectableItemBackground"
             app:cardBackgroundColor="@color/colorPrimary"
             app:cardCornerRadius="4dp"
-            app:cardElevation="2dp">
+            app:cardElevation="2dp"
+            android:stateListAnimator="@anim/card_view_animation">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -91,7 +92,8 @@
             android:foreground="?selectableItemBackground"
             app:cardBackgroundColor="@color/colorPrimary"
             app:cardCornerRadius="4dp"
-            app:cardElevation="2dp">
+            app:cardElevation="2dp"
+            android:stateListAnimator="@anim/card_view_animation">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -137,7 +139,8 @@
             android:foreground="?selectableItemBackground"
             app:cardBackgroundColor="@color/colorPrimary"
             app:cardCornerRadius="4dp"
-            app:cardElevation="2dp">
+            app:cardElevation="2dp"
+            android:stateListAnimator="@anim/card_view_animation">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -184,7 +187,8 @@
             android:foreground="?selectableItemBackground"
             app:cardBackgroundColor="@color/colorPrimary"
             app:cardCornerRadius="4dp"
-            app:cardElevation="2dp">
+            app:cardElevation="2dp"
+            android:stateListAnimator="@anim/card_view_animation">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -229,7 +233,8 @@
             android:foreground="?selectableItemBackground"
             app:cardBackgroundColor="@color/colorPrimary"
             app:cardCornerRadius="4dp"
-            app:cardElevation="2dp">
+            app:cardElevation="2dp"
+            android:stateListAnimator="@anim/card_view_animation">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -274,7 +279,8 @@
             android:foreground="?selectableItemBackground"
             app:cardBackgroundColor="@color/colorPrimary"
             app:cardCornerRadius="4dp"
-            app:cardElevation="2dp">
+            app:cardElevation="2dp"
+            android:stateListAnimator="@anim/card_view_animation">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -325,7 +331,8 @@
         app:cardBackgroundColor="@color/colorPrimary"
         app:cardCornerRadius="4dp"
         app:cardElevation="2dp"
-        app:cardPreventCornerOverlap="true">
+        app:cardPreventCornerOverlap="true"
+        android:stateListAnimator="@anim/card_view_animation">
 
         <LinearLayout
             android:layout_width="match_parent"

@@ -5,7 +5,10 @@
     android:layout_height="@dimen/image_cell_size"
     android:layout_marginLeft="@dimen/image_cell_padding"
     android:layout_marginStart="@dimen/image_cell_padding"
-    android:layout_marginTop="@dimen/image_cell_padding">
+    android:layout_marginTop="@dimen/image_cell_padding"
+    android:foreground="?attr/selectableItemBackground"
+    android:stateListAnimator="@anim/card_view_animation"
+    android:clickable="true">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"

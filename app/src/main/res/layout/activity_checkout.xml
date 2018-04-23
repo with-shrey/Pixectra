@@ -26,7 +26,10 @@
         android:layout_marginTop="25dp"
         app:cardBackgroundColor="@color/userProfileCardViewBlue"
         app:cardCornerRadius="10dp"
-        app:cardElevation="2dp">
+        app:cardElevation="2dp"
+        android:foreground="?attr/selectableItemBackground"
+        android:stateListAnimator="@anim/card_view_animation"
+        android:clickable="true">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -94,7 +97,10 @@
         android:visibility="gone"
         app:cardBackgroundColor="@color/userProfileCardViewBlue"
         app:cardCornerRadius="10dp"
-        app:cardElevation="2dp">
+        app:cardElevation="2dp"
+        android:foreground="?attr/selectableItemBackground"
+        android:stateListAnimator="@anim/card_view_animation"
+        android:clickable="true">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"

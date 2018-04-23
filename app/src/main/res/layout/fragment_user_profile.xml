@@ -82,7 +82,10 @@
                     app:cardElevation="2dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/topSpace">
+                    app:layout_constraintTop_toBottomOf="@+id/topSpace"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:stateListAnimator="@anim/card_view_animation"
+                    android:clickable="true">
 
 
                     <android.support.constraint.ConstraintLayout
@@ -157,7 +160,10 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/account_card_view">
+                    app:layout_constraintTop_toBottomOf="@+id/account_card_view"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:stateListAnimator="@anim/card_view_animation"
+                    android:clickable="true">
 
 
                     <android.support.constraint.ConstraintLayout
@@ -230,7 +236,10 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/address_card_view">
+                    app:layout_constraintTop_toBottomOf="@+id/address_card_view"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:stateListAnimator="@anim/card_view_animation"
+                    android:clickable="true">
 
 
                     <android.support.constraint.ConstraintLayout
@@ -303,7 +312,10 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/link_account_card_view">
+                    app:layout_constraintTop_toBottomOf="@+id/link_account_card_view"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:stateListAnimator="@anim/card_view_animation"
+                    android:clickable="true">
 
 
                     <android.support.constraint.ConstraintLayout
@@ -374,7 +386,10 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/subscription_card_view">
+                    app:layout_constraintTop_toBottomOf="@+id/subscription_card_view"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:stateListAnimator="@anim/card_view_animation"
+                    android:clickable="true">
 
 
                     <android.support.constraint.ConstraintLayout
@@ -414,7 +429,7 @@
                             android:layout_marginBottom="8dp"
                             android:layout_marginLeft="32dp"
                             android:layout_marginStart="32dp"
-                            android:text="Frequencly Asked Questions"
+                            android:text="Frequently Asked Questions"
                             android:textColor="#ffffff"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/imageView41" />
@@ -447,7 +462,10 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/order_card_view">
+                    app:layout_constraintTop_toBottomOf="@+id/order_card_view"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:stateListAnimator="@anim/card_view_animation"
+                    android:clickable="true">
 
 
                     <android.support.constraint.ConstraintLayout

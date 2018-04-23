@@ -6,7 +6,10 @@
     android:layout_height="wrap_content"
     android:layout_marginLeft="@dimen/image_cell_padding"
     android:layout_marginStart="@dimen/image_cell_padding"
-    android:layout_marginTop="@dimen/image_cell_padding">
+    android:layout_marginTop="@dimen/image_cell_padding"
+    android:foreground="?attr/selectableItemBackground"
+    android:stateListAnimator="@anim/card_view_animation"
+    android:clickable="true">
 
     <RelativeLayout
         android:layout_width="wrap_content"
