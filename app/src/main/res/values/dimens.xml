@@ -11,4 +11,5 @@
     <dimen name="item_card_corner_radius">12dp</dimen>
     <dimen name="shadow_card_radius">15dp</dimen>
     <dimen name="card_height">180dp</dimen>
+    <dimen name="shadow_card_cornor_margin">10dp</dimen>
 </resources>
