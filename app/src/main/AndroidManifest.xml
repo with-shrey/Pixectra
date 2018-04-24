@@ -27,9 +27,10 @@
 
         <activity android:name=".MobileVerifyActivity" />
         <activity android:name=".MyProfileActivity" />
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".MainActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity android:name=".PicasaActivity" />
         <!-- Branch install referrer tracking (optional) -->
         <receiver
@@ -86,8 +87,7 @@
         <activity android:name=".LActivity" />
         <activity
             android:name=".ImageSelectActivity"
-            android:label="Select Images.." >
-        </activity>
+            android:label="Select Images.."></activity>
         <activity android:name=".LinkedAccounts" />
         <activity android:name=".FacebookActivity" />
 
@@ -113,6 +113,8 @@
         <service
             android:name=".UploadService"
             android:exported="false" />
+
+        <activity android:name=".FaqActivity"></activity>
     </application>
 
 </manifest>

@@ -34,7 +34,7 @@ public class UserProfileFragment extends Fragment{
 ImageView profilePic;
     TextView userName, remaining;
 CardView address;
-    CardView linkAccount, account, order, subscription;
+    CardView linkAccount, account, order, subscription, faq;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -85,6 +85,7 @@ CardView address;
         subscription = view.findViewById(R.id.subscription_card_view);
         subscription.setVisibility(View.GONE);
         remaining = view.findViewById(R.id.subscription_remaining);
+        faq = view.findViewById(R.id.faq_card_view);
 
         Branch.getInstance().loadRewards(new Branch.BranchReferralStateChangedListener() {
             @Override
@@ -98,6 +99,13 @@ CardView address;
             GlideHelper.load(getActivity(), Uri.parse(data.get(SessionHelper.User_Image)), profilePic
                     , (ProgressBar) view.findViewById(R.id.progress_user_img));
         userName.setText(data.get(SessionHelper.User_Name));
+        faq.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), FaqActivity.class);
+                startActivity(intent);
+            }
+        });
         address.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
