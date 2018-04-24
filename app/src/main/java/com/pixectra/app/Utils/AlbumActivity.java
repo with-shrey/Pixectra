@@ -33,6 +33,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class AlbumActivity extends Fragment {
@@ -41,6 +42,7 @@ public class AlbumActivity extends Fragment {
     String album_name = "";
     LoadAlbumImages loadAlbumTask;
     SingleAlbumAdapter adapter;
+    List<Boolean> logoVisibilities = new ArrayList<>();
 
     public AlbumActivity() {
     }
@@ -67,7 +69,7 @@ public class AlbumActivity extends Fragment {
 
         galleryGridView = view.findViewById(R.id.galleryGridView);
         galleryGridView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-        adapter = new SingleAlbumAdapter(getActivity(), imageList);
+        adapter = new SingleAlbumAdapter(getActivity(), imageList, logoVisibilities);
         galleryGridView.setAdapter(adapter);
         loadAlbumTask = new LoadAlbumImages();
         loadAlbumTask.execute();
@@ -81,6 +83,7 @@ public class AlbumActivity extends Fragment {
         protected void onPreExecute() {
             super.onPreExecute();
             imageList.clear();
+            logoVisibilities.clear();
         }
 
         protected String doInBackground(String... args) {
@@ -107,6 +110,7 @@ public class AlbumActivity extends Fragment {
                     timestamp = "1518331969";
                 }
                 imageList.add(Function.mappingInbox(album, path, timestamp, Function.converToTime(timestamp), null));
+                logoVisibilities.add(false);
             }
             cursor.close();
             Collections.sort(imageList, new MapComparator(Function.KEY_TIMESTAMP, "dsc")); // Arranging photo album by timestamp decending
@@ -124,10 +128,12 @@ public class AlbumActivity extends Fragment {
         int w;
         private Activity activity;
         private ArrayList<HashMap<String, String>> data;
+        List<Boolean> logoVisibilities;
 
-        SingleAlbumAdapter(Activity a, ArrayList<HashMap<String, String>> d) {
+        SingleAlbumAdapter(Activity a, ArrayList<HashMap<String, String>> d, List<Boolean> l) {
             activity = a;
             data = d;
+            logoVisibilities = l;
             DisplayMetrics dm = new DisplayMetrics();
             (getActivity()).getWindowManager().getDefaultDisplay().getMetrics(dm);
             w = (dm.widthPixels / 3) - (int) (AlbumActivity.this.getResources().getDimension(R.dimen.image_cell_padding) * 5);
@@ -145,6 +151,11 @@ public class AlbumActivity extends Fragment {
             HashMap<String, String> song = data.get(position);
             GlideHelper.load(activity, new File(song.get(Function.KEY_PATH))
                     , holder.galleryImage, holder.loader, 200, 200);
+
+            if(logoVisibilities.get(position))
+                holder.overlay.setVisibility(View.VISIBLE);
+            else
+                holder.overlay.setVisibility(View.GONE);
         }
 
 
@@ -176,15 +187,18 @@ public class AlbumActivity extends Fragment {
 
             @Override
             public void onClick(View view) {
-                if (CartHolder.getInstance().getSize(getArguments().getString("key", "")) < getArguments().getInt("maxPics", 0)) {
+                if (CartHolder.getInstance().getSize(getArguments().getString("key", "")) < getArguments().getInt("maxPics", 0) + 10) {
                     if (overlay.getVisibility() == View.GONE) {
                         overlay.setVisibility(View.VISIBLE);
                         CartHolder.getInstance().addImage(getActivity().getIntent().getStringExtra("key")
                                 , new File(data.get(getAdapterPosition()).get(Function.KEY_PATH)));
+
+                        logoVisibilities.set(getAdapterPosition(), true);
                     } else {
                         overlay.setVisibility(View.GONE);
                         CartHolder.getInstance().removeImage(getActivity().getIntent().getStringExtra("key")
                                 , new File(data.get(getAdapterPosition()).get(Function.KEY_PATH)));
+                        logoVisibilities.set(getAdapterPosition(), false);
                     }
                 } else {
                     Toast.makeText(activity, "Images Already Selected", Toast.LENGTH_SHORT).show();
