@@ -14,7 +14,6 @@ import android.widget.Toast;
 import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -145,8 +144,8 @@ public class QReader extends Activity implements QRCodeReaderView.OnQRCodeReadLi
 
         }
         FirebaseDatabase db = FirebaseDatabase.getInstance();
-        final DatabaseReference earned = db.getReference("Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/Earned");
-        final DatabaseReference used = db.getReference("Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/Used");
+        final DatabaseReference earned = db.getReference("Users/" + new SessionHelper(this).getUid() + "/Earned");
+        final DatabaseReference used = db.getReference("Users/" + new SessionHelper(this).getUid() + "/Used");
         used.keepSynced(true);
         earned.keepSynced(true);
         if (details != null) { //If Details Available In QR

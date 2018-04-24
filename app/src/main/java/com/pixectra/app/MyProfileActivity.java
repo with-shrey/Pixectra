@@ -51,7 +51,7 @@ public class MyProfileActivity extends AppCompatActivity {
             finish();
             return;
         }
-        final String uid = mAuth.getCurrentUser().getUid();
+        final String uid = new SessionHelper(this).getUid();
         ref.child(uid).child("Info").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

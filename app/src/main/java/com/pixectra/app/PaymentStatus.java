@@ -51,7 +51,7 @@ public class PaymentStatus extends AppCompatActivity {
         boolean txnstatus = getIntent().getBooleanExtra("status", false);
         String trxnid = getIntent().getStringExtra("transaction_id");
         double amount = getIntent().getDoubleExtra("amount", 0.0);
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String uid = new SessionHelper(this).getUid();
         boolean onetime = getIntent().getBooleanExtra("isOneTime", true);
         transaction_id.setText(trxnid);
         transaction_amount.setText(getString(R.string.Rs) + " " + amount);
@@ -63,9 +63,9 @@ public class PaymentStatus extends AppCompatActivity {
         ref.child(key).setValue(new Myorders("", trxnid, timeFormat.format(new Date())
                 , dateFormat.format(new Date()), false, txnstatus, amount));
         if (txnstatus) {
-            final DatabaseReference used = FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+            final DatabaseReference used = FirebaseDatabase.getInstance().getReference("Users").child(new SessionHelper(this).getUid())
                     .child("Used");
-            final DatabaseReference earned = FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+            final DatabaseReference earned = FirebaseDatabase.getInstance().getReference("Users").child(new SessionHelper(this).getUid())
                     .child("Earned");
 
             Branch.getInstance().userCompletedAction("order");

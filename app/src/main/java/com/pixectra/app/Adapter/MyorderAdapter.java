@@ -13,9 +13,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.auth.FirebaseAuth;
 import com.pixectra.app.Models.Myorders;
 import com.pixectra.app.R;
+import com.pixectra.app.Utils.SessionHelper;
 
 import java.util.ArrayList;
 
@@ -100,7 +100,7 @@ public class MyorderAdapter extends RecyclerView.Adapter<MyorderAdapter.viewHold
             intent.putExtra(Intent.EXTRA_EMAIL, "pixectra@gmail.com");
             intent.putExtra(Intent.EXTRA_SUBJECT, "SUPPORT:");
             intent.putExtra(Intent.EXTRA_TEXT, arrayList.get(getAdapterPosition()).toString()
-                    + "\n UID:" + FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    + "\n UID:" + new SessionHelper(context).getUid());
             if (intent.resolveActivity(MyorderAdapter.this.c.getPackageManager()) != null) {
                 MyorderAdapter.this.c.startActivity(Intent.createChooser(intent, "Interact using..."));
             }

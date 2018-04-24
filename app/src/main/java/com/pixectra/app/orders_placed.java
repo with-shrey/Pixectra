@@ -42,7 +42,7 @@ public class orders_placed extends AppCompatActivity {
             return;
         }
         db = FirebaseDatabase.getInstance();
-        ref = db.getReference("Users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/orders");
+        ref = db.getReference("Users/" + new SessionHelper(this).getUid() + "/orders");
         Toolbar toolbar = findViewById(R.id.toolbar_order);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("My Orders");

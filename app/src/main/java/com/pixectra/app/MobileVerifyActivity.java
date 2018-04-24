@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
@@ -53,8 +54,8 @@ public class MobileVerifyActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.mobile_verification);
-        final Button b = (Button) findViewById(R.id.verify_next);
-        mobile = (EditText) findViewById(R.id.verify_mobile);
+        final Button b = findViewById(R.id.verify_next);
+        mobile = findViewById(R.id.verify_mobile);
         mobile.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -114,7 +115,7 @@ public class MobileVerifyActivity extends AppCompatActivity {
 
                                 Intent intent = new Intent(MobileVerifyActivity.this, MainActivity.class);
                                 startActivity(intent);
-                                MobileVerifyActivity.this.finish();
+                                MobileVerifyActivity.this.finishAffinity();
                             }
 
                             @Override
@@ -193,72 +194,26 @@ public class MobileVerifyActivity extends AppCompatActivity {
                 });
             }
 
-            class GenericTextWatcher implements TextWatcher {
-                private View view;
-
-                private GenericTextWatcher(View view) {
-                    this.view = view;
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-                    // TODO Auto-generated method stub
-                    String text = editable.toString();
-                    switch (view.getId()) {
-
-                        case R.id.char1:
-                            entered_otp = e1.getText().toString() + e2.getText().toString() + e3.getText().toString() + e4.getText().toString();
-                            if (text.length() == 1)
-                                e2.requestFocus();
-                            break;
-                        case R.id.char2:
-                            entered_otp = e1.getText().toString() + e2.getText().toString() + e3.getText().toString() + e4.getText().toString();
-                            if (text.length() == 1)
-                                e3.requestFocus();
-                            break;
-                        case R.id.char3:
-                            entered_otp = e1.getText().toString() + e2.getText().toString() + e3.getText().toString() + e4.getText().toString();
-                            if (text.length() == 1)
-                                e4.requestFocus();
-                            break;
-                        case R.id.char4:
-                            entered_otp = e1.getText().toString() + e2.getText().toString() + e3.getText().toString() + e4.getText().toString();
-                            break;
-                    }
-                }
-
-                @Override
-                public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-                    // TODO Auto-generated method stub
-                }
-
-                @Override
-                public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-                    // TODO Auto-generated method stub
-                }
-
-
-            };
- /*   void send_msg(String mobile_no)
-    {
-        SecureRandom test = new SecureRandom();
-        int result = test.nextInt(1000000);
-        String resultStr = result + "";
-        if (resultStr.length() != 6)
-            for (int x = resultStr.length(); x < 6; x++) resultStr = "0" + resultStr;
-        try {
-            SmsManager smsManager = SmsManager.getDefault();
-            smsManager.sendTextMessage(mobile_no, null, resultStr, null, null);
-            Toast.makeText(getApplicationContext(), "SMS Sent!",
-                    Toast.LENGTH_LONG).show();
-        }
-        catch (Exception e) {
-            Toast.makeText(getApplicationContext(),
-                    "SMS faild, please try again later!",
-                    Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
-    }*/
+    /*   void send_msg(String mobile_no)
+       {
+           SecureRandom test = new SecureRandom();
+           int result = test.nextInt(1000000);
+           String resultStr = result + "";
+           if (resultStr.length() != 6)
+               for (int x = resultStr.length(); x < 6; x++) resultStr = "0" + resultStr;
+           try {
+               SmsManager smsManager = SmsManager.getDefault();
+               smsManager.sendTextMessage(mobile_no, null, resultStr, null, null);
+               Toast.makeText(getApplicationContext(), "SMS Sent!",
+                       Toast.LENGTH_LONG).show();
+           }
+           catch (Exception e) {
+               Toast.makeText(getApplicationContext(),
+                       "SMS faild, please try again later!",
+                       Toast.LENGTH_LONG).show();
+               e.printStackTrace();
+           }
+       }*/
  private void signInWithPhoneAuthCredential(final String mob, PhoneAuthCredential phoneAuthCredential) {
      final FirebaseAuth mAuth=FirebaseAuth.getInstance();
      mAuth.signInWithCredential(phoneAuthCredential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -283,6 +238,58 @@ public class MobileVerifyActivity extends AppCompatActivity {
                  }
              }
          }
+     }).addOnFailureListener(new OnFailureListener() {
+         @Override
+         public void onFailure(@NonNull Exception e) {
+             Toast.makeText(MobileVerifyActivity.this, "Failed Wrong OTP", Toast.LENGTH_SHORT).show();
+         }
      });
  }
+
+    class GenericTextWatcher implements TextWatcher {
+        private View view;
+
+        private GenericTextWatcher(View view) {
+            this.view = view;
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            // TODO Auto-generated method stub
+            String text = editable.toString();
+            switch (view.getId()) {
+
+                case R.id.char1:
+                    entered_otp = e1.getText().toString() + e2.getText().toString() + e3.getText().toString() + e4.getText().toString();
+                    if (text.length() == 1)
+                        e2.requestFocus();
+                    break;
+                case R.id.char2:
+                    entered_otp = e1.getText().toString() + e2.getText().toString() + e3.getText().toString() + e4.getText().toString();
+                    if (text.length() == 1)
+                        e3.requestFocus();
+                    break;
+                case R.id.char3:
+                    entered_otp = e1.getText().toString() + e2.getText().toString() + e3.getText().toString() + e4.getText().toString();
+                    if (text.length() == 1)
+                        e4.requestFocus();
+                    break;
+                case R.id.char4:
+                    entered_otp = e1.getText().toString() + e2.getText().toString() + e3.getText().toString() + e4.getText().toString();
+                    break;
+            }
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+            // TODO Auto-generated method stub
+        }
+
+        @Override
+        public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+            // TODO Auto-generated method stub
+        }
+
+
+    }
     }

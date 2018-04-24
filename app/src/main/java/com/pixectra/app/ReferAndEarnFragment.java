@@ -9,9 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.pixectra.app.Models.Banner;
 import com.pixectra.app.Utils.LogManager;
+import com.pixectra.app.Utils.SessionHelper;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -59,9 +59,10 @@ public class ReferAndEarnFragment extends Fragment {
 
     // This would be your own method where you've loaded the content for this page
     void contentLoaded() {
+
         // Initialize a Branch Universal Object for the page the user is viewing
         branchUniversalObject = new BranchUniversalObject()
-                .setCanonicalIdentifier(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .setCanonicalIdentifier(new SessionHelper(getActivity()).getUid())
                 .setTitle("Get The App Now")
                 .setContentDescription("Download The App ")
                 .setContentImageUrl("http://pixectra.com/img/logo.png");
@@ -110,7 +111,7 @@ public class ReferAndEarnFragment extends Fragment {
 
             @Override
             public void onLinkShareResponse(String sharedLink, String sharedChannel, BranchError error) {
-                LogManager.inviteLinkCreated(FirebaseAuth.getInstance().getCurrentUser().getUid(), sharedLink);
+                LogManager.inviteLinkCreated(new SessionHelper(getActivity()).getUid(), sharedLink);
                 // The link will be available in sharedLink
             }
         });
