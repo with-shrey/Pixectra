@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,36 +62,6 @@ public class PicasaAlbumFragment extends Fragment {
     RequestQueue queue;
     String accessToken;
     ProgressBar progressBar;
-
-/*
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_album);
-        setFinishOnTouchOutside(false);
-        Intent intent = getIntent();
-        albumName = intent.getStringExtra("albumName");
-        //setTitle(album_name);
-        ((TextView) findViewById(R.id.toolbar_text)).setText(albumName);
-        (findViewById(R.id.toolbar_back)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
-
-        queue = Volley.newRequestQueue(this);
-        galleryGridView = findViewById(R.id.galleryGridView);
-        galleryGridView.setLayoutManager(new GridLayoutManager(this, 3));
-        adapter = new PicasaSingleAlbumAdapter(this, imageList);
-        galleryGridView.setAdapter(adapter);
-        key = intent.getStringExtra("key");
-        maxP = intent.getIntExtra("maxP", 0);
-        albumId = intent.getStringExtra("albumId");
-        accessToken = intent.getStringExtra("accessToken");
-        fetchAlbumImagesJSON();
-    }*/
 
     public PicasaAlbumFragment() {
     }
@@ -167,8 +138,7 @@ public class PicasaAlbumFragment extends Fragment {
         int l = entries.length();
         for (int i = 0; i < l; i++) {
             JSONObject entry = entries.getJSONObject(i);
-            String contentType = entry.getJSONObject("content").getString("type");
-            if (contentType.contains("gif") || !contentType.contains("image"))
+            if(!isImage(entry))
                 continue;
             String imageUrl = entry.getJSONObject("content").getString("src");
             String thumbnailUrl = entry.getJSONObject("media$group").getJSONArray("media$thumbnail")
@@ -178,6 +148,20 @@ public class PicasaAlbumFragment extends Fragment {
         }
         progressBar.setVisibility(View.GONE);
         adapter.notifyDataSetChanged();
+    }
+
+    boolean isImage(JSONObject entry) throws JSONException {
+        String contentType = entry.getJSONObject("content").getString("type");
+        if(contentType.contains("gif") || !contentType.contains("image")) return false;
+        JSONArray mediaContent = entry.getJSONObject("media$group").getJSONArray("media$content");
+        for(int i=0; i < mediaContent.length(); i++)
+        {
+            JSONObject object = mediaContent.getJSONObject(i);
+            String type = object.getString("type");
+            if(type.contains("gif") || !type.contains("image") || type.contains("video"))
+                return false;
+        }
+        return true;
     }
 
     public class PicasaSingleAlbumAdapter extends RecyclerView.Adapter<PicasaSingleAlbumAdapter.PicasaSingleAlbumViewHolder> {
