@@ -67,7 +67,7 @@ public class MyorderAdapter extends RecyclerView.Adapter<MyorderAdapter.viewHold
             else
                 Glide.with(holder.context).load(R.drawable.failed).into(imageView);
             TextView number = cardView.findViewById(R.id.Order_number);
-            number.setText("TxnID " + ord.getPayId());
+            number.setText(ord.getPayId());
             TextView time = cardView.findViewById(R.id.Order_time);
             time.setText(ord.getDate() + "  " + ord.getTime());
             TextView uploaded = cardView.findViewById(R.id.Order_uploaded);
