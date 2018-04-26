@@ -27,6 +27,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.pixectra.app.ImageSelectActivity;
 import com.pixectra.app.R;
 
 import java.io.File;
@@ -124,9 +125,11 @@ public class AlbumActivity extends Fragment {
         int w;
         private Activity activity;
         private ArrayList<HashMap<String, String>> data;
+        HashMap<String, Boolean> selectedItems;
 
         SingleAlbumAdapter(Activity a, ArrayList<HashMap<String, String>> d) {
             activity = a;
+            selectedItems = ((ImageSelectActivity) activity).selected;
             data = d;
             DisplayMetrics dm = new DisplayMetrics();
             (getActivity()).getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -143,6 +146,10 @@ public class AlbumActivity extends Fragment {
         @Override
         public void onBindViewHolder(final SingleAlbumViewHolder holder, int position) {
             HashMap<String, String> song = data.get(position);
+            if (selectedItems.containsKey(song.get(Function.KEY_PATH)))
+                holder.overlay.setVisibility(View.VISIBLE);
+            else
+                holder.overlay.setVisibility(View.GONE);
             GlideHelper.load(activity, new File(song.get(Function.KEY_PATH))
                     , holder.galleryImage, holder.loader, 200, 200);
         }
@@ -169,29 +176,26 @@ public class AlbumActivity extends Fragment {
                 overlay = itemView.findViewById(R.id.selected_view);
                 loader = itemView.findViewById(R.id.image_loading_progress);
                 itemView.getLayoutParams().height = w;
-                loader.setVisibility(View.GONE);
-                overlay.setVisibility(View.GONE);
                 itemView.setOnClickListener(this);
             }
 
             @Override
             public void onClick(View view) {
-                if (CartHolder.getInstance().getSize(getArguments().getString("key", "")) < getArguments().getInt("maxPics", 0)) {
-                    if (overlay.getVisibility() == View.GONE) {
+                if (overlay.getVisibility() == View.GONE
+                        && CartHolder.getInstance().getSize(getArguments().getString("key", "")) < getArguments().getInt("maxPics", 0)) {
+                    selectedItems.put(data.get(getAdapterPosition()).get(Function.KEY_PATH), true);
                         overlay.setVisibility(View.VISIBLE);
                         CartHolder.getInstance().addImage(getActivity().getIntent().getStringExtra("key")
                                 , new File(data.get(getAdapterPosition()).get(Function.KEY_PATH)));
-                    } else {
+                } else if (overlay.getVisibility() == View.VISIBLE) {
+                    selectedItems.remove(data.get(getAdapterPosition()).get(Function.KEY_PATH));
                         overlay.setVisibility(View.GONE);
                         CartHolder.getInstance().removeImage(getActivity().getIntent().getStringExtra("key")
                                 , new File(data.get(getAdapterPosition()).get(Function.KEY_PATH)));
-                    }
                 } else {
                     Toast.makeText(activity, "Images Already Selected", Toast.LENGTH_SHORT).show();
                 }
             }
         }
     }
-
-
 }

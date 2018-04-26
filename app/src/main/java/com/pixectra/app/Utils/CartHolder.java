@@ -17,6 +17,7 @@ public class CartHolder {
     private static CartHolder sSoleInstance;
     private static HashMap<String, Vector<Object>> data;
     private static HashMap<String, Product> details;
+    private static HashMap<String, Boolean> selected;
     private static ArrayList<Pair<Product, Vector<Object>>> cart;
     private static ArrayList<Pair<Product, Uri>> video;
     private static ImageChangedListner listner;
@@ -47,6 +48,16 @@ public class CartHolder {
         if (video == null)
             video = new ArrayList<>();
         return video;
+    }
+
+    public HashMap<String, Boolean> getSelected() {
+        if (selected == null)
+            selected = new HashMap<>();
+        return selected;
+    }
+
+    public void clearSelected() {
+        selected.clear();
     }
 
     public CheckoutData getCheckout() {
@@ -88,6 +99,7 @@ public class CartHolder {
         Pair<Product, Vector<Object>> temp = new Pair<>(details.get(key), new Vector<>(data.get(key)));
         cart.add(temp);
         data.remove(key);
+        clearSelected();
     }
 
     public Product getDetails(String key) {

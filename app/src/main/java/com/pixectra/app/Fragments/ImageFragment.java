@@ -157,8 +157,8 @@ public class ImageFragment extends Fragment {
         }else//For Picasa Fragment
             if(category == 3)
                 recyclerView.setAdapter(picasaAdapter);
-        else
-            recyclerView.setAdapter(adapter);
+            else
+                recyclerView.setAdapter(adapter);
         checkAndLoadData();
 
         return layout;

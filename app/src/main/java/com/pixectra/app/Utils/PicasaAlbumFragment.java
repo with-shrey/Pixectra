@@ -10,7 +10,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +31,7 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.pixectra.app.ImageSelectActivity;
 import com.pixectra.app.Models.Images;
 import com.pixectra.app.R;
 
@@ -168,10 +168,12 @@ public class PicasaAlbumFragment extends Fragment {
         int w;
         private Activity activity;
         private List<Images> data;
+        HashMap<String, Boolean> selectedImages;
 
         PicasaSingleAlbumAdapter(Activity a, List<Images> d) {
             activity = a;
             data = d;
+            selectedImages = ((ImageSelectActivity) activity).selected;
             DisplayMetrics dm = new DisplayMetrics();
             (getActivity()).getWindowManager().getDefaultDisplay().getMetrics(dm);
             w = (dm.widthPixels / 3) - (int) (PicasaAlbumFragment.this.getResources().getDimension(R.dimen.image_cell_padding) * 5);
@@ -188,6 +190,11 @@ public class PicasaAlbumFragment extends Fragment {
         public void onBindViewHolder(final PicasaSingleAlbumViewHolder holder, int position) {
             RequestOptions requestOptions = new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL);
             Images current = data.get(position);
+            if (selectedImages.containsKey(current.getUrl())) {
+                holder.overlay.setVisibility(View.VISIBLE);
+            } else {
+                holder.overlay.setVisibility(View.GONE);
+            }
             Glide.with(activity).load(current.getThumbnail()).apply(requestOptions)
 
                     .listener(new RequestListener<Drawable>() {
@@ -221,7 +228,7 @@ public class PicasaAlbumFragment extends Fragment {
         }
 
         public class PicasaSingleAlbumViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-            ImageView galleryImage;
+            ImageView galleryImage, overlay;
             ProgressBar progress;
             boolean selected;
 
@@ -229,6 +236,7 @@ public class PicasaAlbumFragment extends Fragment {
                 super(itemView);
                 selected = false;
                 galleryImage = itemView.findViewById(R.id.ListIcon);
+                overlay = itemView.findViewById(R.id.selected_view);
                 progress = itemView.findViewById(R.id.image_loading_progress);
                 itemView.getLayoutParams().height = w;
                 itemView.setOnClickListener(this);
@@ -236,8 +244,8 @@ public class PicasaAlbumFragment extends Fragment {
 
             @Override
             public void onClick(View view) {
-                if (CartHolder.getInstance().getSize(key) < maxP) {
-                    if (!selected) {
+                if (overlay.getVisibility() == View.GONE
+                        && CartHolder.getInstance().getSize(key) < maxP) {
                         progress.setVisibility(View.VISIBLE);
                         try {
                             GlideHelper.getBitmap(getActivity(), data.get(getAdapterPosition()).getUrl(), new RequestListener() {
@@ -252,6 +260,8 @@ public class PicasaAlbumFragment extends Fragment {
                                 public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
                                     progress.setVisibility(View.GONE);
                                     selected = true;
+                                    overlay.setVisibility(View.VISIBLE);
+                                    selectedImages.put(data.get(getAdapterPosition()).getUrl(), true);
                                     CartHolder.getInstance().addImage(key, resource);
                                     return false;
                                 }
@@ -262,7 +272,7 @@ public class PicasaAlbumFragment extends Fragment {
                             e.printStackTrace();
                         }
 
-                    } else {
+                } else if (overlay.getVisibility() == View.VISIBLE) {
                         try {
                             GlideHelper.getBitmap(getActivity(), data.get(getAdapterPosition()).getUrl(), new RequestListener() {
                                 @Override
@@ -274,6 +284,8 @@ public class PicasaAlbumFragment extends Fragment {
                                 public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
                                     CartHolder.getInstance().removeImage(key, resource);
                                     selected = false;
+                                    selectedImages.remove(data.get(getAdapterPosition()).getUrl());
+                                    overlay.setVisibility(View.GONE);
                                     return false;
                                 }
                             });
@@ -282,7 +294,6 @@ public class PicasaAlbumFragment extends Fragment {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                    }
                 } else {
                     Toast.makeText(getActivity(), "Max. No Of Images Selected", Toast.LENGTH_SHORT).show();
                 }

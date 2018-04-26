@@ -1,7 +1,6 @@
 package com.pixectra.app.Adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,6 +27,7 @@ import com.pixectra.app.Utils.CartHolder;
 import com.pixectra.app.Utils.GlideHelper;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -41,9 +41,11 @@ public class ImageSelectAdapter extends RecyclerView.Adapter<ImageSelectAdapter.
     Context c;
     private int w, maxP;
     private LayoutInflater inflater;
+    HashMap<String, Boolean> selectedImages;
 
     public ImageSelectAdapter(Context context, String key, int maxPics, List<Images> data) {
         inflater = LayoutInflater.from(context);
+        selectedImages = ((ImageSelectActivity) context).selected;
         this.data = data;
         this.key = key;
         maxP = maxPics;
@@ -62,8 +64,13 @@ public class ImageSelectAdapter extends RecyclerView.Adapter<ImageSelectAdapter.
 
     @Override
     public void onBindViewHolder(final myViewHolder holder, int position) {
-        RequestOptions requestOptions = new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL);
         Images current = data.get(position);
+        if (selectedImages.containsKey(current.getUrl())) {
+            holder.overlay.setVisibility(View.VISIBLE);
+        } else {
+            holder.overlay.setVisibility(View.GONE);
+        }
+        RequestOptions requestOptions = new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL);
         Glide.with(c).load(current.getThumbnail()).apply(requestOptions)
 
                 .listener(new RequestListener<Drawable>() {
@@ -92,13 +99,14 @@ public class ImageSelectAdapter extends RecyclerView.Adapter<ImageSelectAdapter.
 
     class myViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         boolean selected;
-        ImageView icon;
+        ImageView icon, overlay;
         ProgressBar progress;
 
         public myViewHolder(View itemView) {
             super(itemView);
             selected = false;
             icon = itemView.findViewById(R.id.ListIcon);
+            overlay = itemView.findViewById(R.id.selected_view);
             progress = itemView.findViewById(R.id.image_loading_progress);
             itemView.setOnClickListener(this);
             itemView.getLayoutParams().height = w;
@@ -106,8 +114,7 @@ public class ImageSelectAdapter extends RecyclerView.Adapter<ImageSelectAdapter.
 
         @Override
         public void onClick(View view) {
-            if (CartHolder.getInstance().getSize(key) < maxP) {
-                if (!selected) {
+            if (overlay.getVisibility() == View.GONE && CartHolder.getInstance().getSize(key) < maxP) {
                     progress.setVisibility(View.VISIBLE);
                     try {
                         GlideHelper.getBitmap(c, data.get(getAdapterPosition()).getUrl(), new RequestListener() {
@@ -121,7 +128,9 @@ public class ImageSelectAdapter extends RecyclerView.Adapter<ImageSelectAdapter.
                             @Override
                             public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
                                 progress.setVisibility(View.GONE);
-                                CartHolder.getInstance().addImage(key, (Bitmap) resource);
+                                overlay.setVisibility(View.VISIBLE);
+                                selectedImages.put(data.get(getAdapterPosition()).getUrl(), true);
+                                CartHolder.getInstance().addImage(key, resource);
                                 return false;
                             }
                         });
@@ -131,21 +140,20 @@ public class ImageSelectAdapter extends RecyclerView.Adapter<ImageSelectAdapter.
                         e.printStackTrace();
                     }
 
-                }
-            } else {
-                Toast.makeText(c, "Max. No Of Images Selected", Toast.LENGTH_SHORT).show();
-            }
-            if (selected) {
+            } else if (overlay.getVisibility() == View.VISIBLE) {
                 try {
                     GlideHelper.getBitmap(c, data.get(getAdapterPosition()).getUrl(), new RequestListener() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target target, boolean isFirstResource) {
+                            Toast.makeText(c, "Unable To Remove", Toast.LENGTH_SHORT).show();
                             return false;
                         }
 
                         @Override
                         public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
-                            CartHolder.getInstance().removeImage(key, (Bitmap) resource);
+                            selectedImages.remove(data.get(getAdapterPosition()).getUrl());
+                            overlay.setVisibility(View.GONE);
+                            CartHolder.getInstance().removeImage(key, resource);
                             selected = false;
                             return false;
                         }
@@ -155,7 +163,10 @@ public class ImageSelectAdapter extends RecyclerView.Adapter<ImageSelectAdapter.
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+            } else {
+                Toast.makeText(c, "Max. No Of Images Selected", Toast.LENGTH_SHORT).show();
             }
         }
+
     }
 }

@@ -24,9 +24,12 @@ import com.pixectra.app.Fragments.ImageFragment;
 import com.pixectra.app.Utils.CartHolder;
 import com.pixectra.app.Utils.LogManager;
 
+import java.util.HashMap;
+
 
 public class ImageSelectActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 4;
+    public HashMap<String, Boolean> selected;
     ViewPager viewPager;
 TabLayout tabLayout;
     RecyclerView selectedImages;
@@ -39,6 +42,7 @@ TabLayout tabLayout;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_select);
+        selected = CartHolder.getInstance().getSelected();
         DisplayMetrics dm = new DisplayMetrics();
         ImageSelectActivity.this.getWindowManager().getDefaultDisplay().getMetrics(dm);
         w = dm.widthPixels / 3;
