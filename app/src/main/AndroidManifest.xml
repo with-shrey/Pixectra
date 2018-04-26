@@ -25,13 +25,23 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_id" />
 
-        <activity android:name=".MobileVerifyActivity" />
-        <activity android:name=".MyProfileActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name=".MobileVerifyActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
-        <activity android:name=".PicasaActivity" />
+        <activity
+            android:name=".MyProfileActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MainActivity"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".PicasaActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
         <!-- Branch install referrer tracking (optional) -->
         <receiver
             android:name="io.branch.referral.InstallListener"
@@ -48,6 +58,8 @@
         <activity
             android:name=".SplashScreenActivity"
             android:launchMode="singleTask"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -75,46 +87,102 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
-        <activity android:name=".ShippingAddressForm" />
-        <activity android:name=".SelectAddressActivity" />
-        <activity android:name=".PhotobookActivity" />
-        <activity android:name=".PosterActivity" />
+        <activity
+            android:name=".ShippingAddressForm"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SelectAddressActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".PhotobookActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".PosterActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name" />
-        <activity android:name=".WelcomeActivity" />
-        <activity android:name=".LActivity" />
+        <activity
+            android:name=".WelcomeActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".LActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ImageSelectActivity"
-            android:label="Select Images.."></activity>
-        <activity android:name=".LinkedAccounts" />
-        <activity android:name=".FacebookActivity" />
+            android:configChanges="orientation"
+            android:label="Select Images.."
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".LinkedAccounts"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".FacebookActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
 
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="24d096531d852632ab1c7f98d4485791c5e5eaa1" />
 
-        <activity android:name=".CroppingActivity" />
-        <activity android:name=".Checkout" />
-        <activity android:name=".PayUMoneyActivity" />
-        <activity android:name=".orders_placed" />
-        <activity android:name=".subscription_list" />
-        <activity android:name=".SubscriptionActivity" />
-        <activity android:name=".PaymentStatus" />
+        <activity
+            android:name=".CroppingActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Checkout"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".PayUMoneyActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".orders_placed"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".subscription_list"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SubscriptionActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".PaymentStatus"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
 
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="24d096531d852632ab1c7f98d4485791c5e5eaa1" />
 
-        <activity android:name=".Utils.QReader" />
-        <activity android:name=".VideoSelection" />
+        <activity
+            android:name=".Utils.QReader"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".VideoSelection"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
 
         <service
             android:name=".UploadService"
             android:exported="false" />
 
-        <activity android:name=".FaqActivity"></activity>
+        <activity
+            android:name=".FaqActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
