@@ -344,9 +344,7 @@
                 android:layout_height="80dp"
                 android:layout_gravity="center"
                 android:layout_margin="8dp"
-                android:padding="24dp"
-                android:background="@drawable/white_radius"
-                android:src="@drawable/ic_shipping_cart" />
+                android:src="@drawable/cart" />
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -363,11 +361,10 @@
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
                     android:text="Shipping cart"
-                    android:textColor="@android:color/black"
+                    android:layout_marginTop="15dp"
                     android:textSize="18sp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="10dp"
-                    android:textStyle="bold" />
+                    android:textColor="@android:color/white"
+                    android:layout_marginBottom="10dp" />
 
                 <TextView
                     android:id="@+id/shipping_cart_desc"
@@ -377,11 +374,11 @@
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="10dp"
+                    android:layout_below="@id/shipping_cart_text"
                     android:text="Review The Order And Proceed To Payment"
-                    android:textColor="@color/colorGray"
-                    android:textSize="16sp"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginTop="20dp"
                     android:textStyle="normal" />
 
             </RelativeLayout>
