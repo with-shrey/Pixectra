@@ -18,6 +18,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.pixectra.app.Models.Coupon;
 import com.pixectra.app.Models.Myorders;
 import com.pixectra.app.Utils.CartHolder;
+import com.pixectra.app.Utils.LogManager;
 import com.pixectra.app.Utils.SessionHelper;
 
 import java.text.SimpleDateFormat;
@@ -71,6 +72,7 @@ public class PaymentStatus extends AppCompatActivity {
             Branch.getInstance().userCompletedAction("order");
             Coupon coupon = CartHolder.getInstance().getCoupon();
             used.child(coupon.getCouponCode()).setValue(coupon);
+            LogManager.couponUsed(coupon.getCouponCode(), new SessionHelper(this).getUid());
             earned.child(coupon.getCouponCode()).setValue(null);
             if (CartHolder.getInstance().getCreditsUsed() > 0)
                 Branch.getInstance().redeemRewards(CartHolder.getInstance().getCreditsUsed());

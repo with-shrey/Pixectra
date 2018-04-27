@@ -3,6 +3,7 @@ package com.pixectra.app.Utils;
 import com.crashlytics.android.answers.AddToCartEvent;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.ContentViewEvent;
+import com.crashlytics.android.answers.CustomEvent;
 import com.crashlytics.android.answers.InviteEvent;
 import com.crashlytics.android.answers.LoginEvent;
 import com.crashlytics.android.answers.PurchaseEvent;
@@ -81,6 +82,13 @@ public class LogManager {
                 .putContentName(name)
                 .putContentType(type)
                 .putContentId(id));
+    }
+
+    public static void couponUsed(String code, String uid) {
+        Answers.getInstance().logCustom(new CustomEvent("Coupon used")
+                .putCustomAttribute("Code", code)
+                .putCustomAttribute("uid", uid)
+        );
     }
 
 }

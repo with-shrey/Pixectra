@@ -223,8 +223,11 @@ public class Checkout extends AppCompatActivity {
                     final DatabaseReference used = FirebaseDatabase.getInstance().getReference("Users").child(new SessionHelper(Checkout.this).getUid())
                             .child("Used");
                     used.keepSynced(true);
+                    boolean univ = false;
+                    if (couponBottomSheet.getText().toString().length() > 0)
+                        univ = couponBottomSheet.getText().toString().charAt(0) == 'U';
                     final DatabaseReference earned = FirebaseDatabase.getInstance().getReference("Users").child(new SessionHelper(Checkout.this).getUid())
-                            .child("Earned");
+                            .child(univ ? "Universal" : "Earned");
                     earned.keepSynced(true);
                     used.addValueEventListener(new ValueEventListener() {
                         @Override
