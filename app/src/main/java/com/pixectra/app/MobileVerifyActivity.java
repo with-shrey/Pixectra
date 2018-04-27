@@ -120,6 +120,7 @@ public class MobileVerifyActivity extends AppCompatActivity {
 
                             @Override
                             public void onVerificationFailed(FirebaseException e) {
+                            	Toast.makeText(MobileVerifyActivity.this,e.getMessage(),Toast.LENGTH_SHORT).show()
                                 deleteDialog.dismiss();
                             }
                             @Override

@@ -159,7 +159,7 @@ public class FacebookActivity extends AppCompatActivity {
 
                         } else {
                             Log.w("TAG", "signInWithCredential", task.getException());
-                            Toast.makeText(FacebookActivity.this, "Already Signed In Using Google",
+                            Toast.makeText(FacebookActivity.this, "Already Registered Using Google",
                                     Toast.LENGTH_SHORT).show();
                             finish();
                         }
