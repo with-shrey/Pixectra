@@ -1,22 +1,54 @@
 package com.pixectra.app.Models;
 
-public class Faq {
-    String q;
-    String a;
+import android.content.ComponentName;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.customtabs.CustomTabsClient;
+import android.support.customtabs.CustomTabsIntent;
+import android.support.customtabs.CustomTabsServiceConnection;
+import android.support.customtabs.CustomTabsSession;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
-    public Faq() {
+import com.pixectra.app.R;
+
+public class Faq extends AppCompatActivity{
+    final String url = "http://pixectra.com/faq.html";
+
+    CustomTabsClient mCustomTabsClient;
+    CustomTabsSession mCustomTabsSession;
+    CustomTabsServiceConnection mCustomTabsServiceConnection;
+    CustomTabsIntent mCustomTabsIntent;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_faq);
+
+        mCustomTabsServiceConnection = new CustomTabsServiceConnection() {
+            @Override
+            public void onCustomTabsServiceConnected(ComponentName name, CustomTabsClient client) {
+                mCustomTabsClient = client;
+                mCustomTabsClient.warmup(0L);
+                mCustomTabsSession = mCustomTabsClient.newSession(null);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                mCustomTabsClient = null;
+            }
+        };
+
+        CustomTabsClient.bindCustomTabsService(this, url, mCustomTabsServiceConnection);
+
+        mCustomTabsIntent = new CustomTabsIntent.Builder(mCustomTabsSession)
+                .setShowTitle(true)
+                .build();
     }
 
-    public Faq(String q, String a) {
-        this.q = q;
-        this.a = a;
+        public void chromeCustomTabExample(View view) {
+            mCustomTabsIntent.launchUrl(this, Uri.parse(url));
+
     }
 
-    public String getQ() {
-        return q;
-    }
-
-    public String getA() {
-        return a;
-    }
 }

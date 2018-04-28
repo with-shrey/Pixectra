@@ -12,7 +12,7 @@
         android:layout_centerInParent="true"
         android:background="@color/bg_screen2"
         android:scaleType="fitXY"
-        android:src="@drawable/two" />
+        android:src="@drawable/slider2" />
 
 
 </RelativeLayout>

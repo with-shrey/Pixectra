@@ -69,9 +69,9 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
 //
 //        ref.child("Posters").push().setValue(new Product("Posters", "Small", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 1, 1, 59, "Poster", 0, 0, 70));
 //        ref.child("Posters").push().setValue(new Product("Posters", "Large", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 1, 1, 99, "Poster", 0, 0, 120));
-        ref.child("Faq").push().setValue(new Faq("How to Upload?", getString(R.string.lorem)));
-        ref.child("Faq").push().setValue(new Faq("How to Pay?", getString(R.string.lorem)));
-        ref.child("Faq").push().setValue(new Faq("What if payment is successfull?", getString(R.string.lorem)));
+//        ref.child("Faq").push().setValue(new Faq("How to Upload?", getString(R.string.lorem)));
+//        ref.child("Faq").push().setValue(new Faq("How to Pay?", getString(R.string.lorem)));
+//        ref.child("Faq").push().setValue(new Faq("What if payment is successfull?", getString(R.string.lorem)));
 
     }
 
