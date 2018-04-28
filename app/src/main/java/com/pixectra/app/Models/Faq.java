@@ -12,7 +12,7 @@ import android.view.View;
 
 import com.pixectra.app.R;
 
-public class Faq extends AppCompatActivity{
+public class Faq extends AppCompatActivity {
     final String url = "http://pixectra.com/faq.html";
 
     CustomTabsClient mCustomTabsClient;
@@ -46,8 +46,8 @@ public class Faq extends AppCompatActivity{
                 .build();
     }
 
-        public void chromeCustomTabExample(View view) {
-            mCustomTabsIntent.launchUrl(this, Uri.parse(url));
+    public void chromeCustomTabExample(View view) {
+        mCustomTabsIntent.launchUrl(this, Uri.parse(url));
 
     }
 

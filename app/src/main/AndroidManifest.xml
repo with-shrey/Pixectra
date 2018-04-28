@@ -54,7 +54,9 @@
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_id" />
-
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_stat_name" />
         <activity
             android:name=".SplashScreenActivity"
             android:launchMode="singleTask"
@@ -179,10 +181,6 @@
             android:name=".UploadService"
             android:exported="false" />
 
-        <activity
-            android:name=".FaqActivity"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
