@@ -9,9 +9,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:background="@color/bg_screen3"
         android:scaleType="fitXY"
-        android:src="@drawable/third" />
+        android:src="@drawable/slider3" />
 
 
 </RelativeLayout>

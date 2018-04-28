@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.pixectra.app.Models.Faq;
 import com.pixectra.app.Utils.GlideHelper;
 import com.pixectra.app.Utils.SessionHelper;
 
@@ -102,7 +103,7 @@ CardView address;
         faq.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), FaqActivity.class);
+                Intent intent = new Intent(getActivity(), Faq.class);
                 startActivity(intent);
             }
         });

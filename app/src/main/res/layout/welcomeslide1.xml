@@ -12,6 +12,6 @@
         android:layout_centerInParent="true"
         android:background="@color/bg_screen1"
         android:scaleType="fitXY"
-        android:src="@drawable/first" />
+        android:src="@drawable/slider1" />
 
 </RelativeLayout>

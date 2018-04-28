@@ -133,7 +133,7 @@
                     android:paddingTop="15dp"
                     android:text="@string/refer_earn_text"
                     android:textColor="@color/colorwhite"
-                    android:textSize="19sp" />
+                    android:textSize="15sp" />
             </ScrollView>
 
         </RelativeLayout>
