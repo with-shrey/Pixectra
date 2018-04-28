@@ -225,14 +225,14 @@ public class Checkout extends AppCompatActivity {
                     used.keepSynced(true);
                     boolean univ = false;
                     if (couponBottomSheet.getText().toString().length() > 0)
-                        univ = couponBottomSheet.getText().toString().charAt(0) == 'U';
-                    final DatabaseReference earned = FirebaseDatabase.getInstance().getReference("Users").child(new SessionHelper(Checkout.this).getUid())
-                            .child(univ ? "Universal" : "Earned");
+                        univ = couponBottomSheet.getText().toString().toUpperCase().charAt(0) == 'U';
+                    final DatabaseReference earned = FirebaseDatabase.getInstance().getReference
+                            (univ ? "Universal" : "Users/" + new SessionHelper(Checkout.this).getUid() + "/Earned");
                     earned.keepSynced(true);
                     used.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            final String code = couponBottomSheet.getText().toString();
+                            final String code = couponBottomSheet.getText().toString().toUpperCase();
                             if (dataSnapshot.hasChild(code)) {
                                 Toast.makeText(Checkout.this, "Offer Already Used", Toast.LENGTH_SHORT).show();
                             } else {
@@ -456,7 +456,7 @@ public class Checkout extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             if (requestCode == 1) {
                 if (couponBottomSheet != null) {
-                    couponBottomSheet.setText(data.getStringExtra("code"));
+                    couponBottomSheet.setText(data.getStringExtra("code").toUpperCase());
                 }
             } else if (requestCode == 2) {
                 Bundle bundle = data.getExtras();

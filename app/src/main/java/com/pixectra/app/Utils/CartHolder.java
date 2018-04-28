@@ -56,8 +56,14 @@ public class CartHolder {
         return selected;
     }
 
+    public void clearData() {
+        if (data != null)
+            data.clear();
+    }
+
     public void clearSelected() {
-        selected.clear();
+        if (selected != null)
+            selected.clear();
     }
 
     public CheckoutData getCheckout() {

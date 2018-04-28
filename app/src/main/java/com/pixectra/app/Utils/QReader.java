@@ -64,6 +64,7 @@ public class QReader extends Activity implements QRCodeReaderView.OnQRCodeReadLi
         qrBlock.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                qrCodeReaderView.startCamera();
                 qrCodeReaderView.forceAutoFocus();
             }
         });
@@ -113,6 +114,7 @@ public class QReader extends Activity implements QRCodeReaderView.OnQRCodeReadLi
     @Override
     public void onQRCodeRead(String text, PointF[] points) {
 //        resultTextView.setText(text);
+        qrCodeReaderView.stopCamera();
         couponCode = null;
         location = null;
         details = null;
@@ -181,6 +183,7 @@ public class QReader extends Activity implements QRCodeReaderView.OnQRCodeReadLi
                                     }
                                 });
                             } else {
+                                qrCodeReaderView.startCamera();
                                 Toast.makeText(QReader.this, "Offer Already Used", Toast.LENGTH_SHORT).show();
                             }
                             used.removeEventListener(this);
@@ -188,10 +191,12 @@ public class QReader extends Activity implements QRCodeReaderView.OnQRCodeReadLi
 
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
-
+                            Toast.makeText(QReader.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                            qrCodeReaderView.startCamera();
                         }
                     });
                 } else {
+                    qrCodeReaderView.startCamera();
                     Toast.makeText(this, "Coupon Expired", Toast.LENGTH_SHORT).show();
 
                 }
@@ -243,6 +248,7 @@ public class QReader extends Activity implements QRCodeReaderView.OnQRCodeReadLi
                                                 }
                                             });
                                         } else {
+                                            qrCodeReaderView.startCamera();
                                             Toast.makeText(QReader.this, "Offer Already Used", Toast.LENGTH_SHORT).show();
                                         }
                                         used.removeEventListener(this);
@@ -250,17 +256,21 @@ public class QReader extends Activity implements QRCodeReaderView.OnQRCodeReadLi
 
                                     @Override
                                     public void onCancelled(DatabaseError databaseError) {
+                                        Toast.makeText(QReader.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                                        qrCodeReaderView.startCamera();
 
                                     }
                                 });
 
                             } else {
+                                qrCodeReaderView.startCamera();
                                 Toast.makeText(QReader.this, "Offer Expired ", Toast.LENGTH_SHORT).show();
                             }
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
                     } else {
+                        qrCodeReaderView.startCamera();
                         Toast.makeText(QReader.this, "No Coupon Details Found", Toast.LENGTH_SHORT).show();
                     }
                     ref.removeEventListener(this);
@@ -268,7 +278,7 @@ public class QReader extends Activity implements QRCodeReaderView.OnQRCodeReadLi
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    Toast.makeText(QReader.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -276,6 +286,7 @@ public class QReader extends Activity implements QRCodeReaderView.OnQRCodeReadLi
         } else {
             Toast.makeText(this, "QR not valid \n Kindly Contact Us", Toast.LENGTH_SHORT).show();
             Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+            qrCodeReaderView.startCamera();
         }
 
 

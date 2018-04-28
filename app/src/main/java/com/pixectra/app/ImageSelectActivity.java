@@ -42,6 +42,8 @@ TabLayout tabLayout;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_select);
+        CartHolder.getInstance().clearSelected();
+        CartHolder.getInstance().clearData();
         selected = CartHolder.getInstance().getSelected();
         DisplayMetrics dm = new DisplayMetrics();
         ImageSelectActivity.this.getWindowManager().getDefaultDisplay().getMetrics(dm);

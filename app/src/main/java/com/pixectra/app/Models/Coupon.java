@@ -17,6 +17,17 @@ public class Coupon {
     public Coupon() {
     }
 
+    public Coupon(String startDate, String endDate, String couponCode, int type, int threshold, double discount, boolean current, boolean delivery) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.couponCode = couponCode;
+        this.type = type;
+        this.threshold = threshold;
+        this.discount = discount;
+        this.current = current;
+        this.delivery = delivery;
+    }
+
     public void setCurrent(boolean current) {
         this.current = current;
     }

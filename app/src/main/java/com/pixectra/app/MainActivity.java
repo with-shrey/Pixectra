@@ -20,7 +20,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.pixectra.app.Models.Faq;
+import com.pixectra.app.Models.Coupon;
 import com.pixectra.app.Utils.SessionHelper;
 
 import io.branch.referral.Branch;
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
 
     void add() {
         FirebaseDatabase db = FirebaseDatabase.getInstance();
-        DatabaseReference ref = db.getReference("CommonData");
+        DatabaseReference ref = db.getReference("Universal");
 
 //        ref.child("PhotoBooks").setValue(null);
 //        ref.child("PhotoBooks").child("6X4").push().setValue(new Product("PhotoBooks", "6 X 4 ", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 25, 22, 119, "Book", 0, 0, 150));
@@ -69,10 +69,13 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
 //
 //        ref.child("Posters").push().setValue(new Product("Posters", "Small", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 1, 1, 59, "Poster", 0, 0, 70));
 //        ref.child("Posters").push().setValue(new Product("Posters", "Large", "http://blog.platinastudio.com/wp-content/uploads/2013/01/saloon1.jpg", 1, 1, 99, "Poster", 0, 0, 120));
-        ref.child("Faq").push().setValue(new Faq("How to Upload?", getString(R.string.lorem)));
-        ref.child("Faq").push().setValue(new Faq("How to Pay?", getString(R.string.lorem)));
-        ref.child("Faq").push().setValue(new Faq("What if payment is successfull?", getString(R.string.lorem)));
-
+//        ref.child("Faq").push().setValue(new Faq("How to Upload?", getString(R.string.lorem)));
+//        ref.child("Faq").push().setValue(new Faq("How to Pay?", getString(R.string.lorem)));
+//        ref.child("Faq").push().setValue(new Faq("What if payment is successfull?", getString(R.string.lorem)));
+        ref.child("UINTRO50").setValue(new Coupon("01/01/2018", "08/05/2018", "UINTRO50", 0, 0, 50, true, false));
+        ref.child("UINTRO30").setValue(new Coupon("01/01/2018", "08/05/2018", "UINTRO30", 0, 0, 30, true, false));
+        ref.child("UDELIVER").setValue(new Coupon("01/01/2018", "08/05/2018", "UDELIVER", 0, 0, 0, true, true));
+        ref.child("UINTRO100").setValue(new Coupon("01/01/2018", "08/05/2018", "UINTRO100", 0, 0, 100, true, false));
     }
 
 
@@ -112,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
             }
         });
         //rewards to refers
-        add();
+//        add();
         viewPager = findViewById(R.id.main_viewpager);
         viewPager.setOffscreenPageLimit(3);
         viewPager.setAdapter(new ViewPagerAdapter(getSupportFragmentManager()));

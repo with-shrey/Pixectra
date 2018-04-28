@@ -83,7 +83,22 @@ public class MobileVerifyActivity extends AppCompatActivity {
                 b.findViewById(R.id.verify_next).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        final String mobile_no = mobile.getText().toString().trim();
+                        final String mobile_no = "+91" + mobile.getText().toString().trim();
+
+//                        FirebaseDatabase db;
+//                        DatabaseReference ref;
+//                        db = FirebaseDatabase.getInstance();
+//                        String uid=getIntent().getStringExtra("uid");
+//                        if (uid == null){
+//                            uid="testid";
+//                        }
+//                        ref = db.getReference("Users").child(uid).child("Info").child("phoneNo");
+//                        ref.setValue(mobile_no);
+//
+//                        Intent intent = new Intent(MobileVerifyActivity.this, MainActivity.class);
+//                        startActivity(intent);
+//                        MobileVerifyActivity.this.finishAffinity();
+
 //                final int PERMISSION_REQUEST_CODE = 1;
 //                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
 //                    if (checkSelfPermission(android.Manifest.permission.SEND_SMS)
@@ -120,7 +135,7 @@ public class MobileVerifyActivity extends AppCompatActivity {
 
                             @Override
                             public void onVerificationFailed(FirebaseException e) {
-                            	Toast.makeText(MobileVerifyActivity.this,e.getMessage(),Toast.LENGTH_SHORT).show()
+                                Toast.makeText(MobileVerifyActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                                 deleteDialog.dismiss();
                             }
                             @Override
