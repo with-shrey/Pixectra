@@ -1,21 +1,16 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Pixectra</string>
     <string name="next">NEXT</string>
-    <string name="skip">SKIP</string>
     <string name="start">GOT IT</string>
     <string name="facebook_id">1929234940653651</string>
 
-    <string name="lorem">Lorem ipsum dolor sit amet, consectetur adipiscing elit. </string>
-
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="default_font_path">fonts/MontserratRegular.ttf</string>
     <string name="disconnect">DISCONNECT</string>
     <string name="connect">CONNECT</string>
     <string name="google_token" tools:ignore="TypographyDashes">802114397478-121sl0s0bfr0ts2ojchta7b22lc98q5n.apps.googleusercontent.com</string>
     <string name="Rs">\u20B9</string>
     <string name="infinite">\u221e</string>
-    <string name="io.branch.apiKey" translatable="false">key_live_omFS21l61XLXuq5CNE59OfecEBhm0ZoT</string>
     <string name="refer_earn_text">We value your memories and friendships equally ❤.\nInvite your friends and you both get something from us! \nGet 10 credits on each sign up and 25 more when they place their first order! And they also get 25 credits on sign up!</string>
     <string name="help_url">http://pixectra.com/gethelp.html</string>
     <string name="faq_url">http://pixectra.com/faq.html</string>
