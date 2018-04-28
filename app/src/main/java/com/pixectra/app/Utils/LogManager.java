@@ -47,8 +47,7 @@ public class LogManager {
     public static void inviteLinkCreated(String Uid, String url) {
         Answers.getInstance().logInvite(new InviteEvent()
                 .putMethod("SMS")
-                .putCustomAttribute("uid", Uid)
-                .putCustomAttribute("link", url));
+                .putCustomAttribute("uid", Uid));
     }
 
     public static void addToCart(Product product) {

@@ -2,7 +2,6 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:card_view="http://schemas.android.com/tools"
     android:id="@+id/poster_card_recycler_view"
     android:layout_height="190dp"
     android:layout_marginEnd="10dp"
@@ -22,13 +21,12 @@
         android:layout_marginStart="@dimen/shadow_card_cornor_margin"
         app:cardBackgroundColor="@color/greyShadow"
         app:cardCornerRadius="@dimen/shadow_card_radius" />
+
     <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="@dimen/card_height"
         android:layout_marginTop="8dp"
-        app:cardCornerRadius="@dimen/item_card_corner_radius"
-        card_view:cardElevation="8dp">
+        app:cardCornerRadius="@dimen/item_card_corner_radius">
 <RelativeLayout
     android:layout_width="match_parent"
     android:background="@android:color/transparent"
@@ -40,7 +38,8 @@
             android:contentDescription="@string/app_name"
             android:scaleType="fitXY" />
 
-    <TextView
+    <com.pixectra.app.Utils.StrokedTextView xmlns:strokeAttrs="http://schemas.android.com/apk/res-auto"
+
         android:id="@+id/image_count_poster"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -48,8 +47,11 @@
         android:textAlignment="center"
         android:textAllCaps="true"
         android:textColor="@color/colorPrimary"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:text="@string/app_name"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        strokeAttrs:textStrokeColor="@android:color/white"
+        strokeAttrs:textStrokeWidth="2" />
 
     <RelativeLayout
         android:layout_width="match_parent"

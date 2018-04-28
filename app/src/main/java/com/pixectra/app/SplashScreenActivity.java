@@ -6,14 +6,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ImageView;
 
-import com.google.firebase.database.FirebaseDatabase;
-
-import org.json.JSONObject;
-
+import io.branch.indexing.BranchUniversalObject;
 import io.branch.referral.Branch;
 import io.branch.referral.BranchError;
 import io.branch.referral.InstallListener;
-import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import io.branch.referral.util.LinkProperties;
 
 @SuppressWarnings("deprecation")
 public class SplashScreenActivity extends AppCompatActivity {
@@ -26,18 +23,8 @@ public class SplashScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         InstallListener listener = new InstallListener();
         listener.onReceive(getApplicationContext(), getIntent());
-        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath(getString(R.string.default_font_path))
-                .setFontAttrId(R.attr.fontPath)
-                .build()
-        );
-        try {
-            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+
         //setContentView(R.layout.activity_splash_screen);
-        splashimage = findViewById(R.id.splash_image);
         new Thread() {
             @Override
             public void run() {
@@ -57,21 +44,24 @@ public class SplashScreenActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onStart() {
+    protected void onStart() {
         super.onStart();
-
-        // Branch init
-        Branch.getInstance().initSession(new Branch.BranchReferralInitListener() {
+        Branch branch = Branch.getInstance();
+        branch.initSession(new Branch.BranchUniversalReferralInitListener() {
             @Override
-            public void onInitFinished(JSONObject referringParams, BranchError error) {
-                if (error == null) {
-                    Log.i("BRANCH SDK", referringParams.toString());
-                } else {
-                    Log.i("BRANCH SDK", error.getMessage());
+            public void onInitFinished(BranchUniversalObject branchUniversalObject, LinkProperties linkProperties, BranchError error) {
+                if (error == null && branchUniversalObject != null) {
+                    // This code will execute when your app is opened from a Branch deep link, which
+                    // means that you can route to a custom activity depending on what they clicked.
+                    // In this example, we'll just print out the data from the link that was clicked.
+
+                    Log.i("BranchTestBed", "title " + branchUniversalObject.getTitle());
+                    Log.i("ContentMetaData", "metadata " + branchUniversalObject.getMetadata());
                 }
             }
         }, this.getIntent().getData(), this);
     }
+
 
     @Override
     public void onNewIntent(Intent intent) {

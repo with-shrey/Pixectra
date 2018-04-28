@@ -73,6 +73,13 @@
                 android:textSize="20dp"
                 android:textStyle="bold"/>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginTop="50dp"
+                android:text="Video Length 5-10 Seconds"
+                android:textColor="#fff" />
         </android.support.v7.widget.CardView>
 
         <android.support.v7.widget.CardView

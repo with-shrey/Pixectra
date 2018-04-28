@@ -164,10 +164,6 @@
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
 
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="24d096531d852632ab1c7f98d4485791c5e5eaa1" />
-
         <activity
             android:name=".Utils.QReader"
             android:configChanges="orientation"
