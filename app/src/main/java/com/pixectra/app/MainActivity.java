@@ -18,6 +18,12 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.pixectra.app.Models.Version;
 import com.pixectra.app.Utils.SessionHelper;
 
 import io.branch.referral.Branch;
@@ -45,7 +51,53 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference version = database.getReference("Version");
+        version.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                try {
+                    Version version = dataSnapshot.getValue(Version.class);
+                    if (version != null && version.getCode() > BuildConfig.VERSION_CODE) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setTitle("App Version " + version.getName() + " Is Available");
+                        builder.setMessage("Changes: \n" + version.getDesc());
+                        builder.setPositiveButton("UPDATE", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + getPackageName()));
+                                if (intent.resolveActivity(getPackageManager()) != null) {
+                                    startActivity(intent);
+                                } else {
+                                    intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName()));
+                                    try {
+                                        startActivity(intent);
+                                    } catch (Exception e) {
+                                        Toast.makeText(MainActivity.this, "Play Store And Browser Not Found", Toast.LENGTH_SHORT).show();
+                                        e.printStackTrace();
+                                    }
+                                }
+                                dialogInterface.dismiss();
+                            }
+                        });
+                        builder.setNegativeButton("LATER", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        });
+                        builder.show();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(MainActivity.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         if (mFirebaseUser == null) {
