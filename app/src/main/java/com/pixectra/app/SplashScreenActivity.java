@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.pixectra.app.Utils.SessionHelper;
+
 import io.branch.indexing.BranchUniversalObject;
 import io.branch.referral.Branch;
 import io.branch.referral.BranchError;
@@ -23,24 +25,6 @@ public class SplashScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         InstallListener listener = new InstallListener();
         listener.onReceive(getApplicationContext(), getIntent());
-
-        //setContentView(R.layout.activity_splash_screen);
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    sleep(2000);
-                    Intent intent = new Intent(getApplicationContext(), WelcomeActivity.class);
-                    startActivity(intent);
-                    finish();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-
-                }
-            }
-        }.start();
-
-
     }
 
     @Override
@@ -57,6 +41,16 @@ public class SplashScreenActivity extends AppCompatActivity {
 
                     Log.i("BranchTestBed", "title " + branchUniversalObject.getTitle());
                     Log.i("ContentMetaData", "metadata " + branchUniversalObject.getMetadata());
+                }
+                SessionHelper sessionHelper = new SessionHelper(getApplicationContext());
+                if (!sessionHelper.isFirstTimeLaunch()) {
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    Intent intent = new Intent(getApplicationContext(), WelcomeActivity.class);
+                    startActivity(intent);
+                    finish();
                 }
             }
         }, this.getIntent().getData(), this);
