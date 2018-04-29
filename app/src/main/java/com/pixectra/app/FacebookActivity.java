@@ -32,9 +32,12 @@ import com.pixectra.app.Models.User;
 import com.pixectra.app.Utils.LogManager;
 import com.pixectra.app.Utils.SessionHelper;
 
+import org.json.JSONObject;
+
 import java.util.Arrays;
 
 import io.branch.referral.Branch;
+import io.branch.referral.BranchError;
 
 public class FacebookActivity extends AppCompatActivity {
     FirebaseDatabase db;
@@ -105,53 +108,61 @@ public class FacebookActivity extends AppCompatActivity {
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
+                    public void onComplete(@NonNull final Task<AuthResult> task) {
                         Log.d("TAG", "signInWithCredential:onComplete:" + task.isSuccessful());
                         if (task.isSuccessful()) {
-                            Branch.getInstance().setIdentity(mAuth.getCurrentUser().getUid());
-                            boolean isNew = task.getResult().getAdditionalUserInfo().isNewUser();
-                           // Log.d("Facebook Sign In", "onComplete: " + (isNew ? "new user" : "old user"));
-                            Toast.makeText(FacebookActivity.this, "onComplete: " + (isNew ? "new user" : "old user"), Toast.LENGTH_SHORT).show();
-                            if (isNew) {
-                                Branch.getInstance().userCompletedAction("signup");
-                                Profile profile = Profile.getCurrentProfile();
-                                fFirstName = profile.getFirstName();
-                                fLastName = profile.getLastName();
-                                fEmail = mAuth.getCurrentUser().getEmail();
-                                fImageurl = profile.getProfilePictureUri(400, 400);
-                                LogManager.userSignUp(true, "Facebook", mAuth.getCurrentUser().getUid());
-                                ref.child(mAuth.getCurrentUser().getUid()).child("Info").setValue(new User(fFirstName + " " + fLastName, fEmail, fImageurl.toString(), ""));
-                                new SessionHelper(FacebookActivity.this).setUserDetails(mAuth.getCurrentUser().getUid()
-                                        , fFirstName + " " + fLastName
-                                        , fEmail
-                                        , fImageurl);
-                                Intent intent = new Intent(FacebookActivity.this, MobileVerifyActivity.class);
-                                intent.putExtra("uid", mAuth.getCurrentUser().getUid());
-                                startActivity(intent);
-                                finish();
+                            Branch.getInstance().setIdentity(mAuth.getCurrentUser().getUid(), new Branch.BranchReferralInitListener() {
+                                @Override
+                                public void onInitFinished(JSONObject referringParams, BranchError error) {
+                                    if (error == null) {
+                                        boolean isNew = task.getResult().getAdditionalUserInfo().isNewUser();
+                                        // Log.d("Facebook Sign In", "onComplete: " + (isNew ? "new user" : "old user"));
+                                        Toast.makeText(FacebookActivity.this, "onComplete: " + (isNew ? "new user" : "old user"), Toast.LENGTH_SHORT).show();
+                                        if (isNew) {
+                                            Branch.getInstance().userCompletedAction("signup");
+                                            Profile profile = Profile.getCurrentProfile();
+                                            fFirstName = profile.getFirstName();
+                                            fLastName = profile.getLastName();
+                                            fEmail = mAuth.getCurrentUser().getEmail();
+                                            fImageurl = profile.getProfilePictureUri(400, 400);
+                                            LogManager.userSignUp(true, "Facebook", mAuth.getCurrentUser().getUid());
+                                            ref.child(mAuth.getCurrentUser().getUid()).child("Info").setValue(new User(fFirstName + " " + fLastName, fEmail, fImageurl.toString(), ""));
+                                            new SessionHelper(FacebookActivity.this).setUserDetails(mAuth.getCurrentUser().getUid()
+                                                    , fFirstName + " " + fLastName
+                                                    , fEmail
+                                                    , fImageurl);
+                                            Intent intent = new Intent(FacebookActivity.this, MobileVerifyActivity.class);
+                                            intent.putExtra("uid", mAuth.getCurrentUser().getUid());
+                                            startActivity(intent);
+                                            finish();
 
-                            }
-                            else {
-                                LogManager.userSignIn(true, "Facebook", mAuth.getCurrentUser().getUid());
-                                ref.child(mAuth.getCurrentUser().getUid()).child("Info").addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        User user = dataSnapshot.getValue(User.class);
-                                        new SessionHelper(FacebookActivity.this).setUserDetails(mAuth.getCurrentUser().getUid()
-                                                , user.getName()
-                                                , user.getEmail()
-                                                , Uri.parse(user.getProfilePic()));
-                                        FirebaseUser userfb = mAuth.getCurrentUser();
-                                        updateUI(userfb);
-                                        ref.child(mAuth.getCurrentUser().getUid()).child("Info").removeEventListener(this);
-                                    }
+                                        } else {
+                                            LogManager.userSignIn(true, "Facebook", mAuth.getCurrentUser().getUid());
+                                            ref.child(mAuth.getCurrentUser().getUid()).child("Info").addValueEventListener(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                                    User user = dataSnapshot.getValue(User.class);
+                                                    new SessionHelper(FacebookActivity.this).setUserDetails(mAuth.getCurrentUser().getUid()
+                                                            , user.getName()
+                                                            , user.getEmail()
+                                                            , Uri.parse(user.getProfilePic()));
+                                                    FirebaseUser userfb = mAuth.getCurrentUser();
+                                                    updateUI(userfb);
+                                                    ref.child(mAuth.getCurrentUser().getUid()).child("Info").removeEventListener(this);
+                                                }
 
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-                                        Toast.makeText(FacebookActivity.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                                                @Override
+                                                public void onCancelled(DatabaseError databaseError) {
+                                                    Toast.makeText(FacebookActivity.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                        }
+                                    } else {
+                                        Toast.makeText(FacebookActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                                     }
-                                });
-                            }
+                                }
+                            });
+
                             // If sign in fails, display a message to the user. If sign in succeeds
                             // the auth state listener will be notified and logic to handle the
                             // signed in user can be handled in the listener.

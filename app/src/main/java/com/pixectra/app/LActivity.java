@@ -39,7 +39,10 @@ import com.pixectra.app.Models.User;
 import com.pixectra.app.Utils.LogManager;
 import com.pixectra.app.Utils.SessionHelper;
 
+import org.json.JSONObject;
+
 import io.branch.referral.Branch;
+import io.branch.referral.BranchError;
 
 public class LActivity extends AppCompatActivity {
     private static final String TAG = "HANDLESIGNINRESULT";
@@ -142,62 +145,71 @@ DatabaseReference ref;
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
+                    public void onComplete(@NonNull final Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            Branch.getInstance().setIdentity(mAuth.getCurrentUser().getUid());
+                            Branch.getInstance().setIdentity(mAuth.getCurrentUser().getUid(), new Branch.BranchReferralInitListener() {
+                                @Override
+                                public void onInitFinished(JSONObject referringParams, BranchError error) {
+                                    if (error == null) {
+                                        Log.d("Google Sign In", "signInWithCredential:success");
+                                        boolean isNew = task.getResult().getAdditionalUserInfo().isNewUser();
+                                        Log.d("Google Sign In", "onComplete: " + (isNew ? "new user" : "old user"));
+                                        if (isNew) {
+                                            Branch.getInstance().userCompletedAction("signup");
+                                            // mAuth.getCurrentUser().getUid();
+                                            Log.d("TAG", "handleSignInResult:" + result.isSuccess());
+                                            if (result.isSuccess()) {
+                                                // Signed in successfully, show authenticated UI.
+                                                GoogleSignInAccount acct = result.getSignInAccount();
+
+                                                gpersonName = acct.getDisplayName();
+                                                gImageUrl = acct.getPhotoUrl();
+                                                gpersonEmail = acct.getEmail();
+                                                ref.child(mAuth.getCurrentUser().getUid()).child("Info").setValue(new User(gpersonName, gpersonEmail, gImageUrl.toString(), ""));
+                                                new SessionHelper(LActivity.this).setUserDetails(mAuth.getCurrentUser().getUid()
+                                                        , gpersonName
+                                                        , gpersonEmail
+                                                        , gImageUrl);
+                                                FirebaseUser user = mAuth.getCurrentUser();
+                                                LogManager.userSignUp(true, "Google", mAuth.getCurrentUser().getUid());
+                                                Intent intent = new Intent(LActivity.this, MobileVerifyActivity.class);
+                                                intent.putExtra("uid", mAuth.getCurrentUser().getUid());
+                                                startActivity(intent);
+                                                finish();
+                                                if (gImageUrl != null) {
+                                                    Toast.makeText(LActivity.this, "found image url", Toast.LENGTH_SHORT).show();
+                                                }
+                                                Toast.makeText(LActivity.this, gpersonName + "\n" + gpersonEmail, Toast.LENGTH_SHORT).show();
+                                            }
+                                        } else {
+                                            LogManager.userSignIn(true, "Google", mAuth.getCurrentUser().getUid());
+                                            ref.child(mAuth.getCurrentUser().getUid()).child("Info").addValueEventListener(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                                    User user = dataSnapshot.getValue(User.class);
+                                                    new SessionHelper(LActivity.this).setUserDetails(mAuth.getCurrentUser().getUid()
+                                                            , user.getName()
+                                                            , user.getEmail()
+                                                            , Uri.parse(user.getProfilePic()));
+                                                    FirebaseUser userfire = mAuth.getCurrentUser();
+                                                    updateUI(userfire);
+                                                    ref.child(mAuth.getCurrentUser().getUid()).child("Info").removeEventListener(this);
+                                                }
+
+                                                @Override
+                                                public void onCancelled(DatabaseError databaseError) {
+
+                                                }
+                                            });
+                                        }
+                                    } else {
+                                        Toast.makeText(LActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
 
                             // Sign in success, update UI with the signed-in user's information
-                            Log.d("Google Sign In", "signInWithCredential:success");
-                            boolean isNew = task.getResult().getAdditionalUserInfo().isNewUser();
-                            Log.d("Google Sign In", "onComplete: " + (isNew ? "new user" : "old user"));
-                            if (isNew) {
-                                Branch.getInstance().userCompletedAction("signup");
-                                // mAuth.getCurrentUser().getUid();
-                                Log.d("TAG", "handleSignInResult:" + result.isSuccess());
-                                if (result.isSuccess()) {
-                                    // Signed in successfully, show authenticated UI.
-                                    GoogleSignInAccount acct = result.getSignInAccount();
 
-                                    gpersonName = acct.getDisplayName();
-                                    gImageUrl = acct.getPhotoUrl();
-                                    gpersonEmail = acct.getEmail();
-                                    ref.child(mAuth.getCurrentUser().getUid()).child("Info").setValue(new User(gpersonName,gpersonEmail,gImageUrl.toString(),""));
-                                    new SessionHelper(LActivity.this).setUserDetails(mAuth.getCurrentUser().getUid()
-                                            , gpersonName
-                                            , gpersonEmail
-                                            , gImageUrl);
-                                    FirebaseUser user = mAuth.getCurrentUser();
-                                    LogManager.userSignUp(true, "Google", mAuth.getCurrentUser().getUid());
-                                    Intent intent = new Intent(LActivity.this, MobileVerifyActivity.class);
-                                    intent.putExtra("uid", mAuth.getCurrentUser().getUid());
-                                    startActivity(intent);
-                                    finish();
-                                    if (gImageUrl != null) {
-                                        Toast.makeText(LActivity.this, "found image url", Toast.LENGTH_SHORT).show();
-                                    }
-                                    Toast.makeText(LActivity.this, gpersonName + "\n" + gpersonEmail, Toast.LENGTH_SHORT).show();
-                                }
-                            } else {
-                                LogManager.userSignIn(true, "Google", mAuth.getCurrentUser().getUid());
-                                ref.child(mAuth.getCurrentUser().getUid()).child("Info").addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        User user = dataSnapshot.getValue(User.class);
-                                        new SessionHelper(LActivity.this).setUserDetails(mAuth.getCurrentUser().getUid()
-                                                , user.getName()
-                                                , user.getEmail()
-                                                , Uri.parse(user.getProfilePic()));
-                                        FirebaseUser userfire = mAuth.getCurrentUser();
-                                        updateUI(userfire);
-                                        ref.child(mAuth.getCurrentUser().getUid()).child("Info").removeEventListener(this);
-                                    }
-
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-
-                                    }
-                                });
-                            }
 
                         } else {
                             // If sign in fails, display a message to the user.

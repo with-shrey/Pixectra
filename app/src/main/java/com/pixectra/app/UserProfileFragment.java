@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.pixectra.app.Utils.GlideHelper;
 import com.pixectra.app.Utils.SessionHelper;
@@ -103,7 +104,10 @@ CardView address;
             @Override
             public void onClick(View view) {
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.faq_url)));
-                startActivity(browserIntent);
+                if (browserIntent.resolveActivity(getActivity().getPackageManager()) != null)
+                    startActivity(browserIntent);
+                else
+                    Toast.makeText(getActivity(), "Browser Not Found", Toast.LENGTH_SHORT).show();
             }
         });
         address.setOnClickListener(new View.OnClickListener() {

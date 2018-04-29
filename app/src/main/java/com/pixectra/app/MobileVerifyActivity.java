@@ -176,10 +176,13 @@ public class MobileVerifyActivity extends AppCompatActivity {
                         deleteDialog.findViewById(R.id.verify_otp).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                PhoneAuthCredential credential = PhoneAuthProvider.getCredential(code, entered_otp);
-                                Toast.makeText(MobileVerifyActivity.this, credential.getSmsCode(), Toast.LENGTH_SHORT).show();
-                                signInWithPhoneAuthCredential(mobile_no,credential);
-
+                                if (entered_otp.length() == 4) {
+                                    PhoneAuthCredential credential = PhoneAuthProvider.getCredential(code, entered_otp);
+                                    Toast.makeText(MobileVerifyActivity.this, credential.getSmsCode(), Toast.LENGTH_SHORT).show();
+                                    signInWithPhoneAuthCredential(mobile_no, credential);
+                                } else {
+                                    Toast.makeText(MobileVerifyActivity.this, "Enter OTP", Toast.LENGTH_SHORT).show();
+                                }
 
 
 

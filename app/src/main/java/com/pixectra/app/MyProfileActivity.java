@@ -110,7 +110,10 @@ public class MyProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.help_url)));
-                startActivity(browserIntent);
+                if (browserIntent.resolveActivity(getPackageManager()) != null)
+                    startActivity(browserIntent);
+                else
+                    Toast.makeText(view.getContext(), "Browser Not Found", Toast.LENGTH_SHORT).show();
                 //help page
             }
         });
@@ -118,7 +121,7 @@ public class MyProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 AlertDialog alertDialog = new AlertDialog.Builder(MyProfileActivity.this).create();
-                alertDialog.setMessage("Are ou Sure You Want To Logout?");
+                alertDialog.setMessage("Are you Sure You Want To Logout?");
                 alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -172,6 +175,7 @@ public class MyProfileActivity extends AppCompatActivity {
 
             }
         });
+        delete.setVisibility(View.GONE);
 
 
     }
