@@ -64,6 +64,7 @@ DatabaseReference ref;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_l);
+        Branch.getInstance().userCompletedAction("loginActivity");
         db = FirebaseDatabase.getInstance();
         ref = db.getReference("Users");
         mAuth = FirebaseAuth.getInstance();

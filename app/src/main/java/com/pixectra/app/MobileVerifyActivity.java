@@ -130,7 +130,7 @@ public class MobileVerifyActivity extends AppCompatActivity {
 
                                 Intent intent = new Intent(MobileVerifyActivity.this, MainActivity.class);
                                 startActivity(intent);
-                                MobileVerifyActivity.this.finishAffinity();
+                                MobileVerifyActivity.this.finish();
                             }
 
                             @Override

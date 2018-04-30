@@ -21,6 +21,8 @@ import android.widget.TextView;
 
 import com.pixectra.app.Utils.SessionHelper;
 
+import io.branch.referral.Branch;
+
 @SuppressWarnings("deprecation")
 public class WelcomeActivity extends AppCompatActivity {
     private ViewPager viewPager;
@@ -84,9 +86,10 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     private void launchHomeScreen() {
+        Branch.getInstance().userCompletedAction("move to login");
 
         sessionHelper.setFirstTimeLaunch(false);
-        startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
+        startActivity(new Intent(WelcomeActivity.this, LActivity.class));
         finish();
     }
 
@@ -98,8 +101,9 @@ public class WelcomeActivity extends AppCompatActivity {
         sessionHelper = new SessionHelper(this);
         if (!sessionHelper.isFirstTimeLaunch()) {
             launchHomeScreen();
-            finish();
         }
+
+        Branch.getInstance().userCompletedAction("welcomescreen");
         if (Build.VERSION.SDK_INT >= 21) {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         }

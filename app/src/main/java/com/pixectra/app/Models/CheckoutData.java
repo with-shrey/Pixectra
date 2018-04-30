@@ -49,10 +49,10 @@ public class CheckoutData implements Serializable {
 
     @Override
     public String toString() {
-        return "CheckoutData{\n "+
-                "user=" + user +"\n"+
-                ", address=" + address +"\n"+
-                ", price=" + price +"\n"+
+        return "CheckoutData{\n\n " +
+                "user=" + user + "\n\n" +
+                ", address=" + address + "\n\n" +
+                ", price=" + price + "\n\n" +
                 '}';
     }
 }

@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.pixectra.app.Utils.SessionHelper;
 
 import io.branch.indexing.BranchUniversalObject;
@@ -43,7 +44,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                     Log.i("ContentMetaData", "metadata " + branchUniversalObject.getMetadata());
                 }
                 SessionHelper sessionHelper = new SessionHelper(getApplicationContext());
-                if (!sessionHelper.isFirstTimeLaunch()) {
+                if (FirebaseAuth.getInstance().getCurrentUser() != null || !sessionHelper.isFirstTimeLaunch()) {
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(intent);
                     finish();
