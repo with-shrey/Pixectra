@@ -263,6 +263,7 @@ public class MyProfileActivity extends AppCompatActivity implements View.OnClick
             case R.id.profile_mobile:
                 Intent intent = new Intent(this, MobileVerifyActivity.class);
                 intent.putExtra("uid", new SessionHelper(this).getUid());
+                intent.putExtra("startHome", false);
                 startActivity(intent);
                 break;
         }

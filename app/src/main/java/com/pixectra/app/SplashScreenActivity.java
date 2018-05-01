@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.pixectra.app.Utils.SessionHelper;
 
+import java.util.HashMap;
+
 import io.branch.indexing.BranchUniversalObject;
 import io.branch.referral.Branch;
 import io.branch.referral.BranchError;
@@ -31,7 +33,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Branch branch = Branch.getInstance();
+        final Branch branch = Branch.getInstance();
         branch.initSession(new Branch.BranchUniversalReferralInitListener() {
             @Override
             public void onInitFinished(BranchUniversalObject branchUniversalObject, LinkProperties linkProperties, BranchError error) {
@@ -40,6 +42,12 @@ public class SplashScreenActivity extends AppCompatActivity {
                     // means that you can route to a custom activity depending on what they clicked.
                     // In this example, we'll just print out the data from the link that was clicked.
 
+                    HashMap<String,String> metaData = branchUniversalObject.getContentMetadata().getCustomMetadata();
+                        if (metaData != null){
+                            if (metaData.containsKey("event")){
+                                branch.userCompletedAction(metaData.get("event"));
+                            }
+                        }
                     Log.i("BranchTestBed", "title " + branchUniversalObject.getTitle());
                     Log.i("ContentMetaData", "metadata " + branchUniversalObject.getMetadata());
                 }

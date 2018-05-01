@@ -128,8 +128,11 @@ public class MobileVerifyActivity extends AppCompatActivity {
                                 ref.setValue(mobile_no);
                                 deleteDialog.dismiss();
 
-                                Intent intent = new Intent(MobileVerifyActivity.this, MainActivity.class);
-                                startActivity(intent);
+                                if(getIntent().getBooleanExtra("startHome",true)) {
+                                    Intent intent = new Intent(MobileVerifyActivity.this, MainActivity.class);
+                                    intent.putExtra("checkPhone",false);
+                                    startActivity(intent);
+                                }
                                 MobileVerifyActivity.this.finish();
                             }
 

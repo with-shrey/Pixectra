@@ -36,7 +36,7 @@
             android:elevation="6dp"
             app:itemIconTint="@drawable/bottom_nav_selector"
             app:itemTextColor="@drawable/bottom_nav_selector"
-            android:background="@color/colorPrimaryDark"
+            app:itemBackground="@color/colorPrimaryDark"
             android:layout_alignParentBottom="true">
 
         </android.support.design.widget.BottomNavigationView>
