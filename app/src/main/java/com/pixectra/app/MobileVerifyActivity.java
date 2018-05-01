@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MobileVerifyActivity extends AppCompatActivity {
     View view;
-    EditText e1, e2, e3, e4, mobile;
+    EditText e1, e2, e3, e4, e5, e6, mobile;
     String entered_otp;
     String code;
     PhoneAuthProvider.ForceResendingToken tokenCode;
@@ -167,16 +167,21 @@ public class MobileVerifyActivity extends AppCompatActivity {
                         e2 = deleteDialogView.findViewById(R.id.char2);
                         e3 = deleteDialogView.findViewById(R.id.char3);
                         e4 = deleteDialogView.findViewById(R.id.char4);
+                        e5 = deleteDialogView.findViewById(R.id.char5);
+                        e6 = deleteDialogView.findViewById(R.id.char6);
                         deleteDialog.show();
+
                         e1.addTextChangedListener(new GenericTextWatcher(e1));
                         e2.addTextChangedListener(new GenericTextWatcher(e2));
                         e3.addTextChangedListener(new GenericTextWatcher(e3));
                         e4.addTextChangedListener(new GenericTextWatcher(e4));
+                        e5.addTextChangedListener(new GenericTextWatcher(e5));
+                        e6.addTextChangedListener(new GenericTextWatcher(e6));
                         deleteDialog.setCancelable(false);
                         deleteDialog.findViewById(R.id.verify_otp).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                if (entered_otp.length() == 4) {
+                                if (entered_otp.length() == 6) {
                                     PhoneAuthCredential credential = PhoneAuthProvider.getCredential(code, entered_otp);
                                     Toast.makeText(MobileVerifyActivity.this, credential.getSmsCode(), Toast.LENGTH_SHORT).show();
                                     signInWithPhoneAuthCredential(mobile_no, credential);
@@ -279,22 +284,47 @@ public class MobileVerifyActivity extends AppCompatActivity {
             switch (view.getId()) {
 
                 case R.id.char1:
-                    entered_otp = e1.getText().toString() + e2.getText().toString() + e3.getText().toString() + e4.getText().toString();
+                    entered_otp = e1.getText().toString() + e2.getText().toString() + e3.getText().toString() + e4.getText().toString() + e5.getText().toString() + e6.getText().toString();
                     if (text.length() == 1)
                         e2.requestFocus();
                     break;
                 case R.id.char2:
-                    entered_otp = e1.getText().toString() + e2.getText().toString() + e3.getText().toString() + e4.getText().toString();
+                    entered_otp = e1.getText().toString() + e2.getText().toString() + e3.getText().toString() + e4.getText().toString() + e5.getText().toString() + e6.getText().toString();
                     if (text.length() == 1)
                         e3.requestFocus();
+                    if (text.length() == 0) {
+                        e1.requestFocus();
+                    }
                     break;
                 case R.id.char3:
-                    entered_otp = e1.getText().toString() + e2.getText().toString() + e3.getText().toString() + e4.getText().toString();
+                    entered_otp = e1.getText().toString() + e2.getText().toString() + e3.getText().toString() + e4.getText().toString() + e5.getText().toString() + e6.getText().toString();
                     if (text.length() == 1)
                         e4.requestFocus();
+                    if (text.length() == 0) {
+                        e2.requestFocus();
+                    }
                     break;
                 case R.id.char4:
-                    entered_otp = e1.getText().toString() + e2.getText().toString() + e3.getText().toString() + e4.getText().toString();
+                    entered_otp = e1.getText().toString() + e2.getText().toString() + e3.getText().toString() + e4.getText().toString() + e5.getText().toString() + e6.getText().toString();
+                    if (text.length() == 1)
+                        e5.requestFocus();
+                    if (text.length() == 0) {
+                        e3.requestFocus();
+                    }
+                    break;
+                case R.id.char5:
+                    entered_otp = e1.getText().toString() + e2.getText().toString() + e3.getText().toString() + e4.getText().toString() + e5.getText().toString() + e6.getText().toString();
+                    if (text.length() == 1)
+                        e6.requestFocus();
+                    if (text.length() == 0) {
+                        e4.requestFocus();
+                    }
+                    break;
+                case R.id.char6:
+                    entered_otp = e1.getText().toString() + e2.getText().toString() + e3.getText().toString() + e4.getText().toString() + e5.getText().toString() + e6.getText().toString();
+                    if (text.length() == 0) {
+                        e5.requestFocus();
+                    }
                     break;
             }
         }

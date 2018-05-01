@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -22,6 +23,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pixectra.app.Models.Banner;
 import com.pixectra.app.Utils.GlideHelper;
+import com.pixectra.app.Utils.SessionHelper;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -130,6 +132,32 @@ public class DashboardFragment extends Fragment {
             }
         });
         ref.keepSynced(true);
+
+        final DatabaseReference number = database.getReference("Users");
+        final String uid = new SessionHelper(getActivity()).getUid();
+        number.child(uid).child("Info").child("phoneNo")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        String integer = null;
+                        if (dataSnapshot.exists()) {
+                            integer = dataSnapshot.getValue(String.class);
+                        }
+                        if (integer == null || integer.length() < 10) {
+                            Toast.makeText(getActivity(), "Invalid Mobile Number Found", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(getActivity(), MobileVerifyActivity.class);
+                            intent.putExtra("uid", new SessionHelper(getActivity()).getUid());
+                            startActivity(intent);
+                        }
+                        number.removeEventListener(this);
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
         i = images.size() / 2;
         timer = new Timer(); // At this line a new Thread will be created
         timer.scheduleAtFixedRate(new RemindTask(), 4000, 4000

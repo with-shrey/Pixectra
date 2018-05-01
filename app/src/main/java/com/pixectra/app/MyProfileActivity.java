@@ -4,19 +4,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,7 +28,7 @@ import com.pixectra.app.Utils.SessionHelper;
  * Created by prashu on 2/16/2018.
  */
 
-public class MyProfileActivity extends AppCompatActivity {
+public class MyProfileActivity extends AppCompatActivity implements View.OnClickListener {
 
     TextView imagename, name, email, mobile, logout, help, delete;
     ImageView imageView;
@@ -143,40 +140,131 @@ public class MyProfileActivity extends AppCompatActivity {
 
             }
         });
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AlertDialog alertDialog = new AlertDialog.Builder(MyProfileActivity.this).create();
-                alertDialog.setMessage("Delete Account ?");
-                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Deactivate", new DialogInterface.OnClickListener() {
+        name.setOnClickListener(this);
+        email.setOnClickListener(this);
+        mobile.setOnClickListener(this);
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        db = FirebaseDatabase.getInstance();
+        ref = db.getReference("Users");
+        final String uid = new SessionHelper(this).getUid();
+        if (name != null && email != null && mobile != null && progress != null)
+            ref.child(uid).child("Info").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    User user = dataSnapshot.getValue(User.class);
+                    assert user != null;
+                    if (user.getName() != null)
+                        name.setText(user.getName());
+                    else
+                        name.setText("Not Found");
+                    if (user.getEmail() != null)
+                        email.setText(user.getEmail());
+                    else
+                        email.setText("Not Found");
+                    if (user.getEmail() != null)
+                        mobile.setText(user.getPhoneNo());
+                    else
+                        mobile.setText("Not Found");
+                    if (user.getProfilePic() != null)
+                        GlideHelper.load(MyProfileActivity.this, user.getProfilePic(), imageView, progress);
+                    else
+                        progress.setVisibility(View.GONE);
+                    ref.child(uid).child("Info").removeEventListener(this);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Toast.makeText(MyProfileActivity.this, "Failed To Fetch Information", Toast.LENGTH_SHORT).show();
+                }
+            });
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.profile_name:
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                View dialogView = View.inflate(this, R.layout.edit_text_dialog, null);
+                builder.setView(dialogView);
+                final EditText editText = dialogView.findViewById(R.id.edit_text);
+                TextView title = dialogView.findViewById(R.id.title);
+                title.setText("Enter Your Name");
+                builder.setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        mAuth.getCurrentUser().delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    public void onClick(final DialogInterface dialogInterface, int i) {
+                        final String name = editText.getText().toString();
+                        db = FirebaseDatabase.getInstance();
+                        ref = db.getReference("Users");
+                        final String uid = new SessionHelper(MyProfileActivity.this).getUid();
+                        ref.child(uid).child("Info").child("name").setValue(name, new DatabaseReference.CompletionListener() {
                             @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                Toast.makeText(MyProfileActivity.this, "Deleted SuccessFully", Toast.LENGTH_SHORT).show();
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(MyProfileActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                dialogInterface.dismiss();
+                                if (MyProfileActivity.this.name != null)
+                                    MyProfileActivity.this.name.setText(name);
+                                Toast.makeText(MyProfileActivity.this, "Name Changed Successfully", Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
                 });
-                alertDialog.show();
+                builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
 
+                    }
+                });
+                builder.show();
+                break;
+            case R.id.profile_email:
+                AlertDialog.Builder builder2 = new AlertDialog.Builder(this);
+                View dialogView2 = View.inflate(this, R.layout.edit_text_dialog, null);
+                builder2.setView(dialogView2);
+                final EditText editText2 = dialogView2.findViewById(R.id.edit_text);
+                final TextView title2 = dialogView2.findViewById(R.id.title);
+                title2.setText("Enter New Email");
+                builder2.setNeutralButton("SAVE", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(final DialogInterface dialogInterface, int i) {
+                        title2.setText("Saving ... ");
+                        final String email = editText2.getText().toString();
+                        db = FirebaseDatabase.getInstance();
+                        ref = db.getReference("Users");
+                        final String uid = new SessionHelper(MyProfileActivity.this).getUid();
+                        if (android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches())
+                            ref.child(uid).child("Info").child("email").setValue(email, new DatabaseReference.CompletionListener() {
+                                @Override
+                                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                    if (MyProfileActivity.this.email != null)
+                                        MyProfileActivity.this.email.setText(email);
+                                    dialogInterface.dismiss();
+                                    Toast.makeText(MyProfileActivity.this, "Email Changed Successfully", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        else {
+                            title2.setText("Enter Email ... ");
+                            Toast.makeText(MyProfileActivity.this, "Invalid Email Entered", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                builder2.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
 
-            }
-        });
-        delete.setVisibility(View.GONE);
-
-
+                    }
+                });
+                builder2.show();
+                break;
+            case R.id.profile_mobile:
+                Intent intent = new Intent(this, MobileVerifyActivity.class);
+                intent.putExtra("uid", new SessionHelper(this).getUid());
+                startActivity(intent);
+                break;
+        }
     }
 }

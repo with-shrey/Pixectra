@@ -85,7 +85,8 @@ public class ReferAndEarnFragment extends Fragment {
         // Customize the appearance of your share sheet
         ShareSheetStyle shareSheetStyle = new ShareSheetStyle(getActivity()
                 , "Download The App Now And Get Exciting Offers On Sign Up"
-                , "Who doesn't love to share memories, bring your memories to life with pixectra's affordable photo printing service")
+                , "Who doesn't love to share memories, bring your memories to life with pixectra's affordable photo printing service" +
+                "\nDon't Minimize App Before Signing Up To Successfully Get Credit Benefits On First Launch")
                 .setCopyUrlStyle(getResources().getDrawable(android.R.drawable.ic_menu_send), "Copy link", "Link added to clipboard!")
                 .setMoreOptionStyle(getResources().getDrawable(android.R.drawable.ic_menu_search), "Show more")
                 .addPreferredSharingOption(SharingHelper.SHARE_WITH.FACEBOOK)
