@@ -135,7 +135,7 @@ public class DashboardFragment extends Fragment {
 
         final DatabaseReference number = database.getReference("Users");
         final String uid = new SessionHelper(getActivity()).getUid();
-        if (getActivity() !=null  &&  getActivity().getIntent().getBooleanExtra("checkPhone",true))
+        if (getActivity() != null && getActivity().getIntent().getBooleanExtra("checkPhone", true) && uid != null)
         number.child(uid).child("Info").child("phoneNo")
                 .addValueEventListener(new ValueEventListener() {
                     @Override

@@ -64,8 +64,8 @@ public class ReferAndEarnFragment extends Fragment {
         branchUniversalObject = new BranchUniversalObject()
                 .setCanonicalIdentifier(new SessionHelper(getActivity()).getUid())
                 .setTitle("Get The App Now")
-                .setContentDescription("Download The App ")
-                .setContentImageUrl("http://pixectra.com/img/logo.png");
+                .setContentDescription("We Are Pixectra And We Help You Bring Your Memories To Life ")
+                .setContentImageUrl("https://cdn.branch.io/branch-assets/1524259015510-og_image.png");
 
 
         // Trigger a view on the content for analytics tracking

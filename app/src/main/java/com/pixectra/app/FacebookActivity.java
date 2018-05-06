@@ -142,10 +142,21 @@ public class FacebookActivity extends AppCompatActivity {
                                                 @Override
                                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                                     User user = dataSnapshot.getValue(User.class);
-                                                    new SessionHelper(FacebookActivity.this).setUserDetails(mAuth.getCurrentUser().getUid()
-                                                            , user.getName()
-                                                            , user.getEmail()
-                                                            , Uri.parse(user.getProfilePic()));
+                                                    if (user != null)
+                                                        new SessionHelper(FacebookActivity.this).setUserDetails(mAuth.getCurrentUser().getUid()
+                                                                , user.getName()
+                                                                , user.getEmail()
+                                                                , Uri.parse(user.getProfilePic()));
+                                                    else {
+                                                        new SessionHelper(FacebookActivity.this).setUserDetails(mAuth.getCurrentUser().getUid()
+                                                                , ""
+                                                                , ""
+                                                                , Uri.parse("http://pixectra.com/img/logo.png"));
+                                                        Toast.makeText(FacebookActivity.this, "Kindly Update Your Account Info", Toast.LENGTH_SHORT).show();
+                                                        Intent intent = new Intent(FacebookActivity.this, MyProfileActivity.class);
+                                                        startActivity(intent);
+                                                        finish();
+                                                    }
                                                     FirebaseUser userfb = mAuth.getCurrentUser();
                                                     updateUI(userfb);
                                                     ref.child(mAuth.getCurrentUser().getUid()).child("Info").removeEventListener(this);

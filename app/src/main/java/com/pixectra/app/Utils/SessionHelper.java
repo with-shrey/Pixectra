@@ -191,10 +191,10 @@ public class SessionHelper extends MainActivity {
     public void logOutUser() {
 
         //Clearing all data from the shared preferences
+        FirebaseAuth.getInstance().signOut();
         Branch.getInstance().logout();
         editor.clear();
         editor.commit();
-        FirebaseAuth.getInstance().signOut();
         if (GoogleSignIn.getLastSignedInAccount(context) != null) {
             GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestIdToken(context.getString(R.string.google_token))

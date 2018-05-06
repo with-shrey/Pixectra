@@ -89,6 +89,9 @@
                 <data
                     android:host="refer.pixectra.com"
                     android:scheme="https" />
+                <data
+                    android:host="pixectra.com"
+                    android:scheme="http" />
             </intent-filter>
         </activity>
         <activity

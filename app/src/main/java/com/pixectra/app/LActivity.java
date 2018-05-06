@@ -188,10 +188,23 @@ DatabaseReference ref;
                                                 @Override
                                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                                     User user = dataSnapshot.getValue(User.class);
-                                                    new SessionHelper(LActivity.this).setUserDetails(mAuth.getCurrentUser().getUid()
-                                                            , user.getName()
-                                                            , user.getEmail()
-                                                            , Uri.parse(user.getProfilePic()));
+                                                    String name = "";
+                                                    if (user != null)
+                                                        new SessionHelper(LActivity.this).setUserDetails(mAuth.getCurrentUser().getUid()
+                                                                , user.getName()
+                                                                , user.getEmail()
+                                                                , Uri.parse(user.getProfilePic()));
+
+                                                    else {
+                                                        new SessionHelper(LActivity.this).setUserDetails(mAuth.getCurrentUser().getUid()
+                                                                , ""
+                                                                , ""
+                                                                , Uri.parse("http://pixectra.com/img/logo.png"));
+                                                        Toast.makeText(LActivity.this, "Kindly Update Your Account Info", Toast.LENGTH_SHORT).show();
+                                                        Intent intent = new Intent(LActivity.this, MyProfileActivity.class);
+                                                        startActivity(intent);
+                                                        finish();
+                                                    }
                                                     FirebaseUser userfire = mAuth.getCurrentUser();
                                                     updateUI(userfire);
                                                     ref.child(mAuth.getCurrentUser().getUid()).child("Info").removeEventListener(this);
@@ -199,7 +212,7 @@ DatabaseReference ref;
 
                                                 @Override
                                                 public void onCancelled(DatabaseError databaseError) {
-
+                                                    Toast.makeText(LActivity.this, "Error Connecting .. ", Toast.LENGTH_SHORT).show();
                                                 }
                                             });
                                         }

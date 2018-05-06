@@ -59,7 +59,7 @@ public class ImageController {
 
     static byte[] getBytes(Bitmap bitmap) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
         return stream.toByteArray();
     }
 
@@ -116,7 +116,7 @@ public class ImageController {
             mBuilder.setContentText("Image " + (j + 1) + "/" + totalJ);
             mBuilder.setProgress(100, 0, false);
             manager.notify(1, mBuilder.build());
-            StorageReference riversRef = mStorageRef.child(pair.first.getId() + "-" + i).child("" + j + ".png");
+            StorageReference riversRef = mStorageRef.child(pair.first.getId() + "-" + i).child("" + j + ".jpeg");
             OnProgressListener<UploadTask.TaskSnapshot> progressListener = new OnProgressListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
